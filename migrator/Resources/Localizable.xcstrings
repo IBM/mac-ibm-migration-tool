@@ -1,0 +1,1276 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@" : {
+
+    },
+    "app.name.backup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the App"
+          }
+        }
+      }
+    },
+    "browser.page.button.main.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "browser.page.button.secondary.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "browser.page.reminder.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you don't see your device listed here, make sure to run %@ on the destination \ndevice as well, and select \"%@\" option."
+          }
+        }
+      }
+    },
+    "browser.page.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the correct device from the list below. Then, enter the code shown on the destination device to pair it."
+          }
+        }
+      }
+    },
+    "browser.page.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the destination device"
+          }
+        }
+      }
+    },
+    "code.verification.alert.code.error.action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "code.verification.alert.code.error.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This might occur due to an incorrect pairing code being entered or due to a lack of response from the target device."
+          }
+        }
+      }
+    },
+    "code.verification.alert.code.error.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to establish connection"
+          }
+        }
+      }
+    },
+    "code.verification.alert.connection.error.action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "code.verification.alert.connection.error.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify that the target device is still discoverable and try again."
+          }
+        }
+      }
+    },
+    "code.verification.alert.connection.error.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to establish connection"
+          }
+        }
+      }
+    },
+    "code.verification.page.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you’re the owner of that device, use the pairing code appeared on it to connect the two Macs."
+          }
+        }
+      }
+    },
+    "code.verification.page.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify the connection"
+          }
+        }
+      }
+    },
+    "common.app.attention" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attention"
+          }
+        }
+      }
+    },
+    "common.app.quit.alert.button.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "common.app.quit.alert.button.quit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit"
+          }
+        }
+      }
+    },
+    "common.app.quit.alert.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to quit %@?"
+          }
+        }
+      }
+    },
+    "common.system.settings.pre.ventura.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System Preferences"
+          }
+        }
+      }
+    },
+    "common.system.settings.ventura.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System Settings"
+          }
+        }
+      }
+    },
+    "connection.error.alert.recoverable.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is trying to recover the connection."
+          }
+        }
+      }
+    },
+    "connection.error.alert.recoverable.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection have been interrupted!"
+          }
+        }
+      }
+    },
+    "connection.error.alert.unrecoverable.main.action.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart"
+          }
+        }
+      }
+    },
+    "connection.error.alert.unrecoverable.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The connection have been interrupted. Please restart the migration process. "
+          }
+        }
+      }
+    },
+    "connection.error.alert.unrecoverable.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection have been interrupted!"
+          }
+        }
+      }
+    },
+    "final.page.body.component.appleid.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple ID Check"
+          }
+        }
+      }
+    },
+    "final.page.body.component.inventory.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventory Update"
+          }
+        }
+      }
+    },
+    "final.page.body.component.migration.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data Migration"
+          }
+        }
+      }
+    },
+    "final.page.body.component.reboot.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device Reboot"
+          }
+        }
+      }
+    },
+    "final.page.body.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The migration is completed. You can now close the app."
+          }
+        }
+      }
+    },
+    "final.page.body.recon.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submitting device inventory to %@..."
+          }
+        }
+      }
+    },
+    "final.page.bottom.informational.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify the integrity of all the migrated files before deleting them from your old device."
+          }
+        }
+      }
+    },
+    "final.page.main.button.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "final.page.recon.state.queued.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queued"
+          }
+        }
+      }
+    },
+    "final.page.recon.state.running.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Running"
+          }
+        }
+      }
+    },
+    "final.page.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're all set!"
+          }
+        }
+      }
+    },
+    "final.page.title.recon.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We're almost done!"
+          }
+        }
+      }
+    },
+    "icloud.page.body.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It appears that you're not currently logged in with your Apple ID.\nAs a result, your iCloud apps/items are not synced on this Mac.\n\nClick \"Open %@\" to log in now, or choose \"%@\" to do so at a later time."
+          }
+        }
+      }
+    },
+    "icloud.page.main.button.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
+    },
+    "icloud.page.system.settings.button.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open %@"
+          }
+        }
+      }
+    },
+    "icloud.page.title.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login with your Apple ID"
+          }
+        }
+      }
+    },
+    "migration.common.calculating.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calculating..."
+          }
+        }
+      }
+    },
+    "migration.devicesleep.alert.main.action.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "migration.devicesleep.alert.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Be aware that once the migration begins, the app will prevent both devices from entering sleep mode."
+          }
+        }
+      }
+    },
+    "migration.devicesleep.alert.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attention"
+          }
+        }
+      }
+    },
+    "migration.fileinteraction.alert.main.action.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "migration.fileinteraction.alert.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avoid interacting with the files involved in the migration process, as doing so may lead to data loss."
+          }
+        }
+      }
+    },
+    "migration.fileinteraction.alert.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attention"
+          }
+        }
+      }
+    },
+    "migration.option.advanced.segment.applications" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applications"
+          }
+        }
+      }
+    },
+    "migration.option.advanced.segment.files" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files"
+          }
+        }
+      }
+    },
+    "migration.option.advanced.segment.preferences" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferences"
+          }
+        }
+      }
+    },
+    "migration.option.complete.applications.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Installed Applications"
+          }
+        }
+      }
+    },
+    "migration.option.complete.preferences.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account Preferences"
+          }
+        }
+      }
+    },
+    "migration.option.complete.userdir.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Folder"
+          }
+        }
+      }
+    },
+    "migration.option.lite.desktop.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desktop Folder"
+          }
+        }
+      }
+    },
+    "migration.option.lite.documents.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documents Folder"
+          }
+        }
+      }
+    },
+    "migration.page.body.ongoing.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending the data to your new device. Don’t interrupt the connection."
+          }
+        }
+      }
+    },
+    "migration.page.body.source.complete.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Great, the transfer of data finished with success.\nDevice have been safely disconnected. You can close this window and continue the process on your new Mac."
+          }
+        }
+      }
+    },
+    "migration.page.main.button.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "migration.page.progressbar.top.complete.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnected from "
+          }
+        }
+      }
+    },
+    "migration.page.progressbar.top.ongoing.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected to "
+          }
+        }
+      }
+    },
+    "migration.page.progressbar.top.percentage.start.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Communicating with the destination device..."
+          }
+        }
+      }
+    },
+    "migration.page.technology.thunderbolt.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "via Thunderbolt Cable"
+          }
+        }
+      }
+    },
+    "migration.page.technology.wifi.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "via Wi-Fi"
+          }
+        }
+      }
+    },
+    "migration.page.time.estimation.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time to Completion: %@"
+          }
+        }
+      }
+    },
+    "migration.page.title.complete.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It’s all done!"
+          }
+        }
+      }
+    },
+    "migration.page.title.ongoing.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The migration has started..."
+          }
+        }
+      }
+    },
+    "migration.page.warning.button.popover.text" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make sure that your Mac is connected to power during this process."
+          }
+        }
+      }
+    },
+    "migration.setup.directory.content.hidden.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Hidden Files"
+          }
+        }
+      }
+    },
+    "migration.setup.directory.content.hidden.label.hide" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide"
+          }
+        }
+      }
+    },
+    "migration.setup.directory.content.hidden.label.show" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show"
+          }
+        }
+      }
+    },
+    "migration.setup.page.advanced.select.all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select all"
+          }
+        }
+      }
+    },
+    "migration.setup.page.advanced.setup.button.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advanced Selection"
+          }
+        }
+      }
+    },
+    "migration.setup.page.bottom.info.loading.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading system information. The operation might take several minutes"
+          }
+        }
+      }
+    },
+    "migration.setup.page.bottom.info.size.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %@ available on the destination device after migration."
+          }
+        }
+      }
+    },
+    "migration.setup.page.button.secondary.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "migration.setup.page.directory.popover.top.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Finder"
+          }
+        }
+      }
+    },
+    "migration.setup.page.main.button.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Migration"
+          }
+        }
+      }
+    },
+    "migration.setup.page.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a migration setup below. If you want to have more flexibility just click on “Advanced Selection”."
+          }
+        }
+      }
+    },
+    "migration.setup.page.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What do you want to migrate?"
+          }
+        }
+      }
+    },
+    "reboot.page.body.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Mac will automatically restart in two minutes to complete the process. If you’re ready now, you can restart immediately by clicking the button below."
+          }
+        }
+      }
+    },
+    "reboot.page.bottom.timer.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time Until Restart: %@"
+          }
+        }
+      }
+    },
+    "reboot.page.main.button.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart Now"
+          }
+        }
+      }
+    },
+    "reboot.page.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Mac Will Restart in Two Minutes"
+          }
+        }
+      }
+    },
+    "recon.page.alert.error.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventory Update encountered an error.\nTry again."
+          }
+        }
+      }
+    },
+    "recon.page.alert.error.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attention"
+          }
+        }
+      }
+    },
+    "recon.page.body.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To keep the device information up to date in %@’s management system, the app will now perform an Inventory Update. This process updates the management system with the latest details about the app installed on your device, enabling it to push any necessary custom configurations, if available.\n\nTo initiate the Inventory Update, after clicking \"%@\", the app will prompt you to enter your Mac password."
+          }
+        }
+      }
+    },
+    "recon.page.informational.bottom.ongoing.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventory Update running. The process might take some minutes."
+          }
+        }
+      }
+    },
+    "recon.page.main.button.run.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run Inventory Update"
+          }
+        }
+      }
+    },
+    "recon.page.title.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Management Inventory"
+          }
+        }
+      }
+    },
+    "server.page.body.migration.complete.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Great, the transfer of data finished with success."
+          }
+        }
+      }
+    },
+    "server.page.body.ongoing.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiving data from your old device. Don’t interrupt the connection."
+          }
+        }
+      }
+    },
+    "server.page.button.main.complete.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "server.page.button.main.continue.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "server.page.button.main.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "server.page.connected.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Great job! now you can continue the process on the old Mac to select what to send here."
+          }
+        }
+      }
+    },
+    "server.page.connected.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’re connected to the old Mac!"
+          }
+        }
+      }
+    },
+    "server.page.default.device.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This device"
+          }
+        }
+      }
+    },
+    "server.page.pairing.code.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairing Code"
+          }
+        }
+      }
+    },
+    "server.page.progressbar.top.percentage.start.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Communicating with the source device..."
+          }
+        }
+      }
+    },
+    "server.page.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run this app on your old Mac and follow the reverse process to locate this device and continue with the data migration. For a faster transfer, you can also connect the devices with a Thunderbolt cable."
+          }
+        }
+      }
+    },
+    "server.page.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This device is now set to be discoverable..."
+          }
+        }
+      }
+    },
+    "server.page.title.migration.complete.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data migration completed!"
+          }
+        }
+      }
+    },
+    "server.page.title.migration.ongoing.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The migration has started..."
+          }
+        }
+      }
+    },
+    "welcome.page.alert.error.action.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "welcome.page.alert.error.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An error occurred while starting the Bonjour server"
+          }
+        }
+      }
+    },
+    "welcome.page.button.big.left.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is my new Mac"
+          }
+        }
+      }
+    },
+    "welcome.page.button.big.right.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is my old Mac"
+          }
+        }
+      }
+    },
+    "welcome.page.button.main.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "welcome.page.fda.error.first.action.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open %@"
+          }
+        }
+      }
+    },
+    "welcome.page.fda.error.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To perform file discovery and migration, the %@ requires Full Disk Access permission. Please click \"Open %@\" to grant this permission, and then reopen the %@."
+          }
+        }
+      }
+    },
+    "welcome.page.fda.error.second.action.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "welcome.page.fda.error.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missing \"Full Disk Access\" Permissions"
+          }
+        }
+      }
+    },
+    "welcome.page.management.error.first.action.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup Instruction"
+          }
+        }
+      }
+    },
+    "welcome.page.management.error.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app wasn't able to detect %@ management on the device. Please enrol the device in the %@ program before starting the migration."
+          }
+        }
+      }
+    },
+    "welcome.page.management.error.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device is not under %@ management"
+          }
+        }
+      }
+    },
+    "welcome.page.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select an option below to get started."
+          }
+        }
+      }
+    },
+    "welcome.page.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to %@"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

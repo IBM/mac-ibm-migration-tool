@@ -1,0 +1,1014 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1B0507412B04F6B200384CD5 /* NetworkBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0507402B04F6B200384CD5 /* NetworkBrowser.swift */; };
+		1B0507432B04F71500384CD5 /* NetworkConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0507422B04F71500384CD5 /* NetworkConnection.swift */; };
+		1B0507472B050C5C00384CD5 /* NWBrowser-Result-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0507462B050C5C00384CD5 /* NWBrowser-Result-Extension.swift */; };
+		1B05074A2B0606B700384CD5 /* NetworkDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0507492B0606B700384CD5 /* NetworkDevice.swift */; };
+		1B05074C2B06129100384CD5 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B05074B2B06129100384CD5 /* MainView.swift */; };
+		1B05074E2B0612B500384CD5 /* MigratorPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B05074D2B0612B500384CD5 /* MigratorPage.swift */; };
+		1B0507502B06130800384CD5 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B05074F2B06130800384CD5 /* WelcomeView.swift */; };
+		1B0507522B06133800384CD5 /* MigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0507512B06133800384CD5 /* MigrationView.swift */; };
+		1B4C5BB42B035EBA00D4BD0B /* MigratorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */; };
+		1B4C5BB62B035EBA00D4BD0B /* ServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */; };
+		1B4C5BB82B035EBD00D4BD0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */; };
+		1B4C5BBB2B035EBD00D4BD0B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B4C5BBA2B035EBD00D4BD0B /* Preview Assets.xcassets */; };
+		1B4C5BC62B035EBD00D4BD0B /* MigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BC52B035EBD00D4BD0B /* MigratorTests.swift */; };
+		1B4C5BD02B035EBD00D4BD0B /* MigratorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BCF2B035EBD00D4BD0B /* MigratorUITests.swift */; };
+		1B4C5BD22B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BD12B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift */; };
+		1B4C5BE12B0375C700D4BD0B /* Scene-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BE02B0375C700D4BD0B /* Scene-Extension.swift */; };
+		1B4C5BE52B03B80300D4BD0B /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BE42B03B80300D4BD0B /* Utils.swift */; };
+		1B4C5BE72B03B82B00D4BD0B /* NetworkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BE62B03B82B00D4BD0B /* NetworkServer.swift */; };
+		1BC044662B2B1E6F0007B5CB /* LinearGradient-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC044652B2B1E6F0007B5CB /* LinearGradient-Extension.swift */; };
+		1BC044682B2B57EB0007B5CB /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC044672B2B57EB0007B5CB /* BrowserView.swift */; };
+		5300EE4F2B7F9E13002127BB /* String-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5300EE4E2B7F9E13002127BB /* String-Extension.swift */; };
+		530923A12B85006400D6BFE7 /* MigrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530923A02B85006400D6BFE7 /* MigrationViewModel.swift */; };
+		530923A52B8CD59C00D6BFE7 /* ServerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530923A42B8CD59C00D6BFE7 /* ServerViewModel.swift */; };
+		5310815B2B7E081500697D46 /* MigratorFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5310815A2B7E081500697D46 /* MigratorFileView.swift */; };
+		5310815D2B7E0B5800697D46 /* AdvancedSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5310815C2B7E0B5800697D46 /* AdvancedSelectionView.swift */; };
+		53180FD92B6BBCF300C84937 /* MigrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53180FD82B6BBCF300C84937 /* MigrationController.swift */; };
+		531E49382C77996E00344C73 /* FinalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531E49372C77996E00344C73 /* FinalView.swift */; };
+		53237C112CA9E1D8004062CC /* JamfReconMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53237C102CA9E1D2004062CC /* JamfReconMethod.swift */; };
+		53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */; };
+		532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B52C64FFE5002E270F /* WindowAccessor.swift */; };
+		532F90B82C650014002E270F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B72C650014002E270F /* AppDelegate.swift */; };
+		535A77912BA49A5E00BB8116 /* CodeVerificationFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */; };
+		535B5F9D2B99D7520071861E /* CodeVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535B5F9C2B99D7520071861E /* CodeVerificationView.swift */; };
+		5363AE6C2BE8D2A2004C96EF /* Array-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5363AE6B2BE8D2A2004C96EF /* Array-Extension.swift */; };
+		53665E912BDBE0C600086714 /* ConfigProfilePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E902BDBE0C600086714 /* ConfigProfilePayload.swift */; };
+		53665E932BDBE0DF00086714 /* ConfigurationProfileDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E922BDBE0DF00086714 /* ConfigurationProfileDataType.swift */; };
+		53665E952BDBE0FE00086714 /* ConfigProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E942BDBE0FE00086714 /* ConfigProfileSection.swift */; };
+		53665E972BDBE12300086714 /* Decodable-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E962BDBE12300086714 /* Decodable-Extension.swift */; };
+		53665E992BDBE14B00086714 /* ConfigProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E982BDBE14B00086714 /* ConfigProfile.swift */; };
+		53665E9B2BDBE15F00086714 /* DeviceManagementState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */; };
+		5377C2272B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */; };
+		5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */; };
+		5377C22B2B51551D00B5C9C1 /* MigratorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C22A2B51551D00B5C9C1 /* MigratorError.swift */; };
+		5377C22D2B559D7900B5C9C1 /* Data-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C22C2B559D7900B5C9C1 /* Data-Extension.swift */; };
+		5377C22F2B57C94F00B5C9C1 /* FileMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C22E2B57C94F00B5C9C1 /* FileMessage.swift */; };
+		5377C2312B57CD9C00B5C9C1 /* MigrationSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2302B57CD9C00B5C9C1 /* MigrationSetupView.swift */; };
+		539B25682B47FB930012B974 /* NSTableView-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B25672B47FB930012B974 /* NSTableView-Extension.swift */; };
+		539B256B2B47FBEE0012B974 /* NoBackgroundScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */; };
+		539B256D2B4817820012B974 /* View-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B256C2B4817820012B974 /* View-Extension.swift */; };
+		539B256F2B4817AC0012B974 /* DeviceListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B256E2B4817AC0012B974 /* DeviceListRow.swift */; };
+		539B25712B4848C90012B974 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 539B25702B4848C90012B974 /* Localizable.xcstrings */; };
+		539F23982BAC85A700E3F399 /* MLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539F23972BAC85A700E3F399 /* MLogger.swift */; };
+		53A1DCB72C6E86950086AD07 /* AppleIDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1DCB62C6E86950086AD07 /* AppleIDView.swift */; };
+		53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */; };
+		53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */; };
+		53B193122C88CB1600DEFE24 /* ManagedEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */; };
+		53B193142C89C7D500DEFE24 /* DefaultsMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193132C89C7D500DEFE24 /* DefaultsMessage.swift */; };
+		53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193152C8EFDE700DEFE24 /* AppContext.swift */; };
+		53B193182C8F212C00DEFE24 /* Double-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193172C8F212C00DEFE24 /* Double-Extension.swift */; };
+		53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C5D8152B7CB2110099F667 /* Int-Extension.swift */; };
+		53DE27992C78A815003AE255 /* Notification-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DE27982C78A815003AE255 /* Notification-Extension.swift */; };
+		53E313052C6CE8410090793F /* Bundle-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E313042C6CE8410090793F /* Bundle-Extension.swift */; };
+		53E65F532C772CE80010B8DD /* JamfReconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E65F522C772CE80010B8DD /* JamfReconView.swift */; };
+		53E65F552C777EBD0010B8DD /* RebootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E65F542C777EBD0010B8DD /* RebootView.swift */; };
+		53F2DE2E2B67C05000588D2D /* MigrationSetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE2D2B67C05000588D2D /* MigrationSetupViewModel.swift */; };
+		53F2DE302B69047B00588D2D /* MigratorFileURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */; };
+		53F2DE322B69049600588D2D /* SymbolicLinkMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE312B69049600588D2D /* SymbolicLinkMessage.swift */; };
+		53F2DE342B6904F900588D2D /* MigratorMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE332B6904F900588D2D /* MigratorMessageType.swift */; };
+		53F2DE362B69051F00588D2D /* MigratorNetworkProtocolHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE352B69051F00588D2D /* MigratorNetworkProtocolHeader.swift */; };
+		53F2DE382B69055000588D2D /* NWProtocolFramer-Message-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE372B69055000588D2D /* NWProtocolFramer-Message-Extension.swift */; };
+		53F2DE3A2B69058D00588D2D /* CommunicationInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE392B69058D00588D2D /* CommunicationInterfaces.swift */; };
+		53F2DE3C2B6905FB00588D2D /* MigratorFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE3B2B6905FB00588D2D /* MigratorFile.swift */; };
+		53F2DE3E2B6A5B7500588D2D /* Binding-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE3D2B6A5B7500588D2D /* Binding-Extension.swift */; };
+		53F2DE402B6A70E000588D2D /* URL-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE3F2B6A70E000588D2D /* URL-Extension.swift */; };
+		53F2DE422B6A712700588D2D /* MigrationOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE412B6A712700588D2D /* MigrationOption.swift */; };
+		53F2DE442B6A8AD500588D2D /* MigrationOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE432B6A8AD500588D2D /* MigrationOptionView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1B4C5BC22B035EBD00D4BD0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B4C5BA82B035EBA00D4BD0B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1B4C5BAF2B035EBA00D4BD0B;
+			remoteInfo = migrator;
+		};
+		1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B4C5BA82B035EBA00D4BD0B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1B4C5BAF2B035EBA00D4BD0B;
+			remoteInfo = migrator;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1B0507402B04F6B200384CD5 /* NetworkBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkBrowser.swift; sourceTree = "<group>"; };
+		1B0507422B04F71500384CD5 /* NetworkConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnection.swift; sourceTree = "<group>"; };
+		1B0507462B050C5C00384CD5 /* NWBrowser-Result-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWBrowser-Result-Extension.swift"; sourceTree = "<group>"; };
+		1B0507492B0606B700384CD5 /* NetworkDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDevice.swift; sourceTree = "<group>"; };
+		1B05074B2B06129100384CD5 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		1B05074D2B0612B500384CD5 /* MigratorPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorPage.swift; sourceTree = "<group>"; };
+		1B05074F2B06130800384CD5 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		1B0507512B06133800384CD5 /* MigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationView.swift; sourceTree = "<group>"; };
+		1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IBM Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorApp.swift; sourceTree = "<group>"; };
+		1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
+		1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1B4C5BBA2B035EBD00D4BD0B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		1B4C5BBC2B035EBD00D4BD0B /* migrator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = migrator.entitlements; sourceTree = "<group>"; };
+		1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = migratorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B4C5BC52B035EBD00D4BD0B /* MigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorTests.swift; sourceTree = "<group>"; };
+		1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = migratorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B4C5BCF2B035EBD00D4BD0B /* MigratorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorUITests.swift; sourceTree = "<group>"; };
+		1B4C5BD12B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		1B4C5BE02B0375C700D4BD0B /* Scene-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scene-Extension.swift"; sourceTree = "<group>"; };
+		1B4C5BE32B03B6FE00D4BD0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1B4C5BE42B03B80300D4BD0B /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		1B4C5BE62B03B82B00D4BD0B /* NetworkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServer.swift; sourceTree = "<group>"; };
+		1BC044652B2B1E6F0007B5CB /* LinearGradient-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LinearGradient-Extension.swift"; sourceTree = "<group>"; };
+		1BC044672B2B57EB0007B5CB /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
+		5300EE4E2B7F9E13002127BB /* String-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String-Extension.swift"; sourceTree = "<group>"; };
+		530923A02B85006400D6BFE7 /* MigrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationViewModel.swift; sourceTree = "<group>"; };
+		530923A42B8CD59C00D6BFE7 /* ServerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerViewModel.swift; sourceTree = "<group>"; };
+		5310815A2B7E081500697D46 /* MigratorFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorFileView.swift; sourceTree = "<group>"; };
+		5310815C2B7E0B5800697D46 /* AdvancedSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSelectionView.swift; sourceTree = "<group>"; };
+		53180FD82B6BBCF300C84937 /* MigrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationController.swift; sourceTree = "<group>"; };
+		531E49372C77996E00344C73 /* FinalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalView.swift; sourceTree = "<group>"; };
+		53237C102CA9E1D2004062CC /* JamfReconMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconMethod.swift; sourceTree = "<group>"; };
+		53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateFilesHandlingPolicy.swift; sourceTree = "<group>"; };
+		532F90B52C64FFE5002E270F /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
+		532F90B72C650014002E270F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationFieldView.swift; sourceTree = "<group>"; };
+		535B5F9C2B99D7520071861E /* CodeVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationView.swift; sourceTree = "<group>"; };
+		5363AE6B2BE8D2A2004C96EF /* Array-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array-Extension.swift"; sourceTree = "<group>"; };
+		53665E902BDBE0C600086714 /* ConfigProfilePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfilePayload.swift; sourceTree = "<group>"; };
+		53665E922BDBE0DF00086714 /* ConfigurationProfileDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationProfileDataType.swift; sourceTree = "<group>"; };
+		53665E942BDBE0FE00086714 /* ConfigProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfileSection.swift; sourceTree = "<group>"; };
+		53665E962BDBE12300086714 /* Decodable-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable-Extension.swift"; sourceTree = "<group>"; };
+		53665E982BDBE14B00086714 /* ConfigProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfile.swift; sourceTree = "<group>"; };
+		53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementState.swift; sourceTree = "<group>"; };
+		5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorNetworkProtocol.swift; sourceTree = "<group>"; };
+		5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWParameters-Extension.swift"; sourceTree = "<group>"; };
+		5377C22A2B51551D00B5C9C1 /* MigratorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorError.swift; sourceTree = "<group>"; };
+		5377C22C2B559D7900B5C9C1 /* Data-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data-Extension.swift"; sourceTree = "<group>"; };
+		5377C22E2B57C94F00B5C9C1 /* FileMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMessage.swift; sourceTree = "<group>"; };
+		5377C2302B57CD9C00B5C9C1 /* MigrationSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationSetupView.swift; sourceTree = "<group>"; };
+		539B25672B47FB930012B974 /* NSTableView-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTableView-Extension.swift"; sourceTree = "<group>"; };
+		539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoBackgroundScroller.swift; sourceTree = "<group>"; };
+		539B256C2B4817820012B974 /* View-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View-Extension.swift"; sourceTree = "<group>"; };
+		539B256E2B4817AC0012B974 /* DeviceListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceListRow.swift; sourceTree = "<group>"; };
+		539B25702B4848C90012B974 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		539F23972BAC85A700E3F399 /* MLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLogger.swift; sourceTree = "<group>"; };
+		53A1DCB62C6E86950086AD07 /* AppleIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIDView.swift; sourceTree = "<group>"; };
+		53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconManager.swift; sourceTree = "<group>"; };
+		53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementHelper.swift; sourceTree = "<group>"; };
+		53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedEnvironment.swift; sourceTree = "<group>"; };
+		53B193132C89C7D500DEFE24 /* DefaultsMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsMessage.swift; sourceTree = "<group>"; };
+		53B193152C8EFDE700DEFE24 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
+		53B193172C8F212C00DEFE24 /* Double-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double-Extension.swift"; sourceTree = "<group>"; };
+		53C5D8152B7CB2110099F667 /* Int-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int-Extension.swift"; sourceTree = "<group>"; };
+		53DE27982C78A815003AE255 /* Notification-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification-Extension.swift"; sourceTree = "<group>"; };
+		53E313042C6CE8410090793F /* Bundle-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle-Extension.swift"; sourceTree = "<group>"; };
+		53E65F522C772CE80010B8DD /* JamfReconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconView.swift; sourceTree = "<group>"; };
+		53E65F542C777EBD0010B8DD /* RebootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RebootView.swift; sourceTree = "<group>"; };
+		53F2DE2D2B67C05000588D2D /* MigrationSetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationSetupViewModel.swift; sourceTree = "<group>"; };
+		53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorFileURL.swift; sourceTree = "<group>"; };
+		53F2DE312B69049600588D2D /* SymbolicLinkMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolicLinkMessage.swift; sourceTree = "<group>"; };
+		53F2DE332B6904F900588D2D /* MigratorMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorMessageType.swift; sourceTree = "<group>"; };
+		53F2DE352B69051F00588D2D /* MigratorNetworkProtocolHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorNetworkProtocolHeader.swift; sourceTree = "<group>"; };
+		53F2DE372B69055000588D2D /* NWProtocolFramer-Message-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWProtocolFramer-Message-Extension.swift"; sourceTree = "<group>"; };
+		53F2DE392B69058D00588D2D /* CommunicationInterfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunicationInterfaces.swift; sourceTree = "<group>"; };
+		53F2DE3B2B6905FB00588D2D /* MigratorFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorFile.swift; sourceTree = "<group>"; };
+		53F2DE3D2B6A5B7500588D2D /* Binding-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding-Extension.swift"; sourceTree = "<group>"; };
+		53F2DE3F2B6A70E000588D2D /* URL-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL-Extension.swift"; sourceTree = "<group>"; };
+		53F2DE412B6A712700588D2D /* MigrationOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationOption.swift; sourceTree = "<group>"; };
+		53F2DE432B6A8AD500588D2D /* MigrationOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationOptionView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1B4C5BAD2B035EBA00D4BD0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B4C5BBE2B035EBD00D4BD0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B4C5BC82B035EBD00D4BD0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1B0507442B04F8E900384CD5 /* NetworkControllers */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BE62B03B82B00D4BD0B /* NetworkServer.swift */,
+				1B0507422B04F71500384CD5 /* NetworkConnection.swift */,
+				1B0507402B04F6B200384CD5 /* NetworkBrowser.swift */,
+			);
+			path = NetworkControllers;
+			sourceTree = "<group>";
+		};
+		1B0507452B04F8FA00384CD5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				539B25702B4848C90012B974 /* Localizable.xcstrings */,
+				1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */,
+				1B4C5BE42B03B80300D4BD0B /* Utils.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1B0507482B0606A500384CD5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				53665E9C2BDBE17200086714 /* DeviceManagement */,
+				53F2DE452B6AA41800588D2D /* Network */,
+				1B05074D2B0612B500384CD5 /* MigratorPage.swift */,
+				53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */,
+				53237C102CA9E1D2004062CC /* JamfReconMethod.swift */,
+				53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */,
+				53F2DE3B2B6905FB00588D2D /* MigratorFile.swift */,
+				5377C22A2B51551D00B5C9C1 /* MigratorError.swift */,
+				53F2DE412B6A712700588D2D /* MigrationOption.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1B4C5BA72B035EBA00D4BD0B = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BB22B035EBA00D4BD0B /* migrator */,
+				1B4C5BC42B035EBD00D4BD0B /* migratorTests */,
+				1B4C5BCE2B035EBD00D4BD0B /* migratorUITests */,
+				1B4C5BB12B035EBA00D4BD0B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1B4C5BB12B035EBA00D4BD0B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */,
+				1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */,
+				1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1B4C5BB22B035EBA00D4BD0B /* migrator */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BBC2B035EBD00D4BD0B /* migrator.entitlements */,
+				1B4C5BE32B03B6FE00D4BD0B /* Info.plist */,
+				53B193152C8EFDE700DEFE24 /* AppContext.swift */,
+				1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */,
+				532F90B72C650014002E270F /* AppDelegate.swift */,
+				53180FD72B6BBCDD00C84937 /* Controllers */,
+				1B0507482B0606A500384CD5 /* Model */,
+				1B4C5BDE2B03759E00D4BD0B /* Views */,
+				1B4C5BDF2B0375A500D4BD0B /* Extensions */,
+				1B0507452B04F8FA00384CD5 /* Resources */,
+				1B4C5BB92B035EBD00D4BD0B /* Preview Content */,
+			);
+			path = migrator;
+			sourceTree = "<group>";
+		};
+		1B4C5BB92B035EBD00D4BD0B /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BBA2B035EBD00D4BD0B /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		1B4C5BC42B035EBD00D4BD0B /* migratorTests */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BC52B035EBD00D4BD0B /* MigratorTests.swift */,
+			);
+			path = migratorTests;
+			sourceTree = "<group>";
+		};
+		1B4C5BCE2B035EBD00D4BD0B /* migratorUITests */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BCF2B035EBD00D4BD0B /* MigratorUITests.swift */,
+				1B4C5BD12B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift */,
+			);
+			path = migratorUITests;
+			sourceTree = "<group>";
+		};
+		1B4C5BDE2B03759E00D4BD0B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				539B25692B47FBD00012B974 /* Common */,
+				5325AE242B7514F1006DDAEB /* MigrationSetup */,
+				530923A32B8CD58B00D6BFE7 /* Server */,
+				530923A22B85006900D6BFE7 /* Migration */,
+				1B05074B2B06129100384CD5 /* MainView.swift */,
+				535B5F9C2B99D7520071861E /* CodeVerificationView.swift */,
+				1B05074F2B06130800384CD5 /* WelcomeView.swift */,
+				1BC044672B2B57EB0007B5CB /* BrowserView.swift */,
+				53A1DCB62C6E86950086AD07 /* AppleIDView.swift */,
+				53E65F522C772CE80010B8DD /* JamfReconView.swift */,
+				53E65F542C777EBD0010B8DD /* RebootView.swift */,
+				531E49372C77996E00344C73 /* FinalView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1B4C5BDF2B0375A500D4BD0B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1BC044652B2B1E6F0007B5CB /* LinearGradient-Extension.swift */,
+				1B4C5BE02B0375C700D4BD0B /* Scene-Extension.swift */,
+				53665E962BDBE12300086714 /* Decodable-Extension.swift */,
+				53F2DE372B69055000588D2D /* NWProtocolFramer-Message-Extension.swift */,
+				53E313042C6CE8410090793F /* Bundle-Extension.swift */,
+				53B193172C8F212C00DEFE24 /* Double-Extension.swift */,
+				5377C22C2B559D7900B5C9C1 /* Data-Extension.swift */,
+				53F2DE3D2B6A5B7500588D2D /* Binding-Extension.swift */,
+				5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */,
+				539B256C2B4817820012B974 /* View-Extension.swift */,
+				539B25672B47FB930012B974 /* NSTableView-Extension.swift */,
+				53C5D8152B7CB2110099F667 /* Int-Extension.swift */,
+				1B0507462B050C5C00384CD5 /* NWBrowser-Result-Extension.swift */,
+				5300EE4E2B7F9E13002127BB /* String-Extension.swift */,
+				5363AE6B2BE8D2A2004C96EF /* Array-Extension.swift */,
+				53F2DE3F2B6A70E000588D2D /* URL-Extension.swift */,
+				53DE27982C78A815003AE255 /* Notification-Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		530923A22B85006900D6BFE7 /* Migration */ = {
+			isa = PBXGroup;
+			children = (
+				1B0507512B06133800384CD5 /* MigrationView.swift */,
+				530923A02B85006400D6BFE7 /* MigrationViewModel.swift */,
+			);
+			path = Migration;
+			sourceTree = "<group>";
+		};
+		530923A32B8CD58B00D6BFE7 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */,
+				530923A42B8CD59C00D6BFE7 /* ServerViewModel.swift */,
+			);
+			path = Server;
+			sourceTree = "<group>";
+		};
+		53180FD72B6BBCDD00C84937 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1B0507442B04F8E900384CD5 /* NetworkControllers */,
+				53180FD82B6BBCF300C84937 /* MigrationController.swift */,
+				53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */,
+				53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */,
+				539F23972BAC85A700E3F399 /* MLogger.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		5325AE242B7514F1006DDAEB /* MigrationSetup */ = {
+			isa = PBXGroup;
+			children = (
+				5377C2302B57CD9C00B5C9C1 /* MigrationSetupView.swift */,
+				53F2DE2D2B67C05000588D2D /* MigrationSetupViewModel.swift */,
+				53F2DE432B6A8AD500588D2D /* MigrationOptionView.swift */,
+				5310815C2B7E0B5800697D46 /* AdvancedSelectionView.swift */,
+			);
+			path = MigrationSetup;
+			sourceTree = "<group>";
+		};
+		53665E9C2BDBE17200086714 /* DeviceManagement */ = {
+			isa = PBXGroup;
+			children = (
+				53665E902BDBE0C600086714 /* ConfigProfilePayload.swift */,
+				53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */,
+				53665E982BDBE14B00086714 /* ConfigProfile.swift */,
+				53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */,
+				53665E942BDBE0FE00086714 /* ConfigProfileSection.swift */,
+				53665E922BDBE0DF00086714 /* ConfigurationProfileDataType.swift */,
+			);
+			path = DeviceManagement;
+			sourceTree = "<group>";
+		};
+		539B25692B47FBD00012B974 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */,
+				535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */,
+				532F90B52C64FFE5002E270F /* WindowAccessor.swift */,
+				539B256E2B4817AC0012B974 /* DeviceListRow.swift */,
+				5310815A2B7E081500697D46 /* MigratorFileView.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		53F2DE452B6AA41800588D2D /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				1B0507492B0606B700384CD5 /* NetworkDevice.swift */,
+				53F2DE392B69058D00588D2D /* CommunicationInterfaces.swift */,
+				5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */,
+				53F2DE352B69051F00588D2D /* MigratorNetworkProtocolHeader.swift */,
+				53F2DE332B6904F900588D2D /* MigratorMessageType.swift */,
+				53F2DE312B69049600588D2D /* SymbolicLinkMessage.swift */,
+				53B193132C89C7D500DEFE24 /* DefaultsMessage.swift */,
+				5377C22E2B57C94F00B5C9C1 /* FileMessage.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */;
+			buildPhases = (
+				1B4C5BAC2B035EBA00D4BD0B /* Sources */,
+				1B4C5BAD2B035EBA00D4BD0B /* Frameworks */,
+				1B4C5BAE2B035EBA00D4BD0B /* Resources */,
+				1B4C5BE22B03769800D4BD0B /* SwiftLint */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "IBM Data Shift";
+			productName = migrator;
+			productReference = 1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1B4C5BC02B035EBD00D4BD0B /* migratorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B4C5BD82B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "migratorTests" */;
+			buildPhases = (
+				1B4C5BBD2B035EBD00D4BD0B /* Sources */,
+				1B4C5BBE2B035EBD00D4BD0B /* Frameworks */,
+				1B4C5BBF2B035EBD00D4BD0B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1B4C5BC32B035EBD00D4BD0B /* PBXTargetDependency */,
+			);
+			name = migratorTests;
+			productName = migratorTests;
+			productReference = 1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B4C5BDB2B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "migratorUITests" */;
+			buildPhases = (
+				1B4C5BC72B035EBD00D4BD0B /* Sources */,
+				1B4C5BC82B035EBD00D4BD0B /* Frameworks */,
+				1B4C5BC92B035EBD00D4BD0B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */,
+			);
+			name = migratorUITests;
+			productName = migratorUITests;
+			productReference = 1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1B4C5BA82B035EBA00D4BD0B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1600;
+				ORGANIZATIONNAME = IBM;
+				TargetAttributes = {
+					1B4C5BAF2B035EBA00D4BD0B = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
+					1B4C5BC02B035EBD00D4BD0B = {
+						CreatedOnToolsVersion = 15.0.1;
+						TestTargetID = 1B4C5BAF2B035EBA00D4BD0B;
+					};
+					1B4C5BCA2B035EBD00D4BD0B = {
+						CreatedOnToolsVersion = 15.0.1;
+						TestTargetID = 1B4C5BAF2B035EBA00D4BD0B;
+					};
+				};
+			};
+			buildConfigurationList = 1B4C5BAB2B035EBA00D4BD0B /* Build configuration list for PBXProject "migrator" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1B4C5BA72B035EBA00D4BD0B;
+			productRefGroup = 1B4C5BA72B035EBA00D4BD0B;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */,
+				1B4C5BC02B035EBD00D4BD0B /* migratorTests */,
+				1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1B4C5BAE2B035EBA00D4BD0B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B4C5BBB2B035EBD00D4BD0B /* Preview Assets.xcassets in Resources */,
+				1B4C5BB82B035EBD00D4BD0B /* Assets.xcassets in Resources */,
+				539B25712B4848C90012B974 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B4C5BBF2B035EBD00D4BD0B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B4C5BC92B035EBD00D4BD0B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1B4C5BE22B03769800D4BD0B /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#Support for M1 Macs Homebrew location\nexport PATH=\"$PATH:/opt/homebrew/bin\"\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1B4C5BAC2B035EBA00D4BD0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53F2DE362B69051F00588D2D /* MigratorNetworkProtocolHeader.swift in Sources */,
+				539B256F2B4817AC0012B974 /* DeviceListRow.swift in Sources */,
+				5300EE4F2B7F9E13002127BB /* String-Extension.swift in Sources */,
+				1B4C5BE72B03B82B00D4BD0B /* NetworkServer.swift in Sources */,
+				1B05074E2B0612B500384CD5 /* MigratorPage.swift in Sources */,
+				53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */,
+				53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */,
+				53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */,
+				1B0507412B04F6B200384CD5 /* NetworkBrowser.swift in Sources */,
+				53665E972BDBE12300086714 /* Decodable-Extension.swift in Sources */,
+				53F2DE3E2B6A5B7500588D2D /* Binding-Extension.swift in Sources */,
+				5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */,
+				53F2DE342B6904F900588D2D /* MigratorMessageType.swift in Sources */,
+				53F2DE322B69049600588D2D /* SymbolicLinkMessage.swift in Sources */,
+				1BC044662B2B1E6F0007B5CB /* LinearGradient-Extension.swift in Sources */,
+				53B193142C89C7D500DEFE24 /* DefaultsMessage.swift in Sources */,
+				539B25682B47FB930012B974 /* NSTableView-Extension.swift in Sources */,
+				53F2DE302B69047B00588D2D /* MigratorFileURL.swift in Sources */,
+				53180FD92B6BBCF300C84937 /* MigrationController.swift in Sources */,
+				1B4C5BB62B035EBA00D4BD0B /* ServerView.swift in Sources */,
+				1B05074C2B06129100384CD5 /* MainView.swift in Sources */,
+				53F2DE402B6A70E000588D2D /* URL-Extension.swift in Sources */,
+				5377C22F2B57C94F00B5C9C1 /* FileMessage.swift in Sources */,
+				1B0507522B06133800384CD5 /* MigrationView.swift in Sources */,
+				1B4C5BB42B035EBA00D4BD0B /* MigratorApp.swift in Sources */,
+				531E49382C77996E00344C73 /* FinalView.swift in Sources */,
+				532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */,
+				53237C112CA9E1D8004062CC /* JamfReconMethod.swift in Sources */,
+				53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */,
+				5377C22D2B559D7900B5C9C1 /* Data-Extension.swift in Sources */,
+				53665E912BDBE0C600086714 /* ConfigProfilePayload.swift in Sources */,
+				53F2DE382B69055000588D2D /* NWProtocolFramer-Message-Extension.swift in Sources */,
+				53F2DE3A2B69058D00588D2D /* CommunicationInterfaces.swift in Sources */,
+				535A77912BA49A5E00BB8116 /* CodeVerificationFieldView.swift in Sources */,
+				53E313052C6CE8410090793F /* Bundle-Extension.swift in Sources */,
+				1BC044682B2B57EB0007B5CB /* BrowserView.swift in Sources */,
+				53B193182C8F212C00DEFE24 /* Double-Extension.swift in Sources */,
+				1B0507472B050C5C00384CD5 /* NWBrowser-Result-Extension.swift in Sources */,
+				53665E9B2BDBE15F00086714 /* DeviceManagementState.swift in Sources */,
+				53665E992BDBE14B00086714 /* ConfigProfile.swift in Sources */,
+				532F90B82C650014002E270F /* AppDelegate.swift in Sources */,
+				5310815B2B7E081500697D46 /* MigratorFileView.swift in Sources */,
+				5377C22B2B51551D00B5C9C1 /* MigratorError.swift in Sources */,
+				5363AE6C2BE8D2A2004C96EF /* Array-Extension.swift in Sources */,
+				53E65F532C772CE80010B8DD /* JamfReconView.swift in Sources */,
+				539B256B2B47FBEE0012B974 /* NoBackgroundScroller.swift in Sources */,
+				53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */,
+				53B193122C88CB1600DEFE24 /* ManagedEnvironment.swift in Sources */,
+				1B0507502B06130800384CD5 /* WelcomeView.swift in Sources */,
+				1B0507432B04F71500384CD5 /* NetworkConnection.swift in Sources */,
+				535B5F9D2B99D7520071861E /* CodeVerificationView.swift in Sources */,
+				53F2DE422B6A712700588D2D /* MigrationOption.swift in Sources */,
+				5377C2272B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift in Sources */,
+				539B256D2B4817820012B974 /* View-Extension.swift in Sources */,
+				53E65F552C777EBD0010B8DD /* RebootView.swift in Sources */,
+				1B4C5BE12B0375C700D4BD0B /* Scene-Extension.swift in Sources */,
+				53F2DE3C2B6905FB00588D2D /* MigratorFile.swift in Sources */,
+				53665E932BDBE0DF00086714 /* ConfigurationProfileDataType.swift in Sources */,
+				539F23982BAC85A700E3F399 /* MLogger.swift in Sources */,
+				5310815D2B7E0B5800697D46 /* AdvancedSelectionView.swift in Sources */,
+				530923A52B8CD59C00D6BFE7 /* ServerViewModel.swift in Sources */,
+				53F2DE442B6A8AD500588D2D /* MigrationOptionView.swift in Sources */,
+				1B05074A2B0606B700384CD5 /* NetworkDevice.swift in Sources */,
+				53665E952BDBE0FE00086714 /* ConfigProfileSection.swift in Sources */,
+				53DE27992C78A815003AE255 /* Notification-Extension.swift in Sources */,
+				53F2DE2E2B67C05000588D2D /* MigrationSetupViewModel.swift in Sources */,
+				53A1DCB72C6E86950086AD07 /* AppleIDView.swift in Sources */,
+				530923A12B85006400D6BFE7 /* MigrationViewModel.swift in Sources */,
+				5377C2312B57CD9C00B5C9C1 /* MigrationSetupView.swift in Sources */,
+				1B4C5BE52B03B80300D4BD0B /* Utils.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B4C5BBD2B035EBD00D4BD0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B4C5BC62B035EBD00D4BD0B /* MigratorTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B4C5BC72B035EBD00D4BD0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B4C5BD22B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift in Sources */,
+				1B4C5BD02B035EBD00D4BD0B /* MigratorUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1B4C5BC32B035EBD00D4BD0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
+			targetProxy = 1B4C5BC22B035EBD00D4BD0B /* PBXContainerItemProxy */;
+		};
+		1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
+			targetProxy = 1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1B4C5BD32B035EBD00D4BD0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1B4C5BD42B035EBD00D4BD0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		1B4C5BD62B035EBD00D4BD0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = migrator/migrator.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 100;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = migrator/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright Company 2023, 2024";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
+				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.company.migrator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1B4C5BD72B035EBD00D4BD0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = migrator/migrator.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 100;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = migrator/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright Company 2023, 2024";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
+				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.company.migrator;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		1B4C5BD92B035EBD00D4BD0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac@IBM Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mac@IBM Shift";
+			};
+			name = Debug;
+		};
+		1B4C5BDA2B035EBD00D4BD0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac@IBM Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mac@IBM Shift";
+			};
+			name = Release;
+		};
+		1B4C5BDC2B035EBD00D4BD0B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = migrator;
+			};
+			name = Debug;
+		};
+		1B4C5BDD2B035EBD00D4BD0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = migrator;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1B4C5BAB2B035EBA00D4BD0B /* Build configuration list for PBXProject "migrator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B4C5BD32B035EBD00D4BD0B /* Debug */,
+				1B4C5BD42B035EBD00D4BD0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B4C5BD62B035EBD00D4BD0B /* Debug */,
+				1B4C5BD72B035EBD00D4BD0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1B4C5BD82B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "migratorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B4C5BD92B035EBD00D4BD0B /* Debug */,
+				1B4C5BDA2B035EBD00D4BD0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1B4C5BDB2B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "migratorUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B4C5BDC2B035EBD00D4BD0B /* Debug */,
+				1B4C5BDD2B035EBD00D4BD0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1B4C5BA82B035EBA00D4BD0B /* Project object */;
+}
