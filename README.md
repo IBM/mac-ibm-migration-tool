@@ -1,4 +1,4 @@
-# Mac@IBM Data Shift
+# IBM Data Shift
 
 ![License](https://img.shields.io/badge/license-Apache%202-1984E5)
 
