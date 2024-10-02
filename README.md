@@ -6,17 +6,9 @@
 ![Project version](https://img.shields.io/badge/version-1.1.0-1984E5)
 ![macOS](https://img.shields.io/badge/macOS-12+-bright%20green)
 
-<!-- [![CI](https://github.com/IBM/mac-ibm-notifications/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/IBM/mac-ibm-notifications/actions/workflows/main.yml)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5823/badge)](https://bestpractices.coreinfrastructure.org/projects/5823)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=IBM_mac-ibm-notifications&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=IBM_mac-ibm-notifications)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=IBM_mac-ibm-notifications&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=IBM_mac-ibm-notifications)   -->
-
-<!-- ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/ibm/Mac-ibm-notifications/latest/total?logo=Github&label=Latest%20Release%20Downloads)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ibm/Mac-ibm-notifications/total?logo=Github&label=Total%20Release%20Downloads) -->
-
 ## Scope
 
-The purpose of this project is to provide an useful tool to system administrators to trigger interactive popups and notification banners to the end user.
+The purpose of this project is to provide an useful macOS Utility to facilitate the mass migration of files/apps/preferences between devices.
 
 ## Usage
 
