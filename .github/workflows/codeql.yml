@@ -83,7 +83,7 @@ jobs:
         xcodebuild clean build \
         -project migrator.xcodeproj \
         -scheme 'IBM Data Shift' \
-        -destination 'platform=macOS,arch=arm64'
+        -destination 'platform:macOS, name:Any Mac'
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
