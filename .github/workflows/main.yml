@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: GitHub Action for SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
+  test:
+    runs-on: macos-15
+    steps:
+      - name: Xcode Setup
+        uses: maxim-lobanov/setup-xcode@v1.6.0
+        with:
+          xcode-version: latest-stable
+      - name: Checkout project
+        uses: actions/checkout@v3
+      - name: Build
+        shell: bash
+        run: |
+          xcodebuild clean build -project "migrator.xcodeproj" -scheme "IBM Data Shift" -destination 'platform=macOS' | xcpretty
