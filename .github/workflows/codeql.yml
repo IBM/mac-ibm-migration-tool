@@ -80,10 +80,7 @@ jobs:
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
-        xcodebuild clean build \
-        -project migrator.xcodeproj \
-        -scheme 'IBM Data Shift' \
-        -destination 'platform:macOS, name:Any Mac'
+        xcodebuild clean build -project migrator.xcodeproj -scheme 'IBM Data Shift' -destination 'platform:macOS,name:Any Mac'
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
