@@ -13,12 +13,13 @@ name: "CodeQL Advanced"
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  schedule:
-    - cron: '45 17 * * 0'
+  # Disabled automatic runs of CodeQL scan because it doesn't work yet for Xcode 16.
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  # schedule:
+  #   - cron: '45 17 * * 0'
 
 jobs:
   analyze:
