@@ -13,7 +13,7 @@ struct AppContext {
     
     // MARK: - Branding Constants
     
-    static let orgName: String = "Company"
+    static let orgName: String = "<Organization Name>"
     
     /// Path to the folder that will contains duplicate files in case duplicateFilesHandlingPolicy is set to `move`.
     static let backupPath: String = "\(FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!.relativePath)/Migration.Backup"
@@ -21,7 +21,7 @@ struct AppContext {
     // MARK: - Network Constants
 
     /// The service identifier used to discover and connect to network services via Bonjour (DNS-SD).
-    static let networkServiceIdentifier: String = "_migrator._tcp"
+    static let networkServiceIdentifier: String = "<Service Identifier>"
 
     // MARK: - Device Management Related Constants
 
@@ -32,15 +32,15 @@ struct AppContext {
     /// - `reconPolicyID`: The policy ID required to run an inventory update via Jamf Self Service.
     /// This workflow is specifically designed for devices managed by Jamf Pro.
     static let mdmEnvironments: [ManagedEnvironment] = [
-        ManagedEnvironment(name: "TestExample", serverURL: "https://test.url/mdm/ServerURL", reconPolicyID: "022"),
-        ManagedEnvironment(name: "ProdExample", serverURL: "https://prod.url/mdm/ServerURL", reconPolicyID: "033")
+        ManagedEnvironment(name: "<Environment Name>", serverURL: "<Environment Server URL>", reconPolicyID: "<Environment Recon Policy ID>"),
+        ManagedEnvironment(name: "<Environment Name>", serverURL: "<Environment Server URL>", reconPolicyID: "<Environment Recon Policy ID>")
     ]
 
     /// Path the Jamf Self Service .app
-    static let storePath: String = "/Applications/Company Self Service.app"
+    static let storePath: String = "<Store Path>"
 
     /// A URL to redirect users to setup instructions if the app detects the device is not managed by MDM.
-    static let enrollmentRedirectionLink: String = "https://url.to.enrollment/support.website"
+    static let enrollmentRedirectionLink: String = "<Enrollment Redirection Link>"
 
     // MARK: - User Defaults Keys
 

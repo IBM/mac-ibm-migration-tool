@@ -111,7 +111,7 @@
 		1B05074D2B0612B500384CD5 /* MigratorPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorPage.swift; sourceTree = "<group>"; };
 		1B05074F2B06130800384CD5 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		1B0507512B06133800384CD5 /* MigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationView.swift; sourceTree = "<group>"; };
-		1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IBM Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorApp.swift; sourceTree = "<group>"; };
 		1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
 		1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -260,7 +260,7 @@
 		1B4C5BB12B035EBA00D4BD0B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */,
+				1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */,
 				1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */,
 				1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */,
 			);
@@ -437,9 +437,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */ = {
+		1B4C5BAF2B035EBA00D4BD0B /* Data Shift */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */;
+			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "Data Shift" */;
 			buildPhases = (
 				1B4C5BAC2B035EBA00D4BD0B /* Sources */,
 				1B4C5BAD2B035EBA00D4BD0B /* Frameworks */,
@@ -450,9 +450,9 @@
 			);
 			dependencies = (
 			);
-			name = "IBM Data Shift";
+			name = "Data Shift";
 			productName = migrator;
-			productReference = 1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */;
+			productReference = 1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1B4C5BC02B035EBD00D4BD0B /* migratorTests */ = {
@@ -528,7 +528,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */,
+				1B4C5BAF2B035EBA00D4BD0B /* Data Shift */,
 				1B4C5BC02B035EBD00D4BD0B /* migratorTests */,
 				1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */,
 			);
@@ -684,12 +684,12 @@
 /* Begin PBXTargetDependency section */
 		1B4C5BC32B035EBD00D4BD0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
 			targetProxy = 1B4C5BC22B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 		1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
 			targetProxy = 1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -981,7 +981,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */ = {
+		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "Data Shift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B4C5BD62B035EBD00D4BD0B /* Debug */,
