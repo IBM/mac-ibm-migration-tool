@@ -114,9 +114,7 @@ struct AppContext {
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Numbers.app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Pages.app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Keynote.app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Box.app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Safari.app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Cisco"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Utilities"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Xcode.app"),
                                            FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first]
