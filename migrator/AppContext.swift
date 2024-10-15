@@ -31,10 +31,7 @@ struct AppContext {
     /// - `serverURL`: The server URL used to identify the environment through the installed management profile.
     /// - `reconPolicyID`: The policy ID required to run an inventory update via Jamf Self Service.
     /// This workflow is specifically designed for devices managed by Jamf Pro.
-    static let mdmEnvironments: [ManagedEnvironment] = [
-        ManagedEnvironment(name: "<Environment Name>", serverURL: "<Environment Server URL>", reconPolicyID: "<Environment Recon Policy ID>"),
-        ManagedEnvironment(name: "<Environment Name>", serverURL: "<Environment Server URL>", reconPolicyID: "<Environment Recon Policy ID>")
-    ]
+    static let mdmEnvironments: [ManagedEnvironment] = []
 
     /// Path the Jamf Self Service .app
     static let storePath: String = "<Store Path>"
