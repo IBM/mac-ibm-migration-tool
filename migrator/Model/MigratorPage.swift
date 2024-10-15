@@ -66,7 +66,7 @@ enum MigratorPage: CaseIterable {
                 fallthrough
             }
         case .reboot:
-            if AppContext.shouldSkipJamfRecon {
+            if !AppContext.shouldSkipJamfRecon {
                 return Utils.reconPage
             } else {
                 fallthrough
