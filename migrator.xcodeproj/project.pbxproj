@@ -836,7 +836,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright Company 2023, 2024";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2024";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
 				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -875,7 +875,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright Company 2023, 2024";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2024";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
 				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
 				LD_RUNPATH_SEARCH_PATHS = (
