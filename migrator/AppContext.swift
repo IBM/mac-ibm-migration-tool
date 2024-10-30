@@ -70,6 +70,9 @@ struct AppContext {
     /// UserDefaults key indicating which policy to use fo handle duplicate files on the destination device.
     private static let duplicateFilesHandlingPolicyKey: String = "duplicateFilesHandlingPolicy"
 
+    /// UserDefaults key indicating the list of paths to exclude during file discovery
+    private static let excludedPathsListKey: String = "excludedPathsList"
+
     /// UserDefaults key indicating whether the app should skip the device reboot step after migration.
     static let skipRebootUserDefaultsKey: String = "skipDeviceReboot"
     
@@ -105,11 +108,16 @@ struct AppContext {
     static var duplicateFilesHandlingPolice: DuplicateFilesHandlingPolicy {
         return DuplicateFilesHandlingPolicy(rawValue: UserDefaults.standard.string(forKey: Self.duplicateFilesHandlingPolicyKey) ?? "overwrite") ?? .overwrite
     }
-    
+    static var urlExclusionsList: [URL?] {
+        let managedExcludedPaths = UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []
+        let managedExcludedURLs = managedExcludedPaths.compactMap { URL(string: $0) }
+        return managedExcludedURLs + defaultUrlExclusionList
+    }
+
     // MARK: - File Scan Variables
-    
-    /// Custom list of paths tha needs to be ignored during file discovery.
-    static var urlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
+
+    /// Custom list of paths that needs to be ignored during file discovery.
+    static var defaultUrlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("\(Bundle.main.name).app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Numbers.app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Pages.app"),
