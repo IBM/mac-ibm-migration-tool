@@ -108,7 +108,7 @@ struct AppContext {
     static var duplicateFilesHandlingPolice: DuplicateFilesHandlingPolicy {
         return DuplicateFilesHandlingPolicy(rawValue: UserDefaults.standard.string(forKey: Self.duplicateFilesHandlingPolicyKey) ?? "overwrite") ?? .overwrite
     }
-    static var urlExclusionsList: [URL?] {
+    static var urlExclusionList: [URL?] {
         let managedExcludedPaths = UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []
         let managedExcludedURLs = managedExcludedPaths.compactMap { URL(string: $0) }
         return managedExcludedURLs + defaultUrlExclusionList
