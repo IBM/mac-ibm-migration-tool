@@ -37,7 +37,15 @@ struct AppContext {
     ]
 
     /// Path the Jamf Self Service .app
-    static let storePath: String = "/Applications/Company Self Service.app"
+    static let fallbackStorePath: String = "/Applications/Company Self Service.app"
+
+    /// Returns the path to the Jamf Self Service .app configured on the user's device OR the fallbackStorePath
+    /// Reads the plist at /Library/Preferences/com.jamfsoftware.jamf.plist to get the path.
+    static var storePath: String {
+        let jamfUserDefaults = UserDefaults(suiteName: "com.jamfsoftware.jamf")
+        let jamfSelfServicePath = jamfUserDefaults?.string(forKey: "self_service_app_path")
+        return jamfSelfServicePath ?? fallbackStorePath
+    }
 
     /// A URL to redirect users to setup instructions if the app detects the device is not managed by MDM.
     static let enrollmentRedirectionLink: String = "https://url.to.enrollment/support.website"
