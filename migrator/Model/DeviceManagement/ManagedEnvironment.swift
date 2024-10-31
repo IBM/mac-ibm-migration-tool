@@ -17,4 +17,23 @@ struct ManagedEnvironment {
     var name: String
     var serverURL: String
     var reconPolicyID: String
+
+    // MARK: - Initializers
+
+    init(name: String, serverURL: String, reconPolicyID: String) {
+        self.name = name
+        self.reconPolicyID = reconPolicyID
+
+        /// Allow for serverURL to be input without the "/mdm/ServerURL" suffix.
+        if !serverURL.hasSuffix("/mdm/ServerURL") {
+            if serverURL.hasSuffix("/") {
+                self.serverURL = serverURL + "mdm/ServerURL"
+            } else {
+                self.serverURL = serverURL + "/mdm/ServerURL"
+            }
+        } else {
+            /// The serverURL is already formatted correctly.
+            self.serverURL = serverURL
+        }
+    }
 }
