@@ -25,16 +25,38 @@ struct AppContext {
 
     // MARK: - Device Management Related Constants
 
+    /// UserDefaults key indicating the list of managed environments.
+    private static let mdmEnvironmentsUserDefaultsKey: String = "mdmEnvironments"
+
     /// A list of managed environments to be tracked on the user's device.
     /// Each `ManagedEnvironment` includes:
     /// - `name`: The environment's name (e.g., Production, QA).
     /// - `serverURL`: The server URL used to identify the environment through the installed management profile.
+    ///     The `serverURL` can optionally include the `/mdm/ServerURL` suffix, and will be added if missing.
     /// - `reconPolicyID`: The policy ID required to run an inventory update via Jamf Self Service.
     /// This workflow is specifically designed for devices managed by Jamf Pro.
-    static let mdmEnvironments: [ManagedEnvironment] = [
+    static let fallbackMdmEnvironments: [ManagedEnvironment] = [
         ManagedEnvironment(name: "TestExample", serverURL: "https://test.url/mdm/ServerURL", reconPolicyID: "022"),
         ManagedEnvironment(name: "ProdExample", serverURL: "https://prod.url/mdm/ServerURL", reconPolicyID: "033")
     ]
+
+    /// Read the list of managed environments from UserDefaults with the
+    static var mdmEnvironments: [ManagedEnvironment] {
+        let managedEnvironments = UserDefaults.standard.array(forKey: mdmEnvironmentsUserDefaultsKey) as? [[String: String]] ?? []
+
+        /// Use managedEnvironments if not empty, otherwise fallback to fallbackMdmEnvironments
+        return managedEnvironments.isEmpty ? fallbackMdmEnvironments : managedEnvironments.compactMap { dict in
+            guard
+                let name = dict["name"],
+                let serverURL = dict["serverURL"],
+                let reconPolicyID = dict["reconPolicyID"]
+            else {
+                return nil
+            }
+
+            return ManagedEnvironment(name: name, serverURL: serverURL, reconPolicyID: reconPolicyID)
+        }
+    }
 
     /// Path the Jamf Self Service .app
     static let fallbackStorePath: String = "/Applications/Company Self Service.app"
