@@ -10,6 +10,8 @@
 
 The purpose of this project is to provide an useful macOS Utility to facilitate the mass migration of files/apps/preferences between devices.
 
+<img alt="Example screenshot" src="https://raw.githubusercontent.com/IBM/mac-ibm-migration-tool/dev/images/Source/6.png" width="1000">
+
 ## Usage
 
 To contribute to this repo please see [CONTRIBUTING.md](CONTRIBUTING.md)
