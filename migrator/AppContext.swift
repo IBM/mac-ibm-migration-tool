@@ -25,16 +25,46 @@ struct AppContext {
 
     // MARK: - Device Management Related Constants
 
+    /// UserDefaults key indicating the list of managed environments.
+    private static let mdmEnvironmentsUserDefaultsKey: String = "mdmEnvironments"
+
     /// A list of managed environments to be tracked on the user's device.
     /// Each `ManagedEnvironment` includes:
     /// - `name`: The environment's name (e.g., Production, QA).
     /// - `serverURL`: The server URL used to identify the environment through the installed management profile.
+    ///     The `serverURL` can optionally include the `/mdm/ServerURL` suffix, and will be added if missing.
     /// - `reconPolicyID`: The policy ID required to run an inventory update via Jamf Self Service.
     /// This workflow is specifically designed for devices managed by Jamf Pro.
-    static let mdmEnvironments: [ManagedEnvironment] = []
+    static let fallbackMdmEnvironments: [ManagedEnvironment] = []
+
+    /// Read the list of managed environments from UserDefaults with the
+    static var mdmEnvironments: [ManagedEnvironment] {
+        let managedEnvironments = UserDefaults.standard.array(forKey: mdmEnvironmentsUserDefaultsKey) as? [[String: String]] ?? []
+
+        /// Use managedEnvironments if not empty, otherwise fallback to fallbackMdmEnvironments
+        return managedEnvironments.isEmpty ? fallbackMdmEnvironments : managedEnvironments.compactMap { dict in
+            guard
+                let name = dict["name"],
+                let serverURL = dict["serverURL"],
+                let reconPolicyID = dict["reconPolicyID"]
+            else {
+                return nil
+            }
+
+            return ManagedEnvironment(name: name, serverURL: serverURL, reconPolicyID: reconPolicyID)
+        }
+    }
 
     /// Path the Jamf Self Service .app
-    static let storePath: String = "<Store Path>"
+    static let fallbackStorePath: String = "/Applications/Company Self Service.app"
+
+    /// Returns the path to the Jamf Self Service .app configured on the user's device OR the fallbackStorePath
+    /// Reads the plist at /Library/Preferences/com.jamfsoftware.jamf.plist to get the path.
+    static var storePath: String {
+        let jamfUserDefaults = UserDefaults(suiteName: "com.jamfsoftware.jamf")
+        let jamfSelfServicePath = jamfUserDefaults?.string(forKey: "self_service_app_path")
+        return jamfSelfServicePath ?? fallbackStorePath
+    }
 
     /// A URL to redirect users to setup instructions if the app detects the device is not managed by MDM.
     static let enrollmentRedirectionLink: String = "<Enrollment Redirection Link>"
@@ -66,6 +96,9 @@ struct AppContext {
     
     /// UserDefaults key indicating which policy to use fo handle duplicate files on the destination device.
     private static let duplicateFilesHandlingPolicyKey: String = "duplicateFilesHandlingPolicy"
+
+    /// UserDefaults key indicating the list of paths to exclude during file discovery
+    private static let excludedPathsListKey: String = "excludedPathsList"
 
     /// UserDefaults key indicating whether the app should skip the device reboot step after migration.
     static let skipRebootUserDefaultsKey: String = "skipDeviceReboot"
@@ -102,11 +135,16 @@ struct AppContext {
     static var duplicateFilesHandlingPolice: DuplicateFilesHandlingPolicy {
         return DuplicateFilesHandlingPolicy(rawValue: UserDefaults.standard.string(forKey: Self.duplicateFilesHandlingPolicyKey) ?? "overwrite") ?? .overwrite
     }
-    
+    static var urlExclusionList: [URL?] {
+        let managedExcludedPaths = UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []
+        let managedExcludedURLs = managedExcludedPaths.compactMap { URL(string: $0) }
+        return managedExcludedURLs + defaultUrlExclusionList
+    }
+
     // MARK: - File Scan Variables
-    
-    /// Custom list of paths tha needs to be ignored during file discovery.
-    static var urlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
+
+    /// Custom list of paths that needs to be ignored during file discovery.
+    static var defaultUrlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("\(Bundle.main.name).app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Numbers.app"),
                                            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Pages.app"),
