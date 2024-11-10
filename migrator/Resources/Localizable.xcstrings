@@ -950,7 +950,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Run Inventory Update"
+            "value" : "Update Inventory"
           }
         }
       }
