@@ -1233,7 +1233,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The app wasn't able to detect %@ management on the device. Please enrol the device in the %@ program before starting the migration."
+            "value" : "The app wasn't able to detect %@ management on the device. Please enroll the device in the %@ program before starting the migration."
           }
         }
       }
