@@ -38,7 +38,7 @@ final class NetworkBrowser {
         let parameters = NWParameters()
         parameters.includePeerToPeer = true
         // Configures the browser for discovering services with the specified Bonjour type and domain.
-        browser = NWBrowser(for: .bonjour(type: AppContext.networkServiceIdentifier, domain: nil), using: parameters)
+        browser = NWBrowser(for: .bonjour(type: AppContext.networkServiceIdentifier+"._tcp", domain: nil), using: parameters)
     }
 
     // MARK: - Public Methods

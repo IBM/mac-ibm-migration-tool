@@ -364,7 +364,7 @@ final class NetworkConnection {
             }
         }
         logger.log("networkConnection.sendfile: preparing file \"\(fileURL.relativePath)\"")
-        guard !AppContext.excludedFiles.contains(fileURL.lastPathComponent) && fileURL.lastPathComponent.first != "~" else {
+        guard !AppContext.excludedFileExtensions.contains(fileURL.lastPathComponent) && fileURL.lastPathComponent.first != "~" else {
             logger.log("networkConnection.sendfile: file \"\(fileURL.relativePath)\" needs to be ignored. This should'n happen.", type: .fault)
             return
         }

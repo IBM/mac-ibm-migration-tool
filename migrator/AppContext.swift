@@ -11,69 +11,67 @@ import Foundation
 
 struct AppContext {
     
-    // MARK: - Branding Constants
+    // MARK: - Customisable Constants
     
-    static let orgName: String = "<Organization Name>"
+    /// The name used to refer the organization that manage the device.
+    /// Managed setting available using `orgName` defaults key.
+    static let fallbackOrgName: String = "<Organization Name>"
     
-    /// Path to the folder that will contains duplicate files in case duplicateFilesHandlingPolicy is set to `move`.
-    static let backupPath: String = "\(FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!.relativePath)/Migration.Backup"
+    /// Path the Jamf Self Service .app
+    /// Managed setting available using `storePath` defaults key.
+    private static let fallbackStorePath: String = "<Store Path>"
     
-    // MARK: - Network Constants
-
-    /// The service identifier used to discover and connect to network services via Bonjour (DNS-SD).
-    static let networkServiceIdentifier: String = "<Service Identifier>"
-
-    // MARK: - Device Management Related Constants
-
-    /// UserDefaults key indicating the list of managed environments.
-    private static let mdmEnvironmentsUserDefaultsKey: String = "mdmEnvironments"
-
     /// A list of managed environments to be tracked on the user's device.
     /// Each `ManagedEnvironment` includes:
     /// - `name`: The environment's name (e.g., Production, QA).
-    /// - `serverURL`: The server URL used to identify the environment through the installed management profile.
-    ///     The `serverURL` can optionally include the `/mdm/ServerURL` suffix, and will be added if missing.
+    /// - `serverURL`: The server URL used to identify the environment through the installed management profile. The `serverURL` can optionally include the `/mdm/ServerURL` suffix, and will be added if missing.
     /// - `reconPolicyID`: The policy ID required to run an inventory update via Jamf Self Service.
     /// This workflow is specifically designed for devices managed by Jamf Pro.
-    static let fallbackMdmEnvironments: [ManagedEnvironment] = []
-
-    /// Read the list of managed environments from UserDefaults with the
-    static var mdmEnvironments: [ManagedEnvironment] {
-        let managedEnvironments = UserDefaults.standard.array(forKey: mdmEnvironmentsUserDefaultsKey) as? [[String: String]] ?? []
-
-        /// Use managedEnvironments if not empty, otherwise fallback to fallbackMdmEnvironments
-        return managedEnvironments.isEmpty ? fallbackMdmEnvironments : managedEnvironments.compactMap { dict in
-            guard
-                let name = dict["name"],
-                let serverURL = dict["serverURL"],
-                let reconPolicyID = dict["reconPolicyID"]
-            else {
-                return nil
-            }
-
-            return ManagedEnvironment(name: name, serverURL: serverURL, reconPolicyID: reconPolicyID)
-        }
-    }
-
-    /// Path the Jamf Self Service .app
-    static let fallbackStorePath: String = "/Applications/Company Self Service.app"
-
-    /// Returns the path to the Jamf Self Service .app configured on the user's device OR the fallbackStorePath
-    /// Reads the plist at /Library/Preferences/com.jamfsoftware.jamf.plist to get the path.
-    static var storePath: String {
-        let jamfUserDefaults = UserDefaults(suiteName: "com.jamfsoftware.jamf")
-        let jamfSelfServicePath = jamfUserDefaults?.string(forKey: "self_service_app_path")
-        return jamfSelfServicePath ?? fallbackStorePath
-    }
+    /// Managed setting available using `mdmEnvironments` defaults key.
+    private static let fallbackMdmEnvironments: [ManagedEnvironment] = []
+    
+    /// The service identifier used to discover and connect to network services via Bonjour (DNS-SD).
+    /// Managed setting available using `networkServiceIdentifier` defaults key.
+    static let fallbackNetworkServiceIdentifier: String = "<Service Identifier>"
 
     /// A URL to redirect users to setup instructions if the app detects the device is not managed by MDM.
-    static let enrollmentRedirectionLink: String = "<Enrollment Redirection Link>"
+    /// Managed setting available using `enrollmentRedirectionLink` defaults key.
+    static let fallbackEnrollmentRedirectionLink: String = "<Enrollment Redirection Link>"
 
+    /// Path to the folder that will contains duplicate files in case duplicateFilesHandlingPolicy is set to `move`.
+    /// Managed setting available using `backupPath` defaults key.
+    static let fallbackBackupPath: String = "<Backup Path>"
+    
+    // MARK: - Default File Scan Variables
+    
+    /// Custom list of paths that needs to be ignored during file discovery.
+    static var defaultUrlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("\(Bundle.main.name).app"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Numbers.app"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Pages.app"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Keynote.app"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Safari.app"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Utilities"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Xcode.app"),
+                                                  FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first]
+    
+    /// Custom list of explicitely allowed paths that needs to be included during file discovery.
+    static var defaultExplicitAllowList: [URL?] = [FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
+                                                   FileManager.default.urls(for: .applicationScriptsDirectory, in: .userDomainMask).first,
+                                                   FileManager.default.urls(for: .preferencePanesDirectory, in: .userDomainMask).first,
+                                                   FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?.appendingPathComponent("Preferences", conformingTo: .directory)]
+    
+    /// Custom list of file's name that needs to be ignored during file discovery.
+    static var defaultExcludedFileExtensions: [String] = [".DS_Store",
+                                                          ".localized",
+                                                          ".vdi",
+                                                          ".vbox"]
+    
     // MARK: - User Defaults Keys
 
     /// UserDefaults key representing the logging verbosity level. Possible values:
     /// - `noLog`: No logs are written.
-    /// - `standard`: A normal amount of logs are written.
+    /// - `standard`: A standard amount of logs are written.
     /// - `debug`: A verbose log level used for debugging migration issues. This may generate large log files during migration. Use cautiously.
     private static let loggingLevelUserDefaultsKey: String = "loggingLevel"
 
@@ -96,14 +94,38 @@ struct AppContext {
     
     /// UserDefaults key indicating which policy to use fo handle duplicate files on the destination device.
     private static let duplicateFilesHandlingPolicyKey: String = "duplicateFilesHandlingPolicy"
-
-    /// UserDefaults key indicating the list of paths to exclude during file discovery
-    private static let excludedPathsListKey: String = "excludedPathsList"
-
+    
     /// UserDefaults key indicating whether the app should skip the device reboot step after migration.
     static let skipRebootUserDefaultsKey: String = "skipDeviceReboot"
+
+    /// UserDefaults key indicating the list of paths to exclude during file discovery.
+    private static let excludedPathsListKey: String = "excludedPathsList"
     
-    // MARK: - User Defaults Values
+    /// UserDefaults key indicating the list of paths to explicitely allow during file discovery.
+    private static let allowedPathsListKey: String = "allowedPathsList"
+    
+    /// UserDefaults key indicating the list of excluded file extensions during file discovery.
+    private static let excludedFileExtensionsKey: String = "excludedFileExtensions"
+    
+    /// UserDefaults key indicating the list of managed environments.
+    private static let mdmEnvironmentsUserDefaultsKey: String = "mdmEnvironments"
+    
+    /// UserDefaults key used to pull managed setting defining the Jamf Self Service app path.
+    private static let storePathKey: String = "storePath"
+    
+    /// UserDefaults key used to pull managed setting defining the bonjour service identifier.
+    private static let networkServiceIdentifierKey: String = "networkServiceIdentifier"
+    
+    /// UserDefaults key used to pull managed setting defining the path to the backup folder.
+    private static let backupPathKey: String = "backupPath"
+    
+    /// UserDefaults key used to pull managed setting defining the organization name used to brand the app.
+    private static let orgNameKey: String = "orgName"
+    
+    /// UserDefaults key used to pull managed setting defining the redirection link to the device enrollment instructions.
+    private static let enrollmentRedirectionLinkKey: String = "enrollmentRedirectionLink"
+    
+    // MARK: - Final Computed Properties
     
     static var loggingLevel: MLogger.LogLevel {
         return MLogger.LogLevel(rawValue: UserDefaults.standard.string(forKey: Self.loggingLevelUserDefaultsKey) ?? "standard") ?? .standard
@@ -135,33 +157,46 @@ struct AppContext {
     static var duplicateFilesHandlingPolice: DuplicateFilesHandlingPolicy {
         return DuplicateFilesHandlingPolicy(rawValue: UserDefaults.standard.string(forKey: Self.duplicateFilesHandlingPolicyKey) ?? "overwrite") ?? .overwrite
     }
+    static var managedExcludedURLs: [URL?] {
+        return (UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []).compactMap { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent($0) }
+    }
     static var urlExclusionList: [URL?] {
-        let managedExcludedPaths = UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []
-        let managedExcludedURLs = managedExcludedPaths.compactMap { URL(string: $0) }
         return managedExcludedURLs + defaultUrlExclusionList
     }
-
-    // MARK: - File Scan Variables
-
-    /// Custom list of paths that needs to be ignored during file discovery.
-    static var defaultUrlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("\(Bundle.main.name).app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Numbers.app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Pages.app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Keynote.app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Safari.app"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Utilities"),
-                                           FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Xcode.app"),
-                                           FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first]
-    
-    /// Custom list of explicitely allowed paths that needs to be included during file discovery.
-    static var explicitAllowList: [URL?] = [FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
-                                            FileManager.default.urls(for: .applicationScriptsDirectory, in: .userDomainMask).first,
-                                            FileManager.default.urls(for: .preferencePanesDirectory, in: .userDomainMask).first,
-                                            FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?.appendingPathComponent("Preferences", conformingTo: .directory)]
-    /// Custom list of file's name that needs to be ignored during file discovery.
-    static var excludedFiles: [String] = [".DS_Store",
-                                          ".localized",
-                                          ".vdi",
-                                          ".vbox"]
+    static var managedAllowedURLs: [URL?] {
+        return (UserDefaults.standard.array(forKey: Self.allowedPathsListKey) as? [String] ?? []).compactMap { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent($0) }
+    }
+    static var explicitAllowList: [URL?] {
+        return managedAllowedURLs + defaultExplicitAllowList
+    }
+    static var excludedFileExtensions: [String] {
+        let managedExcludedFileExtensions = UserDefaults.standard.array(forKey: Self.allowedPathsListKey) as? [String] ?? []
+        return managedExcludedFileExtensions + defaultExcludedFileExtensions
+    }
+    static var mdmEnvironments: [ManagedEnvironment] {
+        guard let managedEnvironments = UserDefaults.standard.array(forKey: mdmEnvironmentsUserDefaultsKey) as? [[String: String]],
+              !managedEnvironments.isEmpty else {
+            return fallbackMdmEnvironments
+        }
+        
+        return managedEnvironments.compactMap { try? DictionaryDecoder().decode(ManagedEnvironment.self, from: $0) }
+    }
+    static var storePath: String {
+        if let jamfValue = UserDefaults(suiteName: "com.jamfsoftware.jamf")?.string(forKey: "self_service_app_path") {
+            return jamfValue
+        }
+        return UserDefaults.standard.string(forKey: Self.storePathKey) ?? fallbackStorePath
+    }
+    static var orgName: String {
+        return UserDefaults.standard.string(forKey: Self.orgNameKey) ?? fallbackOrgName
+    }
+    static var backupPath: String {
+        return UserDefaults.standard.string(forKey: Self.backupPathKey) ?? (fallbackBackupPath.isEmpty && fallbackBackupPath != "<Backup Path>" ? fallbackBackupPath : "\(FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!.relativePath)/Migration.Backup")
+    }
+    static var networkServiceIdentifier: String {
+        return UserDefaults.standard.string(forKey: Self.networkServiceIdentifierKey) ?? fallbackNetworkServiceIdentifier
+    }
+    static var enrollmentRedirectionLink: String {
+        return UserDefaults.standard.string(forKey: Self.enrollmentRedirectionLinkKey) ?? fallbackEnrollmentRedirectionLink
+    }
 }

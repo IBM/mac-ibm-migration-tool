@@ -98,7 +98,7 @@ class MigratorFile {
                             continue
                         }
                         guard !AppContext.urlExclusionList.contains(childURL) &&
-                                !AppContext.excludedFiles.contains(childURL.lastPathComponent) &&
+                                !AppContext.excludedFileExtensions.contains(childURL.lastPathComponent) &&
                                 childURL.lastPathComponent.first != "~" else {
                             if AppContext.explicitAllowList.contains(where: { url in
                                 return url?.absoluteString.contains(childURL.absoluteString) ?? false

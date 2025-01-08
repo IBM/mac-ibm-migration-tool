@@ -10,31 +10,55 @@
 import Foundation
 
 /// Helper class used to run the device management state discovery.
-class DeviceManagementHelper {
+final class DeviceManagementHelper {
     
     // MARK: - Static Constants
     
     static let shared = DeviceManagementHelper()
-
+    
     // MARK: - Variables
     
-    var state: DeviceManagementState
+    private(set) var state: DeviceManagementState = .unknown
     
     /// Determine if possible to run Jamf Inventory Update based on the current device MDM environment state.
     var isJamfReconAvailable: Bool {
         switch state {
         case .managed:
-            return true && !AppContext.shouldSkipJamfRecon
+            return !AppContext.shouldSkipJamfRecon
         default:
             return false
         }
     }
-        
-    // MARK: - Initializers
     
-    init() {
+    // MARK: - Initializer
+    
+    private init() {
+        loadDeviceManagementState()
+    }
+    
+    // MARK: - Private Methods
+    
+    /// Loads the current device management state by analyzing profiles.
+    private func loadDeviceManagementState() {
+        fetchProfiles { [weak self] profiles in
+            guard let self = self else { return }
+            
+            guard !profiles.isEmpty else {
+                self.state = .unmanaged
+                return
+            }
+            
+            if let managementProfile = self.findManagementProfile(in: profiles) {
+                self.state = self.determineState(for: managementProfile)
+            } else {
+                self.state = .unmanaged
+            }
+        }
+    }
+    
+    /// Executes the system command to fetch configuration profiles and parses the result.
+    private func fetchProfiles(completion: @escaping ([ConfigProfile]) -> Void) {
         let command = "system_profiler -json SPConfigurationProfileDataType"
-        var profiles: [ConfigProfile] = []
         let task = Process()
         let pipe = Pipe()
         
@@ -42,30 +66,49 @@ class DeviceManagementHelper {
         task.standardError = pipe
         task.arguments = ["-c", command]
         task.launchPath = "/bin/zsh"
-        task.standardInput = nil
         task.launch()
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)!
+        let output = String(data: data, encoding: .utf8) ?? ""
+        
         do {
             let dataType = try ConfigurationProfileDataType(from: output.replacingOccurrences(of: "\n", with: ""))
-            profiles = dataType.sections.first(where: { $0.name == "spconfigprofile_section_deviceconfigprofiles" })?.profiles ?? []
-            guard !profiles.isEmpty else {
-                state = .unmanaged
-                return
-            }
-            if let managementProfile = profiles.first(where: { $0.payloads?.contains(where: { $0.name == "com.apple.mdm" }) ?? false }) {
-                if let serverURL = managementProfile.payloads?.first(where: { $0.name == "com.apple.mdm" })?.serverURL,
-                   let environment = AppContext.mdmEnvironments.first(where: { $0.serverURL == serverURL }) {
-                    state = .managed(env: environment)
-                } else {
-                    state = .managedByUnknownOrg
-                }
-            } else {
-                state = .unmanaged
-            }
+            let profiles = dataType.sections.first(where: { $0.name == "spconfigprofile_section_deviceconfigprofiles" })?.profiles ?? []
+            completion(profiles)
         } catch {
-            state = .unknown
+            completion([])
         }
+    }
+    
+    /// Finds the management profile containing the `com.apple.mdm` payload.
+    private func findManagementProfile(in profiles: [ConfigProfile]) -> ConfigProfile? {
+        profiles.first { profile in
+            profile.payloads?.contains { $0.name == "com.apple.mdm" } ?? false
+        }
+    }
+    
+    /// Determines the device management state based on the management profile.
+    private func determineState(for managementProfile: ConfigProfile) -> DeviceManagementState {
+        if #available(macOS 13.0, *) {
+            guard let serverURLString = managementProfile.payloads?.first(where: { $0.name == "com.apple.mdm" })?.serverURL,
+                  let serverURL = URL(string: serverURLString)?.host() else {
+                return .managedByUnknownOrg
+            }
+            for environment in AppContext.mdmEnvironments {
+                guard let environmentURL = URL(string: environment.serverURL)?.host(), environmentURL == serverURL else { continue }
+                return .managed(env: environment)
+            }
+        } else {
+            guard let serverURLString = managementProfile.payloads?.first(where: { $0.name == "com.apple.mdm" })?.serverURL,
+                  let serverURL = URL(string: serverURLString)?.host else {
+                return .managedByUnknownOrg
+            }
+            for environment in AppContext.mdmEnvironments {
+                guard let environmentURL = URL(string: environment.serverURL)?.host, environmentURL == serverURL else { continue }
+                return .managed(env: environment)
+            }
+        }
+        
+        return .managedByUnknownOrg
     }
 }

@@ -60,6 +60,7 @@
 		539B25712B4848C90012B974 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 539B25702B4848C90012B974 /* Localizable.xcstrings */; };
 		539F23982BAC85A700E3F399 /* MLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539F23972BAC85A700E3F399 /* MLogger.swift */; };
 		53A1DCB72C6E86950086AD07 /* AppleIDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1DCB62C6E86950086AD07 /* AppleIDView.swift */; };
+		53A2AA4F2CE34CCF00FEAD75 /* DictionaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */; };
 		53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */; };
 		53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */; };
 		53B193122C88CB1600DEFE24 /* ManagedEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */; };
@@ -161,6 +162,7 @@
 		539B25702B4848C90012B974 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		539F23972BAC85A700E3F399 /* MLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLogger.swift; sourceTree = "<group>"; };
 		53A1DCB62C6E86950086AD07 /* AppleIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIDView.swift; sourceTree = "<group>"; };
+		53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryDecoder.swift; sourceTree = "<group>"; };
 		53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconManager.swift; sourceTree = "<group>"; };
 		53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementHelper.swift; sourceTree = "<group>"; };
 		53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedEnvironment.swift; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 		1B0507482B0606A500384CD5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */,
 				53665E9C2BDBE17200086714 /* DeviceManagement */,
 				53F2DE452B6AA41800588D2D /* Network */,
 				1B05074D2B0612B500384CD5 /* MigratorPage.swift */,
@@ -594,6 +597,7 @@
 				5300EE4F2B7F9E13002127BB /* String-Extension.swift in Sources */,
 				1B4C5BE72B03B82B00D4BD0B /* NetworkServer.swift in Sources */,
 				1B05074E2B0612B500384CD5 /* MigratorPage.swift in Sources */,
+				53A2AA4F2CE34CCF00FEAD75 /* DictionaryDecoder.swift in Sources */,
 				53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */,
 				53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */,
 				53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */,

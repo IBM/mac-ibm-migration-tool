@@ -40,7 +40,7 @@ final class NetworkServer {
         let parameters = NWParameters(passcode: passcode)
         parameters.attribution = .developer
         listener = try NWListener(using: parameters)
-        listener?.service = NWListener.Service(type: AppContext.networkServiceIdentifier)
+        listener?.service = NWListener.Service(type: AppContext.networkServiceIdentifier+"._tcp")
         // Handler for listener state updates.
         listener?.stateUpdateHandler = { [weak self] newState in
             self?.onNewListenerState.send(newState)
