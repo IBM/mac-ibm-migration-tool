@@ -573,7 +573,7 @@ final class NetworkConnection {
                             }
                             self.logger.log("networkConnection.receiveNextMessage: file source \"\(messageInfo.source.fullURL().relativePath)\"")
                             if FileManager.default.fileExists(atPath: messageInfo.source.fullURL().relativePath) {
-                                switch AppContext.duplicateFilesHandlingPolice {
+                                switch AppContext.duplicateFilesHandlingPolicy {
                                 case .ignore:
                                     break
                                 case .move:

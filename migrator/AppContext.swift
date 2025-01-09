@@ -11,11 +11,11 @@ import Foundation
 
 struct AppContext {
     
-    // MARK: - Customisable Constants
+    // MARK: - Default Values for Customisable Constants
     
     /// The name used to refer the organization that manage the device.
     /// Managed setting available using `orgName` defaults key.
-    static let fallbackOrgName: String = "<Organization Name>"
+    private static let fallbackOrgName: String = "<Organization Name>"
     
     /// Path the Jamf Self Service .app
     /// Managed setting available using `storePath` defaults key.
@@ -32,15 +32,35 @@ struct AppContext {
     
     /// The service identifier used to discover and connect to network services via Bonjour (DNS-SD).
     /// Managed setting available using `networkServiceIdentifier` defaults key.
-    static let fallbackNetworkServiceIdentifier: String = "<Service Identifier>"
+    private static let fallbackNetworkServiceIdentifier: String = "<Service Identifier>"
 
     /// A URL to redirect users to setup instructions if the app detects the device is not managed by MDM.
     /// Managed setting available using `enrollmentRedirectionLink` defaults key.
-    static let fallbackEnrollmentRedirectionLink: String = "<Enrollment Redirection Link>"
+    private static let fallbackEnrollmentRedirectionLink: String = "<Enrollment Redirection Link>"
 
     /// Path to the folder that will contains duplicate files in case duplicateFilesHandlingPolicy is set to `move`.
     /// Managed setting available using `backupPath` defaults key.
-    static let fallbackBackupPath: String = "<Backup Path>"
+    private static let fallbackBackupPath: String = "<Backup Path>"
+    
+    /// Flag that defines whether or not to check the device's management state and if it's enrolled in a recognised environment.
+    /// Managed setting available using `skipMDMCheck` defaults key.
+    private static let fallbackShouldSkipMDMCheck: Bool = false
+    
+    /// Flag that determines whether or not to display the post-migration phase for Apple ID login verification.
+    /// Managed setting available using `skipAppleIDCheck` defaults key.
+    private static let fallbackShouldSkipAppleIDCheck: Bool = false
+    
+    /// Flag that specifies whether or not to perform an inventory update to Jamf Pro.
+    /// Managed setting available using `skipJamfRecon` defaults key.
+    private static let fallbackShouldSkipJamfRecon: Bool = false
+    
+    /// Specifies what method to use to run the Jamf inventory update.
+    /// Managed setting available using `jamfReconMethod` defaults key.
+    private static let fallbackJamfReconMethod: JamfReconMethod = .selfServicePolicy
+    
+    /// Path to the folder that will contains duplicate files in case duplicateFilesHandlingPolicy is set to `move`.
+    /// Managed setting available using `duplicateFilesHandlingPolicy` defaults key.
+    private static let fallbackDuplicateFilesHandlingPolicy: DuplicateFilesHandlingPolicy = .overwrite
     
     // MARK: - Default File Scan Variables
     
@@ -69,6 +89,9 @@ struct AppContext {
     
     // MARK: - User Defaults Keys
 
+    /// The array of keys defined in the UserDefaults domain.
+    private static let customizedKeys: Dictionary<String, Any>.Keys = UserDefaults.standard.dictionaryRepresentation().keys
+    
     /// UserDefaults key representing the logging verbosity level. Possible values:
     /// - `noLog`: No logs are written.
     /// - `standard`: A standard amount of logs are written.
@@ -140,22 +163,39 @@ struct AppContext {
         }
     }
     static var shouldSkipMDMCheck: Bool {
+        guard Self.customizedKeys.contains(Self.skipMDMCheckUserDefaultsKey) else {
+            return Self.fallbackShouldSkipMDMCheck
+        }
         return UserDefaults.standard.bool(forKey: Self.skipMDMCheckUserDefaultsKey)
     }
     static var shouldSkipAppleIDCheck: Bool {
+        guard Self.customizedKeys.contains(Self.skipAppleIDCheckUserDefaultsKey) else {
+            return Self.fallbackShouldSkipAppleIDCheck
+        }
         return UserDefaults.standard.bool(forKey: Self.skipAppleIDCheckUserDefaultsKey)
     }
     static var shouldSkipJamfRecon: Bool {
+        guard Self.customizedKeys.contains(Self.skipJamfReconUserDefaultsKey) else {
+            return Self.fallbackShouldSkipJamfRecon
+        }
         return UserDefaults.standard.bool(forKey: Self.skipJamfReconUserDefaultsKey)
     }
     static var jamfReconMethod: JamfReconMethod {
-        return JamfReconMethod(rawValue: UserDefaults.standard.string(forKey: Self.jamfReconMethodUserDefaultsKey) ?? "selfServicePolicy") ?? .selfServicePolicy
+        guard let value = UserDefaults.standard.string(forKey: Self.jamfReconMethodUserDefaultsKey),
+              let method = JamfReconMethod(rawValue: value) else {
+            return Self.fallbackJamfReconMethod
+        }
+        return method
     }
     static var shouldSkipDeviceReboot: Bool {
         return UserDefaults.standard.bool(forKey: Self.skipRebootUserDefaultsKey)
     }
-    static var duplicateFilesHandlingPolice: DuplicateFilesHandlingPolicy {
-        return DuplicateFilesHandlingPolicy(rawValue: UserDefaults.standard.string(forKey: Self.duplicateFilesHandlingPolicyKey) ?? "overwrite") ?? .overwrite
+    static var duplicateFilesHandlingPolicy: DuplicateFilesHandlingPolicy {
+        guard let value = UserDefaults.standard.string(forKey: Self.duplicateFilesHandlingPolicyKey),
+              let policy = DuplicateFilesHandlingPolicy(rawValue: value) else {
+            return Self.fallbackDuplicateFilesHandlingPolicy
+        }
+        return policy
     }
     static var managedExcludedURLs: [URL?] {
         return (UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []).compactMap { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent($0) }
