@@ -209,18 +209,18 @@ final class NetworkConnection {
         }
     }
     
+    private func closeFile(_ fileHandle: FileHandle) throws {
+        do {
+            try fileHandle.close()
+        } catch let error {
+            throw MigratorError.fileError(type: .failedDuringFileHandling(error: error))
+        }
+    }
+    
     /// Handles the sending of a file, breaking it into chunks if necessary, and collecting symbolic links as needed.
     /// - Parameter file: The file to send.
     private func _sendFile(_ file: MigratorFile) async throws {
-        func closeFile(_ fileHandle: FileHandle) throws {
-            do {
-                try fileHandle.close()
-            } catch let error {
-                throw MigratorError.fileError(type: .failedDuringFileHandling(error: error))
-            }
-        }
         logger.log("networkConnection.sendfile: preparing file \"\(file.url.fullURL().relativePath)\"")
-        
         let chunkSize: UInt64 = 200000000
         
         if file.type == .symlink {
@@ -356,13 +356,6 @@ final class NetworkConnection {
     /// Handles the sending of a file, breaking it into chunks if necessary, and collecting symbolic links as needed.
     /// - Parameter fileURL: The URL of the file to send.
     private func _sendFile(at fileURL: URL) async throws {
-        func closeFile(_ fileHandle: FileHandle) throws {
-            do {
-                try fileHandle.close()
-            } catch let error {
-                throw MigratorError.fileError(type: .failedDuringFileHandling(error: error))
-            }
-        }
         logger.log("networkConnection.sendfile: preparing file \"\(fileURL.relativePath)\"")
         guard !AppContext.excludedFileExtensions.contains(fileURL.lastPathComponent) && fileURL.lastPathComponent.first != "~" else {
             logger.log("networkConnection.sendfile: file \"\(fileURL.relativePath)\" needs to be ignored. This should'n happen.", type: .fault)

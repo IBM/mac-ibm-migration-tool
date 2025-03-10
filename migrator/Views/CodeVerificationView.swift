@@ -109,19 +109,15 @@ struct CodeVerificationView: View {
         } message: {
             Text("code.verification.alert.connection.error.message")
         }
-        .onReceive(migrationController.$connectionState, perform: { newState in
+        .onReceive(migrationController.$migrationState, perform: { newState in
             switch newState {
-            case .setup:
-                break
-            case .waiting:
+            case .fetching:
                 isLoading = true
-            case .preparing:
-                isLoading = true
-            case .ready:
+            case .connectionEstablished:
                 action(nextPage)
-            case .failed, .cancelled:
+            case .wrongOTPCodeSent:
                 showCodeError.toggle()
-            @unknown default:
+            default:
                 break
             }
         })
@@ -146,11 +142,7 @@ struct CodeVerificationView: View {
     
     private func didPressMainButton() {
         self.isLoading = true
-        migrationController.connect(to: migrationController.selectedBrowserResult, withPasscode: verificationCode) { success in
-            if !success {
-                self.showConnectionError = true
-            }
-        }
+        migrationController.connect(to: migrationController.selectedBrowserResult, withPasscode: verificationCode)
     }
     
     private func didPressSecondaryButton() {

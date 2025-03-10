@@ -143,15 +143,14 @@ struct ServerView: View {
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
-        .alert("connection.error.alert.unrecoverable.title", isPresented: $viewModel.connectionInterrupted) {
-            Button("connection.error.alert.unrecoverable.main.action.label") {
-                Task { @MainActor in
-                    self.viewModel.resetMigration()
-                    self.action(.welcome)
+        .overlay {
+            if viewModel.connectionInterrupted {
+                CustomAlertView(title: "connection.error.alert.title".localized, message: "connection.error.alert.restoring.message".localized) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.regular)
                 }
             }
-        } message: {
-            Text("connection.error.alert.unrecoverable.message")
         }
     }
 }

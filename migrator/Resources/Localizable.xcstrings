@@ -241,6 +241,28 @@
         }
       }
     },
+    "connection.error.alert.restoring.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restoring the connection..."
+          }
+        }
+      }
+    },
+    "connection.error.alert.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection have been interrupted!"
+          }
+        }
+      }
+    },
     "connection.error.alert.unrecoverable.main.action.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -253,21 +275,12 @@
       }
     },
     "connection.error.alert.unrecoverable.message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The connection have been interrupted. Please restart the migration process. "
-          }
-        }
-      }
-    },
-    "connection.error.alert.unrecoverable.title" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connection have been interrupted!"
+            "value" : "The connection have been interrupted and it wasn’t possible to restore it. Please restart the migration process. "
           }
         }
       }

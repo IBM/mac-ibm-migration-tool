@@ -74,12 +74,6 @@ class ServerViewModel: ObservableObject {
                 }
             }
         }.store(in: &cancellables)
-        self.migrationController.$connectionState.sink { newState in
-            switch newState {
-            default:
-                return
-            }
-        }.store(in: &cancellables)
         self.migrationController.$bytesReceived.sink { bytesCount in
             Task { @MainActor in
                 self.bytesReceived = bytesCount

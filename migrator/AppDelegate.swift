@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 firstMenu.submenu?.addItem(aboutItem)
                 mainMenu.items.removeAll()
                 mainMenu.items.append(firstMenu)
-                // menu.items.append(helpMenu)
+//                menu.items.append(helpMenu)
             }
         }
     }
