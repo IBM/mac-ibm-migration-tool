@@ -199,10 +199,10 @@ final class NetworkConnection {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             connection.send(content: content, contentContext: contentContext, isComplete: true, completion: .contentProcessed({ error in
                 if let error = error {
-                    self.logger.log("newtorkConnection.sendAsync: error sending message \"\(contentContext.identifier)\", error \"\(error.localizedDescription)\"", type: .error)
+                    MLogger.main.log("newtorkConnection.sendAsync: error sending message \"\(contentContext.identifier)\", error \"\(error.localizedDescription)\"", type: .error)
                     continuation.resume(throwing: error)
                 } else {
-                    self.logger.log("newtorkConnection.sendAsync: done sending message \"\(contentContext.identifier)\"")
+                    MLogger.main.log("newtorkConnection.sendAsync: done sending message \"\(contentContext.identifier)\"")
                     continuation.resume()
                 }
             }))
@@ -271,9 +271,17 @@ final class NetworkConnection {
             self.onBytesSent.send(data.count)
 
             logger.log("networkConnection.sendfile: start sending content of directory \"\(file.url.fullURL().relativePath)\"")
-            for child in file.childs {
-                try? await sendFile(child)
-                self.onBytesSent.send(data.count)
+            if !file.childs.isEmpty {
+                for child in file.childs {
+                    try? await sendFile(child)
+                    self.onBytesSent.send(data.count)
+                }
+            } else {
+                let unretainedChilds = file.fetchUnretainedChilds()
+                for child in unretainedChilds {
+                    try? await sendFile(child)
+                    self.onBytesSent.send(data.count)
+                }
             }
             return
         }

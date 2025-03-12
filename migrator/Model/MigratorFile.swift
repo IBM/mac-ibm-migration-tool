@@ -63,15 +63,21 @@ class MigratorFile {
     /// True if the file have already been sent to the connected device.
     var sent: Bool = false
     
+    var hLevel: Int = 0
+    
+    var allowListed: Bool = false
+    
     // MARK: - Intializers
     
     // swiftlint:disable function_body_length
     /// Asynchronous initialization to fetch file attributes and child files from a file URL.
     /// - Parameter url: URL of the source file.
-    init(with url: URL, allowListed: Bool = false) {
+    init(with url: URL, allowListed: Bool = false, level: Int = 0) {
         self.name = url.lastPathComponent
         self.url = MigratorFileURL(with: url)
+        self.hLevel = level
         self.isHidden = url.lastPathComponent.hasPrefix(".")
+        self.allowListed = allowListed
         if let attributes = try? FileManager.default.attributesOfItem(atPath: url.relativePath) as NSDictionary {
             let filetype = FileAttributeType(rawValue: attributes.fileType() ?? "")
             switch filetype {
@@ -81,18 +87,19 @@ class MigratorFile {
                     break
                 }
                 self.type = .directory
+                guard hLevel <= 2 else { break }
                 if let childsURL = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) {
                     for childURL in childsURL {
                         if allowListed {
                             if AppContext.explicitAllowList.contains(where: { url in
                                 return url?.absoluteString == childURL.absoluteString
                             }) {
-                                let childFile = MigratorFile(with: childURL)
+                                let childFile = MigratorFile(with: childURL, level: hLevel+1)
                                 self.childs.checkAndAppendFile(childFile)
                             } else if AppContext.explicitAllowList.contains(where: { url in
                                 return url?.absoluteString.contains(childURL.absoluteString) ?? false
                             }) {
-                                let childFile = MigratorFile(with: childURL, allowListed: true)
+                                let childFile = MigratorFile(with: childURL, allowListed: true, level: hLevel+1)
                                 self.childs.checkAndAppendFile(childFile)
                             }
                             continue
@@ -103,12 +110,12 @@ class MigratorFile {
                             if AppContext.explicitAllowList.contains(where: { url in
                                 return url?.absoluteString.contains(childURL.absoluteString) ?? false
                             }) {
-                                let childFile = MigratorFile(with: childURL, allowListed: true)
+                                let childFile = MigratorFile(with: childURL, allowListed: true, level: hLevel+1)
                                 self.childs.checkAndAppendFile(childFile)
                             }
                             continue
                         }
-                        let childFile = MigratorFile(with: childURL)
+                        let childFile = MigratorFile(with: childURL, level: hLevel+1)
                         self.childs.checkAndAppendFile(childFile)
                     }
                 }
@@ -153,20 +160,82 @@ class MigratorFile {
         } else if type == .socket {
             self.fileSize = 0
             self.numberOfFiles = 1
-        } else {
-            for child in childs {
-                await child.fetchFilesSizeAndCount()
+        } else if type == .directory {
+            if !childs.isEmpty {
+                for child in childs {
+                    await child.fetchFilesSizeAndCount()
+                }
+                let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
+                await MainActor.run {
+                    self.fileSize = self.childs.reduce(tempSize) {
+                        return $0 + $1.fileSize
+                    }
+                    self.numberOfFiles = self.childs.reduce(1) {
+                        return $0 + $1.numberOfFiles
+                    }
+                }
+            } else {
+                let tempChilds = fetchUnretainedChilds()
+                if !tempChilds.isEmpty {
+                    for child in tempChilds {
+                        await child.fetchFilesSizeAndCount()
+                    }
+                    let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
+                    let totalSize = tempChilds.reduce(tempSize) {
+                        return $0 + $1.fileSize
+                    }
+                    let totalCount = tempChilds.reduce(1) {
+                        return $0 + $1.numberOfFiles
+                    }
+                    await MainActor.run {
+                        self.fileSize = totalSize
+                        self.numberOfFiles = totalCount
+                    }
+                }
             }
-            let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
+        } else {
             await MainActor.run {
-                self.fileSize = self.childs.reduce(tempSize) {
-                    return $0 + $1.fileSize
-                }
-                self.numberOfFiles = self.childs.reduce(1) {
-                    return $0 + $1.numberOfFiles
-                }
+                self.fileSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
+                self.numberOfFiles = 1
             }
         }
+    }
+    
+    func fetchUnretainedChilds() -> [MigratorFile] {
+        if let childsURL = try? FileManager.default.contentsOfDirectory(at: url.fullURL(), includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) {
+            var tempChilds: [MigratorFile] = []
+            for childURL in childsURL {
+                if allowListed {
+                    if AppContext.explicitAllowList.contains(where: { url in
+                        return url?.absoluteString == childURL.absoluteString
+                    }) {
+                        let childFile = MigratorFile(with: childURL)
+                        tempChilds.checkAndAppendFile(childFile)
+                    } else if AppContext.explicitAllowList.contains(where: { url in
+                        return url?.absoluteString.contains(childURL.absoluteString) ?? false
+                    }) {
+                        let childFile = MigratorFile(with: childURL, allowListed: true)
+                        tempChilds.checkAndAppendFile(childFile)
+                    }
+                    continue
+                }
+                guard !AppContext.urlExclusionList.contains(childURL) &&
+                        !AppContext.excludedFileExtensions.contains(childURL.lastPathComponent) &&
+                        childURL.lastPathComponent.first != "~" else {
+                    if AppContext.explicitAllowList.contains(where: { url in
+                        return url?.absoluteString.contains(childURL.absoluteString) ?? false
+                    }) {
+                        let childFile = MigratorFile(with: childURL, allowListed: true)
+                        tempChilds.checkAndAppendFile(childFile)
+                    }
+                    continue
+                }
+                let childFile = MigratorFile(with: childURL)
+                tempChilds.checkAndAppendFile(childFile)
+            }
+            return tempChilds
+        }
+        return []
     }
 }
 
