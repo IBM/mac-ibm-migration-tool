@@ -26,6 +26,16 @@ final class NetworkBrowser {
     /// The NWBrowser instance used for discovering network services.
     private var browser: NWBrowser
     
+    // MARK: - Private Static Variables
+    
+    /// Static variable that store the Network Connection parameters.
+    private static var parameters: NWParameters {
+        let parameters = NWParameters()
+        parameters.includePeerToPeer = true
+        parameters.attribution = .developer
+        return parameters
+    }
+    
     // MARK: - Private Constants
     
     /// Logger instance.
@@ -35,10 +45,8 @@ final class NetworkBrowser {
     
     /// Initializes a new NetworkBrowser instance configured for discovering Bonjour services.
     init() {
-        let parameters = NWParameters()
-        parameters.includePeerToPeer = true
         // Configures the browser for discovering services with the specified Bonjour type and domain.
-        browser = NWBrowser(for: .bonjour(type: AppContext.networkServiceIdentifier+"._tcp", domain: nil), using: parameters)
+        browser = NWBrowser(for: .bonjour(type: AppContext.networkServiceIdentifier+"._tcp", domain: nil), using: Self.parameters)
     }
 
     // MARK: - Public Methods
@@ -61,8 +69,6 @@ final class NetworkBrowser {
         // Cancels the current browsing session.
         browser.cancel()
         // Reinitializes the browser to be ready for a new discovery session.
-        let parameters = NWParameters()
-        parameters.includePeerToPeer = true
-        browser = NWBrowser(for: .bonjour(type: "_migrator._tcp", domain: nil), using: parameters)
+        browser = NWBrowser(for: .bonjour(type: "_migrator._tcp", domain: nil), using: Self.parameters)
     }
 }
