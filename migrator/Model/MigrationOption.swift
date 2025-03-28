@@ -204,7 +204,7 @@ class MigrationOption: ObservableObject {
     /// Asyncronously calculate the size of the migration option.
     func fetchFilesSizeAndCount() async {
         for file in self.migrationFileList {
-            await file.fetchFilesSizeAndCount()
+            await file.fetchFileSizeAndCount()
             if file.isSelected {
                 await MainActor.run {
                     self.numberOfFiles += file.numberOfFiles
@@ -213,7 +213,7 @@ class MigrationOption: ObservableObject {
             }
         }
         for app in self.migrationAppList {
-            await app.fetchFilesSizeAndCount()
+            await app.fetchFileSizeAndCount()
             if app.isSelected {
                 await MainActor.run {
                     self.numberOfFiles += app.numberOfFiles

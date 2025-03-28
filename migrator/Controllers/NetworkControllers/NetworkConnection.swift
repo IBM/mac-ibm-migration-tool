@@ -271,13 +271,13 @@ final class NetworkConnection {
             self.onBytesSent.send(data.count)
 
             logger.log("networkConnection.sendfile: start sending content of directory \"\(file.url.fullURL().relativePath)\"")
-            if !file.childs.isEmpty {
-                for child in file.childs {
+            if !file.childFiles.isEmpty {
+                for child in file.childFiles {
                     try? await sendFile(child)
                     self.onBytesSent.send(data.count)
                 }
             } else {
-                let unretainedChilds = file.fetchUnretainedChilds()
+                let unretainedChilds = await file.fetchUnretainedChilds()
                 for child in unretainedChilds {
                     try? await sendFile(child)
                     self.onBytesSent.send(data.count)

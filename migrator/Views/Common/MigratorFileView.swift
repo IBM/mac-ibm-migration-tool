@@ -56,7 +56,7 @@ struct MigratorFileView: View {
             Image(nsImage: NSWorkspace.shared.icon(forFile: file.url.fullURL().relativePath))
                 .resizable()
                 .frame(width: 20, height: 20)
-            if file.type == .directory && !file.childs.isEmpty && allowDirectoryOverview {
+            if file.type == .directory && !file.childFiles.isEmpty && allowDirectoryOverview {
                 Button(action: {
                     showContent.toggle()
                 }, label: {
@@ -87,7 +87,7 @@ struct MigratorFileView: View {
                             .fixedSize()
                         }
                         ScrollView {
-                            ForEach($file.childs) { child in
+                            ForEach($file.childFiles) { child in
                                 if child.isHidden.wrappedValue && !showHiddenFiles {
                                     EmptyView()
                                 } else {

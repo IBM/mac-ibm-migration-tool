@@ -57,7 +57,7 @@ class MigratorFile {
     /// Name of the file
     var name: String
     /// Child files if the file is a directory
-    var childs: [MigratorFile] = []
+    var childFiles: [MigratorFile] = []
     /// True if the file is hidden
     var isHidden: Bool = false
     /// True if the file have already been sent to the connected device.
@@ -95,12 +95,12 @@ class MigratorFile {
                                 return url?.absoluteString == childURL.absoluteString
                             }) {
                                 let childFile = MigratorFile(with: childURL, level: hLevel+1)
-                                self.childs.checkAndAppendFile(childFile)
+                                self.childFiles.checkAndAppendFile(childFile)
                             } else if AppContext.explicitAllowList.contains(where: { url in
                                 return url?.absoluteString.contains(childURL.absoluteString) ?? false
                             }) {
                                 let childFile = MigratorFile(with: childURL, allowListed: true, level: hLevel+1)
-                                self.childs.checkAndAppendFile(childFile)
+                                self.childFiles.checkAndAppendFile(childFile)
                             }
                             continue
                         }
@@ -111,12 +111,12 @@ class MigratorFile {
                                 return url?.absoluteString.contains(childURL.absoluteString) ?? false
                             }) {
                                 let childFile = MigratorFile(with: childURL, allowListed: true, level: hLevel+1)
-                                self.childs.checkAndAppendFile(childFile)
+                                self.childFiles.checkAndAppendFile(childFile)
                             }
                             continue
                         }
                         let childFile = MigratorFile(with: childURL, level: hLevel+1)
-                        self.childs.checkAndAppendFile(childFile)
+                        self.childFiles.checkAndAppendFile(childFile)
                     }
                 }
             case .typeRegular:
@@ -131,7 +131,7 @@ class MigratorFile {
         } else {
             self.type = .file
         }
-        self.childs.sort { (file1: MigratorFile, file2: MigratorFile) in
+        self.childFiles.sort { (file1: MigratorFile, file2: MigratorFile) in
             if file1.type != file2.type {
                 return file1.type.sortOrder < file2.type.sortOrder
             } else {
@@ -144,7 +144,7 @@ class MigratorFile {
     // MAKR: - Public Methods
 
     /// Calculate the current file size in bytes.
-    func fetchFilesSizeAndCount() async {
+    func fetchFileSizeAndCount() async {
         guard self.fileSize == -1 else { return }
         if type == .app {
             if let size = try? await self.url.fullURL().directoryTotalAllocatedSize() {
@@ -161,37 +161,16 @@ class MigratorFile {
             self.fileSize = 0
             self.numberOfFiles = 1
         } else if type == .directory {
-            if !childs.isEmpty {
-                for child in childs {
-                    await child.fetchFilesSizeAndCount()
-                }
-                let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
-                await MainActor.run {
-                    self.fileSize = self.childs.reduce(tempSize) {
-                        return $0 + $1.fileSize
-                    }
-                    self.numberOfFiles = self.childs.reduce(1) {
-                        return $0 + $1.numberOfFiles
-                    }
-                }
-            } else {
-                let tempChilds = fetchUnretainedChilds()
-                if !tempChilds.isEmpty {
-                    for child in tempChilds {
-                        await child.fetchFilesSizeAndCount()
-                    }
-                    let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
-                    let totalSize = tempChilds.reduce(tempSize) {
-                        return $0 + $1.fileSize
-                    }
-                    let totalCount = tempChilds.reduce(1) {
-                        return $0 + $1.numberOfFiles
-                    }
-                    await MainActor.run {
-                        self.fileSize = totalSize
-                        self.numberOfFiles = totalCount
-                    }
-                }
+            let availableChildFiles = self.childFiles.isEmpty ? await self.fetchUnretainedChilds() : self.childFiles
+            for file in availableChildFiles {
+                await file.fetchFileSizeAndCount()
+            }
+            let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
+            let totalSize = availableChildFiles.reduce(tempSize) { return $0 + $1.fileSize }
+            let totalCount = availableChildFiles.reduce(1) { return $0 + $1.numberOfFiles }
+            await MainActor.run {
+                self.fileSize = totalSize
+                self.numberOfFiles = totalCount
             }
         } else {
             await MainActor.run {
@@ -201,7 +180,7 @@ class MigratorFile {
         }
     }
     
-    func fetchUnretainedChilds() -> [MigratorFile] {
+    func fetchUnretainedChilds() async -> [MigratorFile] {
         if let childsURL = try? FileManager.default.contentsOfDirectory(at: url.fullURL(), includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) {
             var tempChilds: [MigratorFile] = []
             for childURL in childsURL {
