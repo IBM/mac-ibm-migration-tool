@@ -1127,7 +1127,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Loading system information. The operation might take several minutes"
+            "value" : "Loading system information. The operation might take several minutes."
           }
         }
       }
@@ -1265,7 +1265,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "To keep the device information up to date in %@’s management system, the app will now perform an Inventory Update. This process updates the management system with the latest details about the app installed on your device, enabling it to push any necessary custom configurations, if available.\n\nTo initiate the Inventory Update, after clicking \"%@\", the app will prompt you to enter your Mac password."
+            "value" : "To keep the device information up to date in %@’s management system, the app will now perform an Inventory Update. This process updates the management system with the latest details about the apps installed on your device, enabling it to push any necessary custom configurations, if available.\n\nTo initiate the Inventory Update, after clicking \"%@\", the app will prompt you to enter your Mac password."
           }
         }
       }
@@ -1361,7 +1361,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Great job! now you can continue the process on the old Mac to select what to send here."
+            "value" : "Great job! Now you can continue the process on the old Mac to select what to send here."
           }
         }
       }
