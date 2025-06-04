@@ -44,6 +44,12 @@ struct MigratorApp: App {
         .commands {
             CommandGroup(replacing: .newItem) { }
             CommandGroup(replacing: .appVisibility) { }
+            CommandGroup(replacing: .systemServices) { }
+            CommandGroup(replacing: .appTermination) {
+                Button(String(format: "common.app.quit.menu.button".localized, Bundle.main.name)) {
+                    self.showQuitConfirmationAlert = true
+                }
+            }
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizabilityContentSize()

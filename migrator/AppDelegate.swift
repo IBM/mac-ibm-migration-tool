@@ -44,16 +44,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
 #endif
         Task { @MainActor in
             if let mainMenu = NSApplication.shared.mainMenu,
-               let appMenu = mainMenu.items.first(where: { $0.title == Bundle.main.name }),
-               let aboutItem = appMenu.submenu?.items.first?.copy() as? NSMenuItem {
-//               let helpMenu = mainMenu.items.last {
-                let firstMenu = NSMenuItem(title: Bundle.main.name, action: nil, keyEquivalent: "")
-                firstMenu.submenu = NSMenu(title: Bundle.main.name)
-                firstMenu.submenu?.addItem(aboutItem)
-                mainMenu.items.removeAll()
-                mainMenu.items.append(firstMenu)
-//                menu.items.append(helpMenu)
+               mainMenu.numberOfItems > 2 {
+                mainMenu.removeItem(at: 1)
             }
+        }
+    }
+    
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Tracks the cmd-q keyboard shortcut to avoid unhandled app quits.
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            switch event.modifierFlags.intersection(.deviceIndependentFlagsMask) {
+            case [.command] where event.characters == "q":
+                self.userRequestToQuit = true
+            default:
+                return event
+            }
+            return event
         }
     }
     
