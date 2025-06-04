@@ -7,6 +7,317 @@
     "%@" : {
 
     },
+    "accessibility.appleIDPage.skip.button.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will let you skip this step."
+          }
+        }
+      }
+    },
+    "accessibility.appleIDPage.systemPreferences.button.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will open the System Settings, specifically the iCloud Login section."
+          }
+        }
+      }
+    },
+    "accessibility.browserPage.deviceTable.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device List."
+          }
+        }
+      }
+    },
+    "accessibility.browserPage.mainButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will redirect you to the page where you can enter the OTP code showed on the new Mac to complete the device pairing."
+          }
+        }
+      }
+    },
+    "accessibility.browserPage.secondayButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will take you back to the previous page."
+          }
+        }
+      }
+    },
+    "accessibility.cvPage.error.button.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It will dismiss this alert."
+          }
+        }
+      }
+    },
+    "accessibility.cvPage.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will take you back to the previous page."
+          }
+        }
+      }
+    },
+    "accessibility.cvPage.secondaryButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will initiate the process of establishing a connection with the selected device using the code provided on this page."
+          }
+        }
+      }
+    },
+    "accessibility.finalPage.close.button.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The application will close."
+          }
+        }
+      }
+    },
+    "accessibility.jamfReconPage.runRecon.button.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will initiate an inventory update. This process may take some time."
+          }
+        }
+      }
+    },
+    "accessibility.mainWindow.label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The main window of the app."
+          }
+        }
+      }
+    },
+    "accessibility.migrationSetupView.advancedSelectionButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will show advanced file and app selection for the migration."
+          }
+        }
+      }
+    },
+    "accessibility.migrationSetupView.devicSleepAlert.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will close this alert."
+          }
+        }
+      }
+    },
+    "accessibility.migrationSetupView.fileInteractionAlert.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will close this alert."
+          }
+        }
+      }
+    },
+    "accessibility.migrationSetupView.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will show you some information to be aware of, then the migration will start."
+          }
+        }
+      }
+    },
+    "accessibility.migrationSetupView.secondaryButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will cancel the process and redirect you to the beginning."
+          }
+        }
+      }
+    },
+    "accessibility.migrationView.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will close the app."
+          }
+        }
+      }
+    },
+    "accessibility.migrationView.powerWarningButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will open a warning alert."
+          }
+        }
+      }
+    },
+    "accessibility.rebootPage.reboot.button.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will ask to restart your system and reopen automatically when you log in again."
+          }
+        }
+      }
+    },
+    "accessibility.serverView.connected.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will redirect you to the next step in the migration process."
+          }
+        }
+      }
+    },
+    "accessibility.serverView.notConnected.mainButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will redirect you to the previous step."
+          }
+        }
+      }
+    },
+    "accessibility.serverView.powerWarningButton.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will open a warning alert."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.fdaAlert.defaultButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens System Settings to the Privacy & Security section, showing the Full Disk Access list."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.fdaAlert.secondaryButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will close the application."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.leftButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will designate this device as the destination during the migration process."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.leftButton.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is my new Mac"
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.mainButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will redirect you to the next step in the migration process."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.mdmAlert.defaultButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will redirect you to the instructions for enrolling your device."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.rightButton.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Will designate this device as the source during the migration process."
+          }
+        }
+      }
+    },
+    "accessibility.welcomePage.rightButton.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is my old Mac"
+          }
+        }
+      }
+    },
     "app.name.backup" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -193,6 +504,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Are you sure you want to quit %@?"
+          }
+        }
+      }
+    },
+    "common.app.quit.menu.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit %@"
           }
         }
       }

@@ -44,6 +44,7 @@ struct MigrationSetupView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text("migration.setup.page.title")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -79,6 +80,7 @@ struct MigrationSetupView: View {
                     secondaryButtonLabel
                 })
                 .hiddenConditionally(isHidden: viewModel.viewState != .advancedSelection)
+                .accessibilityHint("accessibility.migrationSetupView.secondaryButton.hint")
                 Button(action: {
                     didPressMainButton()
                 }, label: {
@@ -87,6 +89,7 @@ struct MigrationSetupView: View {
                 .disabled(!(viewModel.isSizeCalculationFinal && viewModel.isReadyForMigration))
                 .padding(.leading, 6)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityHint("accessibility.migrationSetupView.mainButton.hint")
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
@@ -105,6 +108,7 @@ struct MigrationSetupView: View {
                     showFileInteractionAlert.toggle()
                 }
             }
+            .accessibilityHint("accessibility.migrationSetupView.devicSleepAlert.mainButton.hint")
         } message: {
             Text("migration.devicesleep.alert.message")
         }
@@ -115,6 +119,7 @@ struct MigrationSetupView: View {
                     action(nextPage)
                 }
             }
+            .accessibilityHint("accessibility.migrationSetupView.fileInteractionAlert.mainButton.hint")
         } message: {
             Text("migration.fileinteraction.alert.message")
         }
@@ -128,6 +133,7 @@ struct MigrationSetupView: View {
                 ProgressView()
                     .progressViewStyle(.circular)
                     .controlSize(.small)
+                    .accessibilityHidden(true)
             } else {
                 Text(viewModel.availableSpaceOnDestinationLabel)
             }
@@ -139,6 +145,7 @@ struct MigrationSetupView: View {
             Color("discoveryViewBackground")
                 .clipShape(RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 6 : 20))
                 .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                .accessibilityHidden(true)
             if viewModel.viewState == .advancedSelection {
                 AdavancedSelectionView(migrationOption: $viewModel.chosenOption)
             } else {
@@ -166,6 +173,7 @@ struct MigrationSetupView: View {
                             Text("migration.setup.page.advanced.setup.button.label")
                         })
                         .buttonStyle(.link)
+                        .accessibilityHint("accessibility.migrationSetupView.advancedSelectionButton.hint")
                     }
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)

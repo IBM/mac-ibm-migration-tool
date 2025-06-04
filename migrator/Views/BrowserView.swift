@@ -54,6 +54,7 @@ struct BrowserView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text("browser.page.title")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -65,6 +66,7 @@ struct BrowserView: View {
             deviceList
                 .padding(.horizontal, 270)
                 .padding(.bottom, 4)
+                .accessibilityElement(children: .contain)
             Spacer()
             Text(String(format: "browser.page.reminder.label".localized, Bundle.main.name, "welcome.page.button.big.left.label".localized))
                 .padding(.bottom, 4)
@@ -79,6 +81,7 @@ struct BrowserView: View {
                 })
                 .buttonStyle(.bordered)
                 .keyboardShortcut(.cancelAction)
+                .accessibilityHint("accessibility.browserPage.secondayButton.hint")
                 ZStack {
                     Button(action: {
                         didPressMainButton()
@@ -88,6 +91,7 @@ struct BrowserView: View {
                     .buttonStyle(.bordered)
                     .disabled(selectedResult == nil)
                     .keyboardShortcut(.defaultAction)
+                    .accessibilityHint("accessibility.browserPage.mainButton.hint")
                 }
                 .padding(.leading, 6)
             }
@@ -100,19 +104,25 @@ struct BrowserView: View {
             Color("discoveryViewBackground")
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                .accessibilityHidden(true)
             VStack(alignment: .center) {
                 ProgressView()
                     .progressViewStyle(.circular)
                     .controlSize(.small)
                     .padding(.top, 10)
+                    .accessibilityHidden(true)
                 List($migrationController.browserResults, id: \.self, selection: $selectedResult) { result in
                     DeviceListRow(result: result)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(result.name.wrappedValue)
                 }
                 .onChange(of: migrationController.browserResults) { newResults in
                     if !newResults.contains(where: { $0.id == selectedResult?.id }) {
                         selectedResult = nil
                     }
                 }
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel("accessibility.browserPage.deviceTable.label")
                 .padding(.top, 0)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 2)

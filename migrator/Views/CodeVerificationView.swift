@@ -53,17 +53,21 @@ struct CodeVerificationView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text("code.verification.page.title")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
                 .padding(.bottom, 8)
+                .accessibilitySortPriority(1)
             Text("code.verification.page.subtitle")
                 .multilineTextAlignment(.center)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
+                .accessibilitySortPriority(0.9)
             CodeVerificationFieldView(code: $verificationCode)
                 .disabled(isLoading)
                 .focused($isTextFieldFocused)
+                .accessibilitySortPriority(0.8)
             Spacer()
             Divider()
             HStack {
@@ -75,6 +79,7 @@ struct CodeVerificationView: View {
                 })
                 .disabled(isLoading)
                 .keyboardShortcut(.cancelAction)
+                .accessibilityHint("accessibility.cvPage.mainButton.hint")
                 ZStack {
                     Button(action: {
                         didPressMainButton()
@@ -84,6 +89,7 @@ struct CodeVerificationView: View {
                     .disabled(verificationCode.count < 6)
                     .hiddenConditionally(isHidden: isLoading)
                     .keyboardShortcut(.defaultAction)
+                    .accessibilityHint("accessibility.cvPage.secondaryButton.hint")
                     ProgressView()
                         .progressViewStyle(.circular)
                         .controlSize(.small)
@@ -99,6 +105,7 @@ struct CodeVerificationView: View {
                     self.isLoading = false
                 }
             }
+            .accessibilityHint("accessibility.cvPage.error.button.hint")
         } message: {
             Text("code.verification.alert.code.error.message")
         }
@@ -106,6 +113,7 @@ struct CodeVerificationView: View {
             Button("code.verification.alert.connection.error.action") {
                 action(previousPage)
             }
+            .accessibilityHint("accessibility.cvPage.error.button.hint")
         } message: {
             Text("code.verification.alert.connection.error.message")
         }

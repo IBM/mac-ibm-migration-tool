@@ -45,6 +45,7 @@ struct WelcomeView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text(String(format: "welcome.page.title".localized, Bundle.main.name))
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -74,7 +75,10 @@ struct WelcomeView: View {
                     .buttonStyle(.plain)
                     .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.3), radius: 2.5, x: 0, y: 0.5)
                     .padding(.bottom, 6)
+                    .accessibilityLabel("accessibility.welcomePage.leftButton.label")
+                    .accessibilityHint("accessibility.welcomePage.leftButton.hint")
                     Text("welcome.page.button.big.left.label")
+                        .accessibilityHidden(true)
                 }
                 VStack {
                     Button(action: {
@@ -96,7 +100,10 @@ struct WelcomeView: View {
                     .buttonStyle(.plain)
                     .shadow(color: Color.black.opacity(0.3), radius: 2.5, x: 0, y: 0.5)
                     .padding(.bottom, 6)
+                    .accessibilityLabel("accessibility.welcomePage.rightButton.label")
+                    .accessibilityHint("accessibility.welcomePage.rightButton.hint")
                     Text("welcome.page.button.big.right.label")
+                        .accessibilityHidden(true)
                 }
             }
             Spacer()
@@ -111,6 +118,7 @@ struct WelcomeView: View {
                 })
                 .disabled(nextPage == .welcome)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityHint("accessibility.welcomePage.mainButton.hint")
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
@@ -121,11 +129,13 @@ struct WelcomeView: View {
             }, label: {
                 Text(String(format: "welcome.page.fda.error.first.action.title".localized, Utils.systemSettingsLabel))
             })
+            .accessibilityHint("accessibility.welcomePage.fdaAlert.defaultButton.hint")
             Button {
                 exit(0)
             } label: {
                 Text("welcome.page.fda.error.second.action.title")
             }
+            .accessibilityHint("accessibility.welcomePage.fdaAlert.secondaryButton.hint")
         }, message: {
             Text(String(format: "welcome.page.fda.error.message".localized, appName, Utils.systemSettingsLabel, appName))
         })
@@ -136,11 +146,13 @@ struct WelcomeView: View {
             }, label: {
                 Text("welcome.page.management.error.first.action.title")
             })
+            .accessibilityHint("accessibility.welcomePage.mdmAlert.defaultButton.hint")
         }, message: {
             Text(String(format: "welcome.page.management.error.message".localized, AppContext.orgName, AppContext.orgName))
         })
         .onAppear {
             // Trying to access a file unaccessible without Full Disk Access permissions as there isn't a way to ask for those permission with an API. This trick allow the app to be in the Full Disk Access app list.
+            #if !DEBUG
             try? FileManager.default.copyItem(atPath: "/Library/Preferences/com.apple.TimeMachine.plist", toPath: "/private/tmp/com.apple.TimeMachine.plist")
             // If the app is not able to read at this path it means that it doesn't have FDA permissions so an alert is showed to ask the user to allow it.
             if !FileManager.default.isReadableFile(atPath: "/Library/Preferences/com.apple.TimeMachine.plist") {
@@ -154,6 +166,7 @@ struct WelcomeView: View {
                     break
                 }
             }
+            #endif
         }
     }
 }

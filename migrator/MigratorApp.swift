@@ -38,6 +38,8 @@ struct MigratorApp: App {
                           primaryButton: .cancel(),
                           secondaryButton: .destructive(Text("common.app.quit.alert.button.quit"), action: { appDelegate.quit() }))
                 })
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel("accessibility.mainWindow.label")
         }
         .commands {
             CommandGroup(replacing: .newItem) { }
