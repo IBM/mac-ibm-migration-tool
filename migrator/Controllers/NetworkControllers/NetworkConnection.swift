@@ -87,7 +87,6 @@ final class NetworkConnection {
     init(endpoint: NWEndpoint, withPasscode passcode: String) {
         logger.log("newtorkConnection.initOutgoingConnection: endpoint \"\(endpoint.debugDescription)\"", type: .default)
         let parameters = NWParameters(passcode: passcode)
-        parameters.attribution = .developer
         connection = NWConnection(to: endpoint, using: parameters)
         connection.pathUpdateHandler = { path in
             self.logger.log("newtorkConnection.pathUpdateHandler: newPath \"\(path.debugDescription)\"")
@@ -221,7 +220,7 @@ final class NetworkConnection {
     /// - Parameter file: The file to send.
     private func _sendFile(_ file: MigratorFile) async throws {
         logger.log("networkConnection.sendfile: preparing file \"\(file.url.fullURL().relativePath)\"")
-        let chunkSize: UInt64 = 200000000
+        let chunkSize: UInt64 = 33_554_432
         
         if file.type == .symlink {
             do {
@@ -370,7 +369,7 @@ final class NetworkConnection {
             return
         }
         
-        let chunkSize: UInt64 = 200000000
+        let chunkSize: UInt64 = 33_554_432
         var isDirectory: ObjCBool = false
         
         if let destinationPath = try? FileManager.default.destinationOfSymbolicLink(atPath: fileURL.relativePath),
