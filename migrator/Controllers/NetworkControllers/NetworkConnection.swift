@@ -87,7 +87,6 @@ final class NetworkConnection {
     init(endpoint: NWEndpoint, withPasscode passcode: String) {
         logger.log("newtorkConnection.initOutgoingConnection: endpoint \"\(endpoint.debugDescription)\"", type: .default)
         let parameters = NWParameters(passcode: passcode)
-        parameters.attribution = .developer
         connection = NWConnection(to: endpoint, using: parameters)
         connection.pathUpdateHandler = { path in
             self.logger.log("newtorkConnection.pathUpdateHandler: newPath \"\(path.debugDescription)\"")
@@ -199,29 +198,29 @@ final class NetworkConnection {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             connection.send(content: content, contentContext: contentContext, isComplete: true, completion: .contentProcessed({ error in
                 if let error = error {
-                    self.logger.log("newtorkConnection.sendAsync: error sending message \"\(contentContext.identifier)\", error \"\(error.localizedDescription)\"", type: .error)
+                    MLogger.main.log("newtorkConnection.sendAsync: error sending message \"\(contentContext.identifier)\", error \"\(error.localizedDescription)\"", type: .error)
                     continuation.resume(throwing: error)
                 } else {
-                    self.logger.log("newtorkConnection.sendAsync: done sending message \"\(contentContext.identifier)\"")
+                    MLogger.main.log("newtorkConnection.sendAsync: done sending message \"\(contentContext.identifier)\"")
                     continuation.resume()
                 }
             }))
         }
     }
     
+    private func closeFile(_ fileHandle: FileHandle) throws {
+        do {
+            try fileHandle.close()
+        } catch let error {
+            throw MigratorError.fileError(type: .failedDuringFileHandling(error: error))
+        }
+    }
+    
     /// Handles the sending of a file, breaking it into chunks if necessary, and collecting symbolic links as needed.
     /// - Parameter file: The file to send.
     private func _sendFile(_ file: MigratorFile) async throws {
-        func closeFile(_ fileHandle: FileHandle) throws {
-            do {
-                try fileHandle.close()
-            } catch let error {
-                throw MigratorError.fileError(type: .failedDuringFileHandling(error: error))
-            }
-        }
         logger.log("networkConnection.sendfile: preparing file \"\(file.url.fullURL().relativePath)\"")
-        
-        let chunkSize: UInt64 = 200000000
+        let chunkSize: UInt64 = 33_554_432
         
         if file.type == .symlink {
             do {
@@ -271,9 +270,17 @@ final class NetworkConnection {
             self.onBytesSent.send(data.count)
 
             logger.log("networkConnection.sendfile: start sending content of directory \"\(file.url.fullURL().relativePath)\"")
-            for child in file.childs {
-                try? await sendFile(child)
-                self.onBytesSent.send(data.count)
+            if !file.childFiles.isEmpty {
+                for child in file.childFiles {
+                    try? await sendFile(child)
+                    self.onBytesSent.send(data.count)
+                }
+            } else {
+                let unretainedChilds = await file.fetchUnretainedChilds()
+                for child in unretainedChilds {
+                    try? await sendFile(child)
+                    self.onBytesSent.send(data.count)
+                }
             }
             return
         }
@@ -356,20 +363,13 @@ final class NetworkConnection {
     /// Handles the sending of a file, breaking it into chunks if necessary, and collecting symbolic links as needed.
     /// - Parameter fileURL: The URL of the file to send.
     private func _sendFile(at fileURL: URL) async throws {
-        func closeFile(_ fileHandle: FileHandle) throws {
-            do {
-                try fileHandle.close()
-            } catch let error {
-                throw MigratorError.fileError(type: .failedDuringFileHandling(error: error))
-            }
-        }
         logger.log("networkConnection.sendfile: preparing file \"\(fileURL.relativePath)\"")
-        guard !AppContext.excludedFiles.contains(fileURL.lastPathComponent) && fileURL.lastPathComponent.first != "~" else {
+        guard !AppContext.excludedFileExtensions.contains(fileURL.lastPathComponent) && fileURL.lastPathComponent.first != "~" else {
             logger.log("networkConnection.sendfile: file \"\(fileURL.relativePath)\" needs to be ignored. This should'n happen.", type: .fault)
             return
         }
         
-        let chunkSize: UInt64 = 200000000
+        let chunkSize: UInt64 = 33_554_432
         var isDirectory: ObjCBool = false
         
         if let destinationPath = try? FileManager.default.destinationOfSymbolicLink(atPath: fileURL.relativePath),
@@ -573,7 +573,7 @@ final class NetworkConnection {
                             }
                             self.logger.log("networkConnection.receiveNextMessage: file source \"\(messageInfo.source.fullURL().relativePath)\"")
                             if FileManager.default.fileExists(atPath: messageInfo.source.fullURL().relativePath) {
-                                switch AppContext.duplicateFilesHandlingPolice {
+                                switch AppContext.duplicateFilesHandlingPolicy {
                                 case .ignore:
                                     break
                                 case .move:

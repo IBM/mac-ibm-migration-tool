@@ -20,15 +20,25 @@ class MigrationController: ObservableObject {
         case initial
         case discovery
         case fetching
+        case wrongOTPCodeSent
+        case connectionEstablished
         case readyForMigration
         case fileMigration
         case appMigration
         case preferencesMigration
         case interrupted
+        case cancelled
         case paused
-        case restoring
+        case restoringConnection
         case completing
         case completed
+    }
+    
+    // MARK: - Private Enum Definitions
+
+    private enum OperatingMode {
+        case server
+        case browser
     }
     
     // MARK: - Static Constants
@@ -71,34 +81,32 @@ class MigrationController: ObservableObject {
                 }
             }).store(in: &cancellables)
             connection?.onNewConnectionState.sink(receiveValue: { newState in
+                self.connectionState = newState
                 switch newState {
                 case .setup, .waiting, .preparing:
                     Task { @MainActor in
-                        self.connectionState = newState
+                        self.migrationState = .fetching
                         self.isConnected = false
                     }
                 case .ready:
                     Task { @MainActor in
                         self.isConnected = true
-                        self.connectionState = newState
+                        self.migrationState = .connectionEstablished
                     }
                 case .failed:
                     Task { @MainActor in
                         self.connection?.connection.cancel()
-                        self.connection = nil
-                        self.connectionState = newState
-                        self.connectionState = .setup
                         self.isConnected = false
-                        self.migrationState = .interrupted
+                        self.migrationState = .restoringConnection
+                        self.restoreConnection()
                     }
                 case .cancelled:
-                    Task { @MainActor in
-                        self.connection = nil
-                        self.connectionState = newState
-                        self.connectionState = .setup
-                        self.isConnected = false
-                        self.migrationState = .interrupted
-                    }
+                    break
+//                    Task { @MainActor in
+//                        self.connection = nil
+//                        self.isConnected = false
+//                        self.migrationState = .cancelled
+//                    }
                 @unknown default:
                     break
                 }
@@ -113,11 +121,20 @@ class MigrationController: ObservableObject {
     var migrationOption: MigrationOption!
     /// The selected result in the device list.
     var selectedBrowserResult: NWBrowser.Result!
-    
+
     // MARK: - Private Variables
     
     /// Collection of cancellable subscriptions to manage memory and avoid retain cycles.
     private var cancellables = Set<AnyCancellable>()
+    /// Define if the current instance is used as `server` or `browser`
+    private var operatingMode: OperatingMode!
+    /// Passcode used to secure the connection.
+    private var passcode: String!
+    
+    private var destinationDevice: NWBrowser.Result!
+    
+    /// Tracks connection states.
+    private var connectionState: NWConnection.State = .setup
     
     // MARK: - Private Constants
     
@@ -144,8 +161,6 @@ class MigrationController: ObservableObject {
     @Published var bytesReceived: Int = 0
     /// Tracks the completion of the migration.
     @Published var isMigrationCompleted: Bool = false
-    /// Tracks connection states.
-    @Published var connectionState: NWConnection.State = .setup
     /// Tracks migration controller state.
     @Published var migrationState: MigrationState = .initial
             
@@ -205,6 +220,8 @@ class MigrationController: ObservableObject {
     /// Starts the network server to accept incoming connections with a given passcode.
     @MainActor
     func startServer(withPasscode passcode: String) {
+        self.operatingMode = .server
+        self.passcode = passcode
         logger.log("migrationController.networkServer.start: starting server with passcode \"\(passcode)\"...", type: .default)
         do {
             try server.start(withPasscode: passcode)
@@ -226,6 +243,7 @@ class MigrationController: ObservableObject {
     /// Starts the network browser to search for available network services.
     @MainActor
     func startBrowser() {
+        self.operatingMode = .browser
         logger.log("migrationController.networkBrowser.start: starting browser...", type: .default)
         browser.start()
         migrationState = .discovery
@@ -242,11 +260,12 @@ class MigrationController: ObservableObject {
     
     /// Attempts to connect to a specified device using a passcode. Calls the completion handler with the result.
     @MainActor 
-    func connect(to device: NWBrowser.Result, withPasscode passcode: String = "000000", completion: @escaping (Bool) -> Void) {
+    func connect(to device: NWBrowser.Result, withPasscode passcode: String = "000000") {
+        self.passcode = passcode
+        self.destinationDevice = device
         logger.log("migrationController.connect: starting connection with device \"\(device)\", using passcode \"\(passcode)\"", type: .default)
-        guard self.connection == nil else {
+        guard !self.isConnected else {
             logger.log("migrationController.connect: a connection has already been established \"\(self.connection?.connection.debugDescription ?? "nil")\", discarding new connection request...", type: .default)
-            completion(true)
             return
         }
 
@@ -259,9 +278,6 @@ class MigrationController: ObservableObject {
         logger.log("migrationController.connect: starting connection...", type: .default)
         self.hostName = device.resultName
         self.checkConnectionEstablishment(5)
-        
-        // Calls completion with success after setting up the connection.
-        completion(true)
     }
     
     @MainActor 
@@ -275,6 +291,18 @@ class MigrationController: ObservableObject {
         self.sizeOfMigration = 0
         self.browserResults = []
         self.selectedBrowserResult = nil
+    }
+    
+    @MainActor
+    func restoreConnection() {
+        switch self.operatingMode {
+        case .server:
+            self.startServer(withPasscode: self.passcode)
+        case .browser:
+            self.connect(to: self.destinationDevice, withPasscode: self.passcode)
+        case .none:
+            break
+        }
     }
     
     // MARK: - Private Methods
@@ -294,6 +322,7 @@ class MigrationController: ObservableObject {
                 guard attempts > 1 else {
                     self.logger.log("migrationController.connect: failed to get connection establishment report. Connection will be cancelled", type: .error)
                     self.connection?.connection.forceCancel()
+                    self.migrationState = .wrongOTPCodeSent
                     return
                 }
                 self.logger.log("migrationController.connect: failed to get connection establishment report. Trying again in 3 seconds...", type: .fault)

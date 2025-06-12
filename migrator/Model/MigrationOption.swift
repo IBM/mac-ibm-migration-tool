@@ -153,7 +153,7 @@ class MigrationOption: ObservableObject {
         case .advanced:
             if let contentOfHomeDirectory = try? FileManager.default.contentsOfDirectory(at: FileManager.default.homeDirectoryForCurrentUser, includingPropertiesForKeys: nil) {
                 self.migrationFileList.append(contentsOf: contentOfHomeDirectory.filter({ url in
-                    return (!AppContext.urlExclusionList.contains(url) && !AppContext.excludedFiles.contains(url.lastPathComponent) && url.lastPathComponent.first != "~") || AppContext.explicitAllowList.contains(where: { $0?.absoluteString.contains(url.absoluteString) ?? false })
+                    return (!AppContext.urlExclusionList.contains(url) && !AppContext.excludedFileExtensions.contains(url.lastPathComponent) && url.lastPathComponent.first != "~") || AppContext.explicitAllowList.contains(where: { $0?.absoluteString.contains(url.absoluteString) ?? false })
                 }).compactMap({ url in
                     let file = MigratorFile(with: url, allowListed: AppContext.explicitAllowList.contains(where: { $0?.absoluteString.contains(url.absoluteString) ?? false }))
                     file.$isSelected.sink { newValue in
@@ -168,7 +168,7 @@ class MigrationOption: ObservableObject {
             if let applicationsFolder = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first,
                let contentOfApplicationsFolder = try? FileManager.default.contentsOfDirectory(at: applicationsFolder, includingPropertiesForKeys: nil) {
                 self.migrationAppList.append(contentsOf: contentOfApplicationsFolder.filter({ url in
-                    return !AppContext.urlExclusionList.contains(url) && !AppContext.excludedFiles.contains(url.lastPathComponent) && url.lastPathComponent.first != "~"
+                    return !AppContext.urlExclusionList.contains(url) && !AppContext.excludedFileExtensions.contains(url.lastPathComponent) && url.lastPathComponent.first != "~"
                 }).map({ url in
                     let appFile = MigratorFile(with: url)
                     appFile.$isSelected.sink { newValue in
@@ -204,7 +204,7 @@ class MigrationOption: ObservableObject {
     /// Asyncronously calculate the size of the migration option.
     func fetchFilesSizeAndCount() async {
         for file in self.migrationFileList {
-            await file.fetchFilesSizeAndCount()
+            await file.fetchFileSizeAndCount()
             if file.isSelected {
                 await MainActor.run {
                     self.numberOfFiles += file.numberOfFiles
@@ -213,7 +213,7 @@ class MigrationOption: ObservableObject {
             }
         }
         for app in self.migrationAppList {
-            await app.fetchFilesSizeAndCount()
+            await app.fetchFileSizeAndCount()
             if app.isSelected {
                 await MainActor.run {
                     self.numberOfFiles += app.numberOfFiles

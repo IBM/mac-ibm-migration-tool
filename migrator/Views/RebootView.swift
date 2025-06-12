@@ -32,6 +32,7 @@ struct RebootView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text("reboot.page.title.label")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -54,6 +55,7 @@ struct RebootView: View {
                 })
                 .buttonStyle(.bordered)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityHint("accessibility.rebootPage.reboot.button.hint")
                 .padding(.leading, 6)
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))

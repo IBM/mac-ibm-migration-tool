@@ -39,6 +39,7 @@ struct JamfReconView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text("recon.page.title.label")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -53,6 +54,7 @@ struct JamfReconView: View {
                 if runningRecon {
                     ProgressView()
                         .controlSize(.small)
+                        .accessibilityHidden(true)
                     Text("recon.page.informational.bottom.ongoing.label")
                         .padding(.leading, 8)
                 }
@@ -66,6 +68,7 @@ struct JamfReconView: View {
                 })
                 .buttonStyle(.bordered)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityHint("accessibility.jamfReconPage.runRecon.button.hint")
                 .disabled(runningRecon)
                 .padding(.leading, 6)
             }

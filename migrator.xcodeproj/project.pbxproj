@@ -47,6 +47,7 @@
 		53665E972BDBE12300086714 /* Decodable-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E962BDBE12300086714 /* Decodable-Extension.swift */; };
 		53665E992BDBE14B00086714 /* ConfigProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E982BDBE14B00086714 /* ConfigProfile.swift */; };
 		53665E9B2BDBE15F00086714 /* DeviceManagementState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */; };
+		536776C12D5F36FF0055F7A3 /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */; };
 		5377C2272B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */; };
 		5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */; };
 		5377C22B2B51551D00B5C9C1 /* MigratorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C22A2B51551D00B5C9C1 /* MigratorError.swift */; };
@@ -60,6 +61,7 @@
 		539B25712B4848C90012B974 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 539B25702B4848C90012B974 /* Localizable.xcstrings */; };
 		539F23982BAC85A700E3F399 /* MLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539F23972BAC85A700E3F399 /* MLogger.swift */; };
 		53A1DCB72C6E86950086AD07 /* AppleIDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1DCB62C6E86950086AD07 /* AppleIDView.swift */; };
+		53A2AA4F2CE34CCF00FEAD75 /* DictionaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */; };
 		53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */; };
 		53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */; };
 		53B193122C88CB1600DEFE24 /* ManagedEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */; };
@@ -111,7 +113,7 @@
 		1B05074D2B0612B500384CD5 /* MigratorPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorPage.swift; sourceTree = "<group>"; };
 		1B05074F2B06130800384CD5 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		1B0507512B06133800384CD5 /* MigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationView.swift; sourceTree = "<group>"; };
-		1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IBM Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorApp.swift; sourceTree = "<group>"; };
 		1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
 		1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 		53665E962BDBE12300086714 /* Decodable-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable-Extension.swift"; sourceTree = "<group>"; };
 		53665E982BDBE14B00086714 /* ConfigProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfile.swift; sourceTree = "<group>"; };
 		53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementState.swift; sourceTree = "<group>"; };
+		536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
 		5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorNetworkProtocol.swift; sourceTree = "<group>"; };
 		5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWParameters-Extension.swift"; sourceTree = "<group>"; };
 		5377C22A2B51551D00B5C9C1 /* MigratorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorError.swift; sourceTree = "<group>"; };
@@ -161,6 +164,7 @@
 		539B25702B4848C90012B974 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		539F23972BAC85A700E3F399 /* MLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLogger.swift; sourceTree = "<group>"; };
 		53A1DCB62C6E86950086AD07 /* AppleIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIDView.swift; sourceTree = "<group>"; };
+		53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryDecoder.swift; sourceTree = "<group>"; };
 		53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconManager.swift; sourceTree = "<group>"; };
 		53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementHelper.swift; sourceTree = "<group>"; };
 		53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedEnvironment.swift; sourceTree = "<group>"; };
@@ -234,6 +238,7 @@
 		1B0507482B0606A500384CD5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */,
 				53665E9C2BDBE17200086714 /* DeviceManagement */,
 				53F2DE452B6AA41800588D2D /* Network */,
 				1B05074D2B0612B500384CD5 /* MigratorPage.swift */,
@@ -260,7 +265,7 @@
 		1B4C5BB12B035EBA00D4BD0B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */,
+				1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */,
 				1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */,
 				1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */,
 			);
@@ -411,6 +416,7 @@
 			isa = PBXGroup;
 			children = (
 				539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */,
+				536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */,
 				535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */,
 				532F90B52C64FFE5002E270F /* WindowAccessor.swift */,
 				539B256E2B4817AC0012B974 /* DeviceListRow.swift */,
@@ -437,9 +443,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */ = {
+		1B4C5BAF2B035EBA00D4BD0B /* Data Shift */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */;
+			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "Data Shift" */;
 			buildPhases = (
 				1B4C5BAC2B035EBA00D4BD0B /* Sources */,
 				1B4C5BAD2B035EBA00D4BD0B /* Frameworks */,
@@ -450,9 +456,9 @@
 			);
 			dependencies = (
 			);
-			name = "IBM Data Shift";
+			name = "Data Shift";
 			productName = migrator;
-			productReference = 1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */;
+			productReference = 1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1B4C5BC02B035EBD00D4BD0B /* migratorTests */ = {
@@ -528,7 +534,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */,
+				1B4C5BAF2B035EBA00D4BD0B /* Data Shift */,
 				1B4C5BC02B035EBD00D4BD0B /* migratorTests */,
 				1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */,
 			);
@@ -594,6 +600,7 @@
 				5300EE4F2B7F9E13002127BB /* String-Extension.swift in Sources */,
 				1B4C5BE72B03B82B00D4BD0B /* NetworkServer.swift in Sources */,
 				1B05074E2B0612B500384CD5 /* MigratorPage.swift in Sources */,
+				53A2AA4F2CE34CCF00FEAD75 /* DictionaryDecoder.swift in Sources */,
 				53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */,
 				53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */,
 				53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */,
@@ -618,6 +625,7 @@
 				532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */,
 				53237C112CA9E1D8004062CC /* JamfReconMethod.swift in Sources */,
 				53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */,
+				536776C12D5F36FF0055F7A3 /* CustomAlertView.swift in Sources */,
 				5377C22D2B559D7900B5C9C1 /* Data-Extension.swift in Sources */,
 				53665E912BDBE0C600086714 /* ConfigProfilePayload.swift in Sources */,
 				53F2DE382B69055000588D2D /* NWProtocolFramer-Message-Extension.swift in Sources */,
@@ -684,12 +692,12 @@
 /* Begin PBXTargetDependency section */
 		1B4C5BC32B035EBD00D4BD0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
 			targetProxy = 1B4C5BC22B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 		1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
 			targetProxy = 1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -836,7 +844,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright Company 2023, 2024";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2024";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
 				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -875,7 +883,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright Company 2023, 2024";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2024";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
 				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -981,7 +989,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */ = {
+		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "Data Shift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B4C5BD62B035EBD00D4BD0B /* Debug */,

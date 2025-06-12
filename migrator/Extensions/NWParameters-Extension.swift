@@ -19,6 +19,7 @@ extension NWParameters {
         tcpOptions.keepaliveIdle = 1
         tcpOptions.keepaliveCount = 2
         tcpOptions.keepaliveInterval = 1
+        tcpOptions.noDelay = true
 
         // Initialize `NWParameters` with custom TLS options (derived from the passcode) and the specified TCP options.
         self.init(tls: NWParameters.tlsOptions(passcode: passcode), tcp: tcpOptions)

@@ -46,6 +46,7 @@ struct FinalView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             if reconState != .done && DeviceManagementHelper.shared.isJamfReconAvailable {
                 Text("final.page.title.recon.label")
                     .multilineTextAlignment(.center)
@@ -70,6 +71,7 @@ struct FinalView: View {
                     Image(systemName: "shippingbox.and.arrow.backward.fill")
                         .resizable()
                         .frame(width: 52, height: 34.125)
+                        .accessibilityHidden(true)
                     Text("final.page.body.component.migration.title.label")
                         .font(.title2)
                         .padding(.leading, 8)
@@ -89,6 +91,7 @@ struct FinalView: View {
                             .resizable()
                             .frame(width: 27.3, height: 34.125)
                             .padding(.horizontal, 11.35)
+                            .accessibilityHidden(true)
                         Text("final.page.body.component.appleid.title.label")
                             .font(.title2)
                             .padding(.leading, 8)
@@ -97,6 +100,7 @@ struct FinalView: View {
                             .resizable()
                             .frame(width: 25, height: 25)
                             .foregroundStyle(.green)
+                            .accessibilityHidden(true)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 10)
@@ -108,6 +112,7 @@ struct FinalView: View {
                         Image(systemName: "macbook.gen2")
                             .resizable()
                             .frame(width: 52, height: 34.125)
+                            .accessibilityHidden(true)
                         Text("final.page.body.component.reboot.title.label")
                             .font(.title2)
                             .padding(.leading, 8)
@@ -116,6 +121,7 @@ struct FinalView: View {
                             .resizable()
                             .frame(width: 25, height: 25)
                             .foregroundStyle(.green)
+                            .accessibilityHidden(true)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 10)
@@ -127,6 +133,7 @@ struct FinalView: View {
                         Image(systemName: "arrow.clockwise.icloud.fill")
                             .resizable()
                             .frame(width: 52, height: 34.125)
+                            .accessibilityHidden(true)
                         Text("final.page.body.component.inventory.title.label")
                             .font(.title2)
                             .padding(.leading, 8)
@@ -139,16 +146,19 @@ struct FinalView: View {
                             ProgressView()
                                 .controlSize(.small)
                                 .frame(width: 25, height: 25)
+                                .accessibilityHidden(true)
                         case .running:
                             Text("final.page.recon.state.running.label")
                             ProgressView()
                                 .controlSize(.small)
                                 .frame(width: 25, height: 25)
+                                .accessibilityHidden(true)
                         case .done:
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
                                 .frame(width: 25, height: 25)
                                 .foregroundStyle(.green)
+                                .accessibilityHidden(true)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -184,6 +194,7 @@ struct FinalView: View {
                 })
                 .buttonStyle(.bordered)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityHint("accessibility.finalPage.close.button.hint")
                 .padding(.leading, 6)
                 .disabled(reconState != .done && DeviceManagementHelper.shared.isJamfReconAvailable)
             }

@@ -41,6 +41,7 @@ struct MigrationView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text(viewModel.migrationProgress == 1 ? "migration.page.title.complete.label".localized : "migration.page.title.ongoing.label".localized)
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -51,6 +52,7 @@ struct MigrationView: View {
                 .padding(.horizontal, 40)
             Image("new_mac")
                 .padding(.vertical, 4)
+                .accessibilityHidden(true)
             Group {
                 Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized) + Text(viewModel.migrationController.hostName).fontWeight(.bold) + Text(viewModel.usedInterface)
             }
@@ -78,6 +80,7 @@ struct MigrationView: View {
                         Image(systemName: "exclamationmark")
                     }
                     .clipShape(Circle())
+                    .accessibilityHint("accessibility.migrationView.powerWarningButton.hint")
                     .popover(isPresented: $showWarningPopover, arrowEdge: .bottom, content: {
                         Text("migration.page.warning.button.popover.text")
                             .padding()
@@ -92,6 +95,7 @@ struct MigrationView: View {
                 })
                 .hiddenConditionally(isHidden: viewModel.migrationProgress < 1)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityHint("accessibility.migrationView.mainButton.hint")
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
