@@ -3,14 +3,14 @@
 ![License](https://img.shields.io/badge/license-Apache%202-1984E5)
 
 ![Swift version](https://img.shields.io/badge/swift-5.9.0-1984E5?logo=swift)
-![Project version](https://img.shields.io/badge/version-1.1.0-1984E5)
+![Project version](https://img.shields.io/badge/version-1.2.0-1984E5)
 ![macOS](https://img.shields.io/badge/macOS-12+-bright%20green)
 
 ## Scope
 
 The purpose of this project is to provide an useful macOS Utility to facilitate the mass migration of files/apps/preferences between devices.
 
-<img alt="Example screenshot" src="https://raw.githubusercontent.com/IBM/mac-ibm-migration-tool/dev/images/Source/6.png" width="1000">
+<img alt="Example screenshot" src="https://github.com/IBM/mac-ibm-migration-tool/blob/main/images/readme_img.jpg" width="1000">
 
 ## Usage
 
