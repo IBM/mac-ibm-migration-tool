@@ -54,6 +54,7 @@ struct ServerView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text(viewModel.connectionEstablished ? (viewModel.migrationProgress > 0 ? (viewModel.migrationProgress == 1 ? "server.page.title.migration.complete.label" : "server.page.title.migration.ongoing.label") : "server.page.connected.title") : "server.page.title")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -63,15 +64,18 @@ struct ServerView: View {
                 .padding(.bottom)
                 .padding(.horizontal, 40)
             Image(viewModel.connectionEstablished ? "old_mac" : "new_mac")
+                .accessibilityHidden(true)
             if viewModel.connectionEstablished {
                 Group {
                     Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized) + Text(migrationController.hostName).fontWeight(.bold) + Text(viewModel.usedInterface)
                 }
                 .padding(.vertical, 4)
+                .accessibilityElement(children: .combine)
             } else {
                 Text(Host.current().localizedName ?? "server.page.default.device.name")
                     .font(.headline)
                     .padding(.vertical, 4)
+                    .accessibilityHidden(true)
             }
             VStack {
                 if viewModel.connectionEstablished {
@@ -79,11 +83,11 @@ struct ServerView: View {
                         ProgressView()
                             .progressViewStyle(.linear)
                             .controlSize(.regular)
+                            .accessibilityHidden(true)
                     } else {
                         ProgressView(value: viewModel.migrationProgress)
                             .progressViewStyle(.linear)
                             .controlSize(.regular)
-                            
                     }
                     HStack {
                         Spacer()
@@ -95,10 +99,12 @@ struct ServerView: View {
                         ProgressView()
                             .progressViewStyle(.circular)
                             .controlSize(.small)
+                            .accessibilityHidden(true)
                         Spacer()
                         Text("server.page.pairing.code.label")
                             .font(.title3)
                         CodeVerificationFieldView(code: .constant(viewModel.randomCode), viewOnly: true)
+                            .accessibilityElement(children: .combine)
                         Spacer()
                     }
                 }
@@ -114,6 +120,7 @@ struct ServerView: View {
                         Image(systemName: "exclamationmark")
                     }
                     .clipShape(Circle())
+                    .accessibilityHint("accessibility.serverView.powerWarningButton.hint")
                     .popover(isPresented: $showWarningPopover, arrowEdge: .bottom, content: {
                         Text("migration.page.warning.button.popover.text")
                             .padding()
@@ -129,6 +136,7 @@ struct ServerView: View {
                     })
                     .disabled(viewModel.migrationProgress != 1)
                     .keyboardShortcut(.defaultAction)
+                    .accessibilityHint("accessibility.serverView.connected.mainButton.hint")
                 } else {
                     Button(action: {
                         migrationController.stopServer()
@@ -139,19 +147,19 @@ struct ServerView: View {
                             .padding(4)
                     })
                     .keyboardShortcut(.cancelAction)
+                    .accessibilityHint("accessibility.serverView.notConnected.mainButton.hint")
                 }
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
-        .alert("connection.error.alert.unrecoverable.title", isPresented: $viewModel.connectionInterrupted) {
-            Button("connection.error.alert.unrecoverable.main.action.label") {
-                Task { @MainActor in
-                    self.viewModel.resetMigration()
-                    self.action(.welcome)
+        .overlay {
+            if viewModel.connectionInterrupted {
+                CustomAlertView(title: "connection.error.alert.title".localized, message: "connection.error.alert.restoring.message".localized) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.regular)
                 }
             }
-        } message: {
-            Text("connection.error.alert.unrecoverable.message")
         }
     }
 }

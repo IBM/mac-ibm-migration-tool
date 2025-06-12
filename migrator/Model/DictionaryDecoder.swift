@@ -1,6 +1,6 @@
 //
 //  DictionaryDecoder.swift
-//  migrator
+//  IBM Data Shift
 //
 //  Created by Simone Martorelli on 12/11/2024.
 //  © Copyright IBM Corp. 2023, 2024

@@ -32,6 +32,7 @@ struct MainView: View {
             currentPage = nextPage
         })
         .frame(width: 812, height: 600)
+        .accessibilityElement(children: .contain)
     }
 }
 

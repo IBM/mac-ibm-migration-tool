@@ -38,7 +38,6 @@ final class NetworkServer {
     /// - Parameter passcode: A passcode required for clients to connect to this service.
     func start(withPasscode passcode: String) throws {
         let parameters = NWParameters(passcode: passcode)
-        parameters.attribution = .developer
         listener = try NWListener(using: parameters)
         listener?.service = NWListener.Service(type: AppContext.networkServiceIdentifier+"._tcp")
         // Handler for listener state updates.

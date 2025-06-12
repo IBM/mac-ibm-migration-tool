@@ -31,6 +31,7 @@ struct AppleIDView: View {
                 .frame(width: 86, height: 86)
                 .padding(.top, 55)
                 .padding(.bottom, 8)
+                .accessibilityHidden(true)
             Text("icloud.page.title.label")
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
@@ -48,6 +49,7 @@ struct AppleIDView: View {
                     .padding(4)
             })
             .keyboardShortcut(.defaultAction)
+            .accessibilityHint("accessibility.appleIDPage.systemPreferences.button.hint")
             .padding(.bottom, 6)
             Divider()
             HStack {
@@ -61,6 +63,7 @@ struct AppleIDView: View {
                 })
                 .buttonStyle(.bordered)
                 .keyboardShortcut(.cancelAction)
+                .accessibilityHint("accessibility.appleIDPage.skip.button.hint")
                 .padding(.leading, 6)
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
