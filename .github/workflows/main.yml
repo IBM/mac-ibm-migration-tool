@@ -26,4 +26,4 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          xcodebuild clean build -project "migrator.xcodeproj" -scheme "IBM Data Shift" -destination 'platform=macOS' | xcpretty
+          xcodebuild clean build -project "migrator.xcodeproj" -scheme "Data Shift" -destination 'platform=macOS' | xcpretty
