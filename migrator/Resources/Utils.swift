@@ -154,4 +154,22 @@ struct Utils {
             window.styleMask.update(with: .closable)
         }
     }
+    
+    static func parseProfileURL(_ urlString: String) -> URL? {
+        if urlString.contains("$HOMEFOLDER") {
+            var finalUrl = urlString.replacingOccurrences(of: "$HOMEFOLDER", with: "")
+            if finalUrl.starts(with: "/") {
+                finalUrl.removeFirst()
+            }
+            return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(finalUrl)
+        }
+        if urlString.contains("$APPFOLDER") {
+            var finalUrl = urlString.replacingOccurrences(of: "$APPFOLDER", with: "")
+            if finalUrl.starts(with: "/") {
+                finalUrl.removeFirst()
+            }
+            return FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent(finalUrl)
+        }
+        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(urlString)
+    }
 }
