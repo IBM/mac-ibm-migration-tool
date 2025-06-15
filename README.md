@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/license-Apache%202-1984E5)
 
 ![Swift version](https://img.shields.io/badge/swift-5.9.0-1984E5?logo=swift)
-![Project version](https://img.shields.io/badge/version-1.2.0-1984E5)
+![Project version](https://img.shields.io/badge/version-1.2.1-1984E5)
 ![macOS](https://img.shields.io/badge/macOS-12+-bright%20green)
 
 ## Scope
