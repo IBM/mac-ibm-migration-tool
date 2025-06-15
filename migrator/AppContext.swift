@@ -198,13 +198,17 @@ struct AppContext {
         return policy
     }
     static var managedExcludedURLs: [URL?] {
-        return (UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []).compactMap { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent($0) }
+        return (UserDefaults.standard.array(forKey: Self.excludedPathsListKey) as? [String] ?? []).compactMap { urlString in
+            return Utils.parseProfileURL(urlString)
+        }
     }
     static var urlExclusionList: [URL?] {
         return managedExcludedURLs + defaultUrlExclusionList
     }
     static var managedAllowedURLs: [URL?] {
-        return (UserDefaults.standard.array(forKey: Self.allowedPathsListKey) as? [String] ?? []).compactMap { FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent($0) }
+        return (UserDefaults.standard.array(forKey: Self.allowedPathsListKey) as? [String] ?? []).compactMap { urlString in
+            return Utils.parseProfileURL(urlString)
+        }
     }
     static var explicitAllowList: [URL?] {
         return managedAllowedURLs + defaultExplicitAllowList
