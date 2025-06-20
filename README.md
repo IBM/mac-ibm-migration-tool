@@ -18,6 +18,11 @@ To contribute to this repo please see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 For detailed usage of this tool please refer to the [official wiki](https://github.com/IBM/mac-ibm-migration-tool/wiki)
 
+## As seen on
+
+[JNUC 2024 Session 1077](https://www.youtube.com/watch?v=S_exJoiVb20)  
+[University of Utah, MacAdmins Meeting, June 2025](https://stream.lib.utah.edu/index.php?c=details&id=13705)  
+
 ## Notes
 
 If you have any questions or issues you can create a new issue [here](https://github.com/IBM/mac-ibm-migration-tool/issues/new/choose).
