@@ -634,8 +634,7 @@ final class NetworkConnection {
                     self.logger.log("networkConnection.receiveNextMessage: multipart file message received")
                     guard var data = content else {
                         self.logger.log("networkConnection.receiveNextMessage: no data in multipart file message", type: .error)
-                        self.receiveNextMessage()
-                        return
+                        break
                     }
                     do {
                         let messageInfo = try data.extractObject(from: 0..<Int(migratorMessage.migratorMessageInfoLenght), ofType: FileMessage.self)
@@ -655,7 +654,7 @@ final class NetworkConnection {
                         try fileHandle.seekToEnd()
                         try fileHandle.write(contentsOf: data)
                         try fileHandle.close()
-                        self.receiveNextMessage()
+                        try FileManager.default.setAttributes(messageInfo.attributes, ofItemAtPath: messageInfo.source.fullURL().relativePath)
                     } catch let error {
                         self.logger.log("networkConnection.receiveNextMessage: failed to write chunk of data -> \"\(error.localizedDescription)\"", type: .error)
                     }
