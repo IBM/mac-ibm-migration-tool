@@ -558,7 +558,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connection have been interrupted!"
+            "value" : "Connection has been interrupted!"
           }
         }
       }
@@ -580,7 +580,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connection have been interrupted!"
+            "value" : "Connection has been interrupted!"
           }
         }
       }
@@ -602,7 +602,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The connection have been interrupted and it wasn’t possible to restore it. Please restart the migration process. "
+            "value" : "The connection has been interrupted and it wasn’t possible to restore it. Please restart the migration process. "
           }
         }
       }
@@ -612,7 +612,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple ID Check"
+            "value" : "Apple Account Check"
           }
         }
       }
@@ -737,7 +737,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "It appears that you're not currently logged in with your Apple ID.\nAs a result, your iCloud apps/items are not synced on this Mac.\n\nClick \"Open %@\" to log in now, or choose \"%@\" to do so at a later time."
+            "value" : "It appears that you're not currently logged in with your Apple Account.\nAs a result, your iCloud apps/items are not synced on this Mac.\n\nClick \"Open %@\" to log in now, or choose \"%@\" to do so at a later time."
           }
         }
       }
@@ -770,7 +770,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login with your Apple ID"
+            "value" : "Login with your Apple Account"
           }
         }
       }
