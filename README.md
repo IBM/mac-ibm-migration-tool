@@ -11,6 +11,11 @@
 
 <img alt="IBM Data Shift" src="images/readme_img.png" width="100%">
 
+## As seen on
+
+[JNUC 2024 Session 1077](https://www.youtube.com/watch?v=S_exJoiVb20)  
+[University of Utah, MacAdmins Meeting, June 2025](https://stream.lib.utah.edu/index.php?c=details&id=13705)  
+
 ## Key Features
 
 ### 🚀 **Seamless Data Migration**

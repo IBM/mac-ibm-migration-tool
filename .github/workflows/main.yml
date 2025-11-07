@@ -1,5 +1,7 @@
 name: CI
-
+permissions:
+  contents: read
+  
 on:
   workflow_dispatch:
   push:
@@ -11,7 +13,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: GitHub Action for SwiftLint
         uses: norio-nomura/action-swiftlint@3.2.1
   test:
@@ -22,7 +24,7 @@ jobs:
         with:
           xcode-version: latest-stable
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Build
         shell: bash
         run: |
