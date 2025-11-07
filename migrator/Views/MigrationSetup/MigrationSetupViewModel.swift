@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 29/01/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -26,7 +26,7 @@ class MigrationSetupViewModel: ObservableObject {
     // MARK: - Observable Variables
     
     /// Observable object that controls the migration process.
-    @ObservedObject var migrationController: MigrationController = MigrationController.shared
+    @ObservedObject var migrationController: MigrationController
     
     // MARK: - Published Variables
     
@@ -72,10 +72,11 @@ class MigrationSetupViewModel: ObservableObject {
     // MARK: - Initializers
     
     /// Initializes the ViewModel with default values and sets up a subscription for available space changes.
-    init() {
-        self.viewState = .loadingMetadata // Default view state
+    init(_ migrationController: MigrationController) {
+        self.migrationController = migrationController
+        self.viewState = .loadingMetadata
         self.pickerMigrationOptions = []
-        self.chosenOption = MigrationOption(type: .none) // Default chosen option
+        self.chosenOption = MigrationOption(type: .none)
         
         // Subscribe to the `onAvailableSpaceChange` event of `migrationController` to update the available space.
         self.migrationController.connection?.onAvailableSpaceChange.sink(receiveValue: { [weak self] value in
@@ -87,13 +88,16 @@ class MigrationSetupViewModel: ObservableObject {
             }
         }.store(in: &cancellables)
         
-        Utils.preventSleep()
+        Utils.Common.preventSleep()
     }
 
     // MARK: - Public Methods
     
     /// Loads metadata for each migration option asynchronously and updates the view state.
     func loadMigrationOptions() async {
+        if let availableSpace = self.migrationController.connection?.connectedDeviceAvailableSpace {
+            self.availableSpaceOnDestination = availableSpace
+        }
         for migrationType in MigrationOption.MigrationOptionType.allCases {
             guard migrationType != .none else { continue }
             let option = MigrationOption(type: migrationType)
@@ -129,13 +133,17 @@ class MigrationSetupViewModel: ObservableObject {
         await loadMigrationOptionsSizes()
     }
     
-    /// Reset the migration options and controllers.
+    /// Reset the migration options and view state.
     func resetMigration() {
         self.advancedMigrationOption = nil
         self.pickerMigrationOptions = []
         self.chosenOption = MigrationOption(type: .none)
-        self.cancellables.removeAll(keepingCapacity: false)
-        self.migrationController.resetMigration()
+        self.viewState = .loadingMetadata
+        self.availableSpaceOnDestinationLabel = ""
+        self.isReadyForMigration = false
+        self.isSizeCalculationFinal = false
+        self.connectionInterrupted = false
+        self.availableSpaceOnDestination = -1
     }
     
     // MARK: - Private Methods

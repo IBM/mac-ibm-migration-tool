@@ -2,10 +2,10 @@
 Our project welcomes external contributions. If you have an itch, please feel
 free to scratch it.
 
-To contribute code or documentation, please submit a [pull request](https://github.com/ibm/mac-ibm-migration-tool/pulls).
+To contribute code or documentation, please submit a [pull request](../../issues).
 
 A good way to familiarize yourself with the codebase and contribution process is
-to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/ibm/mac-ibm-migration-tool/issues).
+to look for and tackle low-hanging fruit in the [issue tracker](../../issues).
 Before embarking on a more ambitious contribution, please quickly [get in touch](#communication) with us.
 
 **Note: We appreciate your effort, and want to avoid a situation where a contribution
@@ -14,14 +14,14 @@ cannot be accepted at all!**
 
 ### Proposing new features
 
-If you would like to implement a new feature, please [raise an issue](https://github.com/ibm/mac-ibm-migration-tool/issues)
+If you would like to implement a new feature, please [raise an issue](../../issues)
 before sending a pull request so the feature can be discussed. This is to avoid
 you wasting your valuable time working on a feature that the project developers
 are not interested in accepting into the code base.
 
 ### Fixing bugs
 
-If you would like to fix a bug, please [raise an issue](https://github.com/ibm/mac-ibm-migration-tool/issues) before sending a
+If you would like to fix a bug, please [raise an issue](../../issues) before sending a
 pull request so it can be tracked.
 
 ### Merge approval
@@ -40,7 +40,7 @@ e.g.
 
 ```text
 //
-// © Copyright IBM Corp. 2023, 2024
+// © Copyright IBM Corp. 2023, 2025
 // SPDX-License-Identifier: Apache2.0
 //
 ```

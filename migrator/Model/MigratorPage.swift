@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 16/11/2023.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -16,6 +16,7 @@ enum MigratorPage: CaseIterable {
     case codeVerification
     case server
     case migrationSetup
+    case recap
     case migration
     case appleID
     case recon
@@ -38,6 +39,8 @@ enum MigratorPage: CaseIterable {
             ServerView(action: action)
         case .migrationSetup:
             MigrationSetupView(action: action)
+        case .recap:
+            RecapView(action: action)
         case .migration:
             MigrationView(action: action)
         case .appleID:
@@ -54,7 +57,7 @@ enum MigratorPage: CaseIterable {
     func next() -> MigratorPage {
         switch self {
         case .server:
-            if !AppContext.shouldSkipAppleIDCheck && !Utils.iCloudAvailable {
+            if !AppContext.shouldSkipAppleIDCheck && !Utils.FileManagerHelpers.iCloudAvailable {
                 return .appleID
             } else {
                 fallthrough
@@ -67,7 +70,7 @@ enum MigratorPage: CaseIterable {
             }
         case .reboot:
             if !AppContext.shouldSkipJamfRecon {
-                return Utils.reconPage
+                return Utils.Common.reconPage
             } else {
                 fallthrough
             }

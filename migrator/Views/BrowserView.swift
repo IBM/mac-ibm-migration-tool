@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/12/2023.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -49,9 +49,7 @@ struct BrowserView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "browser")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)

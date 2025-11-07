@@ -3,14 +3,16 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 07/03/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
 import SwiftUI
 import Combine
 
+/// View for verifying the connection code between devices during migration.
 struct CodeVerificationView: View {
+    
     // MARK: - Environment Variables
 
     @Environment(\.colorScheme) var colorScheme
@@ -48,9 +50,7 @@ struct CodeVerificationView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "codeVerification")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)

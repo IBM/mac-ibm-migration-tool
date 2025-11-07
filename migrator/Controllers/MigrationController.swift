@@ -3,16 +3,35 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 01/02/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
 import Foundation
 import Network
 import Combine
+import Darwin
 
+// swiftlint:disable type_body_length file_length
 /// Controls the migration process, managing network connections, and handling data transfer.
 class MigrationController: ObservableObject {
+    
+    // MARK: - Resource Monitoring Constants
+    
+    /// Maximum number of files to process in parallel
+    private let maxConcurrentFileOperations = 5
+    
+    /// Interval in seconds to check system resources
+    private let resourceCheckInterval: TimeInterval = 10.0
+    
+    /// Minimum free memory required (in bytes) - 500 MB
+    private let minimumFreeMemory: UInt64 = 500 * 1024 * 1024
+    
+    /// Maximum memory usage percentage before pausing (0.0-1.0)
+    private let maxMemoryUsagePercentage: Double = 0.85
+    
+    /// Timer for periodic resource checks
+    private var resourceMonitorTimer: Timer?
     
     // MARK: - Enum Definitions
     
@@ -34,9 +53,7 @@ class MigrationController: ObservableObject {
         case completed
     }
     
-    // MARK: - Private Enum Definitions
-
-    private enum OperatingMode {
+    enum OperatingMode {
         case server
         case browser
     }
@@ -56,6 +73,7 @@ class MigrationController: ObservableObject {
                 Task { @MainActor in
                     self.hostName = hostName
                     self.migrationState = .readyForMigration
+                    MigrationReportController.shared.setTargetDevice(hostName)
                 }
             }).store(in: &cancellables)
             connection?.onReadyToReceive.sink(receiveValue: { isReady in
@@ -85,12 +103,16 @@ class MigrationController: ObservableObject {
                 switch newState {
                 case .setup, .waiting, .preparing:
                     Task { @MainActor in
+                        guard self.migrationState != .restoringConnection else { return }
                         self.migrationState = .fetching
                         self.isConnected = false
                     }
                 case .ready:
                     Task { @MainActor in
                         self.isConnected = true
+                        if self.migrationState == .restoringConnection {
+                            self.connectedDeviceIsReady = true
+                        }
                         self.migrationState = .connectionEstablished
                     }
                 case .failed:
@@ -98,15 +120,11 @@ class MigrationController: ObservableObject {
                         self.connection?.connection.cancel()
                         self.isConnected = false
                         self.migrationState = .restoringConnection
+                        self.connectedDeviceIsReady = false
                         self.restoreConnection()
                     }
                 case .cancelled:
                     break
-//                    Task { @MainActor in
-//                        self.connection = nil
-//                        self.isConnected = false
-//                        self.migrationState = .cancelled
-//                    }
                 @unknown default:
                     break
                 }
@@ -121,18 +139,19 @@ class MigrationController: ObservableObject {
     var migrationOption: MigrationOption!
     /// The selected result in the device list.
     var selectedBrowserResult: NWBrowser.Result!
+    /// Define if the current instance is used as `server` or `browser`
+    var operatingMode: OperatingMode!
+    /// Persistent view model for migration setup to avoid reloading options
+    lazy var migrationSetupViewModel: MigrationSetupViewModel = MigrationSetupViewModel(self)
 
     // MARK: - Private Variables
     
     /// Collection of cancellable subscriptions to manage memory and avoid retain cycles.
     private var cancellables = Set<AnyCancellable>()
-    /// Define if the current instance is used as `server` or `browser`
-    private var operatingMode: OperatingMode!
     /// Passcode used to secure the connection.
     private var passcode: String!
     
     private var destinationDevice: NWBrowser.Result!
-    
     /// Tracks connection states.
     private var connectionState: NWConnection.State = .setup
     
@@ -140,6 +159,18 @@ class MigrationController: ObservableObject {
     
     /// Logger instance.
     private let logger: MLogger = MLogger.main
+    /// Flag to indicate if migration is paused due to resource constraints
+    private var isPausedForResources: Bool = false
+    /// Queue for managing file operations
+    private let fileOperationQueue = DispatchQueue(label: "com.ibm.migrator.fileOperations",
+                                                 attributes: .concurrent)
+    /// Semaphore to limit concurrent file operations
+    private let fileOperationSemaphore = DispatchSemaphore(value: 5)
+    /// Queue for managing connection operations
+    private let connectionOperationQueue = DispatchQueue(label: "com.ibm.migrator.connectionOperations",
+                                                   attributes: .concurrent)
+    /// Semaphore to limit concurrent file operations
+    private let connectionOperationSemaphore = DispatchSemaphore(value: 5)
     
     // MARK: - Published Variables
     
@@ -162,7 +193,11 @@ class MigrationController: ObservableObject {
     /// Tracks the completion of the migration.
     @Published var isMigrationCompleted: Bool = false
     /// Tracks migration controller state.
-    @Published var migrationState: MigrationState = .initial
+    @Published var migrationState: MigrationState = .initial {
+        didSet {
+            logger.log("migrationController.migrationState: State changed from \(oldValue) to \(migrationState)", type: .default)
+        }
+    }
             
     // MARK: - Initializers
     
@@ -215,6 +250,7 @@ class MigrationController: ObservableObject {
                 }
             }
         }.store(in: &cancellables)
+        // startResourceMonitoring() Thinking it to enable a resource monitoring logic...
     }
     
     /// Starts the network server to accept incoming connections with a given passcode.
@@ -222,7 +258,7 @@ class MigrationController: ObservableObject {
     func startServer(withPasscode passcode: String) {
         self.operatingMode = .server
         self.passcode = passcode
-        logger.log("migrationController.networkServer.start: starting server with passcode \"\(passcode)\"...", type: .default)
+        logger.log("migrationController.networkServer.start: starting server...", type: .default)
         do {
             try server.start(withPasscode: passcode)
             migrationState = .discovery
@@ -254,7 +290,7 @@ class MigrationController: ObservableObject {
     func stopBrowser() {
         logger.log("migrationController.networkBrowser.stop: stopping the  browser...", type: .default)
         browser.stop()
-        migrationState = .initial
+        migrationState =  migrationState == .restoringConnection ? .restoringConnection : .initial
         browserResults = []
     }
     
@@ -263,7 +299,7 @@ class MigrationController: ObservableObject {
     func connect(to device: NWBrowser.Result, withPasscode passcode: String = "000000") {
         self.passcode = passcode
         self.destinationDevice = device
-        logger.log("migrationController.connect: starting connection with device \"\(device)\", using passcode \"\(passcode)\"", type: .default)
+        logger.log("migrationController.connect: starting connection with device \"\(device)\"", type: .default)
         guard !self.isConnected else {
             logger.log("migrationController.connect: a connection has already been established \"\(self.connection?.connection.debugDescription ?? "nil")\", discarding new connection request...", type: .default)
             return
@@ -277,20 +313,24 @@ class MigrationController: ObservableObject {
         self.connection?.connection.start(queue: .main)
         logger.log("migrationController.connect: starting connection...", type: .default)
         self.hostName = device.resultName
+        MigrationReportController.shared.setTargetDevice(device.resultName)
         self.checkConnectionEstablishment(5)
     }
     
-    @MainActor 
+    @MainActor
     func resetMigration() {
-        self.stopServer()
-        self.stopBrowser()
-        self.connection?.connection.forceCancel()
-        self.connection = nil
-        self.migrationOption = nil
-        self.migrationProgress = 0
-        self.sizeOfMigration = 0
-        self.browserResults = []
-        self.selectedBrowserResult = nil
+        stopServer()
+        stopBrowser()
+        connection?.connection.forceCancel()
+        connection = nil
+        migrationOption = nil
+        migrationProgress = 0
+        sizeOfMigration = 0
+        browserResults = []
+        selectedBrowserResult = nil
+        stopResourceMonitoring()
+        isPausedForResources = false
+        migrationSetupViewModel.resetMigration()
     }
     
     @MainActor
@@ -322,6 +362,12 @@ class MigrationController: ObservableObject {
                 guard attempts > 1 else {
                     self.logger.log("migrationController.connect: failed to get connection establishment report. Connection will be cancelled", type: .error)
                     self.connection?.connection.forceCancel()
+                    guard self.migrationState != .restoringConnection else {
+                        Task { @MainActor in
+                            self.restoreConnection()
+                        }
+                        return
+                    }
                     self.migrationState = .wrongOTPCodeSent
                     return
                 }
@@ -333,4 +379,137 @@ class MigrationController: ObservableObject {
             }
         })
     }
+    
+    // MARK: - Resource Management Methods
+    
+    /// Starts periodic monitoring of system resources
+    private func startResourceMonitoring() {
+        logger.log("migrationController.startResourceMonitoring: Starting resource monitoring", type: .default)
+        checkSystemResources()
+        resourceMonitorTimer = Timer.scheduledTimer(withTimeInterval: resourceCheckInterval, repeats: true) { [weak self] _ in
+            self?.checkSystemResources()
+        }
+    }
+    
+    /// Stops resource monitoring
+    private func stopResourceMonitoring() {
+        logger.log("migrationController.stopResourceMonitoring: Stopping resource monitoring", type: .default)
+        resourceMonitorTimer?.invalidate()
+        resourceMonitorTimer = nil
+    }
+    
+    /// Checks system resources and adjusts migration behavior accordingly
+    private func checkSystemResources() {
+        // Check available memory
+        let memoryInfo = getMemoryInfo()
+        let freeMemory = memoryInfo.free
+        let totalMemory = memoryInfo.total
+        let memoryUsagePercentage = Double(totalMemory - freeMemory) / Double(totalMemory)
+        
+        logger.log("migrationController.checkSystemResources: Memory usage: \(Int(memoryUsagePercentage * 100))%, Free: \(freeMemory / 1024 / 1024) MB", type: .default)
+        
+        // Check if we need to pause due to low resources
+        if freeMemory < minimumFreeMemory || memoryUsagePercentage > maxMemoryUsagePercentage {
+            if !isPausedForResources {
+                logger.log("migrationController.checkSystemResources: Pausing migration due to low system resources", type: .fault)
+                isPausedForResources = true
+                
+                for _ in 0..<3 {
+                    fileOperationSemaphore.wait()
+                }
+                
+                Task { @MainActor in
+                    self.migrationState = .paused
+                }
+            }
+        } else if isPausedForResources {
+            // Resume if we have enough resources now
+            logger.log("migrationController.checkSystemResources: Resuming migration after resource constraints", type: .default)
+            isPausedForResources = false
+            
+            // Restore semaphore
+            for _ in 0..<3 {
+                fileOperationSemaphore.signal()
+            }
+            
+            Task { @MainActor in
+                if self.migrationState == .paused {
+                    self.migrationState = .fileMigration
+                }
+            }
+        }
+    }
+    
+    /// Gets information about system memory usage
+    private func getMemoryInfo() -> (free: UInt64, total: UInt64) {
+        var pageSize: vm_size_t = 0
+        let hostPort: mach_port_t = mach_host_self()
+        var hostSize: mach_msg_type_number_t = mach_msg_type_number_t(MemoryLayout<vm_statistics_data_t>.stride / MemoryLayout<integer_t>.stride)
+        var vmStats = vm_statistics_data_t()
+
+        _ = withUnsafeMutablePointer(to: &vmStats) { vmStatsPtr -> kern_return_t in
+            return vmStatsPtr.withMemoryRebound(to: integer_t.self, capacity: Int(hostSize)) { intPtr in
+                host_statistics(hostPort, HOST_VM_INFO, intPtr, &hostSize)
+            }
+        }
+
+        host_page_size(hostPort, &pageSize)
+
+        let freeMemory = UInt64(vmStats.free_count) * UInt64(pageSize)
+        let totalMemory = ProcessInfo.processInfo.physicalMemory
+
+        return (freeMemory, totalMemory)
+    }
+    
+    /// Acquires a resource token for file operations
+    func acquireFileOperationToken() async {
+        logger.log("migrationController.acquireFileOperationToken: Asking for file operation token...", type: .debug)
+        await withCheckedContinuation { continuation in
+            self.fileOperationQueue.async {
+                self.fileOperationSemaphore.wait()
+                continuation.resume()
+            }
+        }
+    }
+    
+    /// Releases a resource token after file operations
+    func releaseFileOperationToken() {
+        logger.log("migrationController.releaseFileOperationToken: releasing file operation token...", type: .debug)
+        fileOperationSemaphore.signal()
+    }
+    
+    /// Acquires a resource token for file operations
+    func acquireConnectionOperationToken() async {
+        logger.log("migrationController.acquireConnectionOperationToken: Asking for connection operation token...", type: .debug)
+        await withCheckedContinuation { continuation in
+            self.connectionOperationQueue.async {
+                self.connectionOperationSemaphore.wait()
+                continuation.resume()
+            }
+        }
+    }
+    
+    /// Releases a resource token after file operations
+    func releaseConnectionOperationToken() {
+        logger.log("migrationController.releaseConnectionOperationToken: releasing connection operation token...", type: .debug)
+        connectionOperationSemaphore.signal()
+    }
+    
+    /// Hold the caller until the migration is in an "in progress" state.
+    func awaitConnectionReadiness() async {
+        func isMigrationInProgress() -> Bool {
+            switch self.migrationState {
+            case .paused, .restoringConnection, .cancelled, .discovery, .initial, .interrupted, .wrongOTPCodeSent:
+                return false
+            default:
+                return true
+            }
+        }
+        var canContinue: Bool = isMigrationInProgress()
+        while !canContinue {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            canContinue = isMigrationInProgress()
+        }
+    }
 }
+// swiftlint:enable type_body_length file_length

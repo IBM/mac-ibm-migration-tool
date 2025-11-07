@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 16/11/2023.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -35,14 +35,16 @@ struct WelcomeView: View {
     @State private var showFDAError: Bool = false
     /// State to control the visibility of Management error messages
     @State private var showManagementError: Bool = false
+
+    @State private var showTermsAndConditions: Bool = false
+    
+    @State private var showPrivacyPolicy: Bool = false
     
     // MARK: - Views
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "welcome")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -61,8 +63,8 @@ struct WelcomeView: View {
                     }, label: {
                         Image("new_mac")
                             .frame(width: 120, height: 120)
+                            .tint(Color("uiIcon"))
                             .background(content: {
-                                // Change background based on selection
                                 if nextPage == .server {
                                     LinearGradient.bigButtonSelected(colorScheme: colorScheme)
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -86,8 +88,8 @@ struct WelcomeView: View {
                     }, label: {
                         Image("old_mac")
                             .frame(width: 120, height: 120)
+                            .tint(Color("uiIcon"))
                             .background(content: {
-                                // Change background based on selection
                                 if nextPage == .browser {
                                     LinearGradient.bigButtonSelected(colorScheme: colorScheme)
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -108,7 +110,10 @@ struct WelcomeView: View {
             }
             Spacer()
             Divider()
-            HStack {
+            HStack(spacing: 2) {
+                if AppContext.shouldShowWelcomePageInfo {
+                    versionCopyrightPrivacy
+                }
                 Spacer()
                 Button(action: {
                     action(nextPage)
@@ -121,13 +126,14 @@ struct WelcomeView: View {
                 .accessibilityHint("accessibility.welcomePage.mainButton.hint")
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
+            .frame(height: 56)
         }
         .alert("welcome.page.fda.error.title", isPresented: $showFDAError, actions: {
             Button(action: {
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!)
                 exit(0)
             }, label: {
-                Text(String(format: "welcome.page.fda.error.first.action.title".localized, Utils.systemSettingsLabel))
+                Text(String(format: "welcome.page.fda.error.first.action.title".localized, Utils.Common.systemSettingsLabel))
             })
             .accessibilityHint("accessibility.welcomePage.fdaAlert.defaultButton.hint")
             Button {
@@ -137,7 +143,7 @@ struct WelcomeView: View {
             }
             .accessibilityHint("accessibility.welcomePage.fdaAlert.secondaryButton.hint")
         }, message: {
-            Text(String(format: "welcome.page.fda.error.message".localized, appName, Utils.systemSettingsLabel, appName))
+            Text(String(format: "welcome.page.fda.error.message".localized, appName, Utils.Common.systemSettingsLabel, appName))
         })
         .alert(String(format: "welcome.page.management.error.title".localized, AppContext.orgName), isPresented: $showManagementError, actions: {
             Button(action: {
@@ -150,7 +156,22 @@ struct WelcomeView: View {
         }, message: {
             Text(String(format: "welcome.page.management.error.message".localized, AppContext.orgName, AppContext.orgName))
         })
-        .onAppear {
+        .sheet(isPresented: $showTermsAndConditions) {
+            ResourceView(title: "common.app.menu.label.termsandconditon".localized,
+                         resource: AppContext.termsConditionsURL!,
+                         requireUserAcceptance: true,
+                         acceptanceDefaultsKey: AppContext.tAndCUserAcceptanceKey,
+                         acceptanceMessageLabel: "welcome.page.termsandconditions.message.label")
+                .frame(width: 700, height: 600)
+        }
+        .sheet(isPresented: $showPrivacyPolicy) {
+            ResourceView(title: "common.app.menu.label.privacypolicy".localized, resource: AppContext.privacyPolicyURL!)
+                .frame(width: 700, height: 600)
+        }
+        .task {
+            if !AppContext.userAcceptedTermsAndConditions && AppContext.shouldRequireTAndCAcceptance {
+                self.showTermsAndConditions.toggle()
+            }
             // Trying to access a file unaccessible without Full Disk Access permissions as there isn't a way to ask for those permission with an API. This trick allow the app to be in the Full Disk Access app list.
             #if !DEBUG
             try? FileManager.default.copyItem(atPath: "/Library/Preferences/com.apple.TimeMachine.plist", toPath: "/private/tmp/com.apple.TimeMachine.plist")
@@ -160,13 +181,38 @@ struct WelcomeView: View {
             }
             if !AppContext.shouldSkipMDMCheck {
                 switch DeviceManagementHelper.shared.state {
-                case .unmanaged, .unknown, .managedByUnknownOrg:
+                case .unmanaged, .unknown, .managedByUnknownOrg, .none:
                     showManagementError.toggle()
                 case .managed:
                     break
                 }
             }
             #endif
+        }
+    }
+    
+    var versionCopyrightPrivacy: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            if !Bundle.main.marketingVersion.isEmpty && !Bundle.main.buildNumber.isEmpty {
+                Text(String(format: "welcome.page.bundle.version.label".localized, Bundle.main.marketingVersion, Bundle.main.buildNumber))
+                    .font(.caption)
+                    .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] }
+            }
+            if !Bundle.main.copyright.isEmpty {
+                Text(Bundle.main.copyright)
+                    .font(.caption)
+                    .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] }
+            }
+            if AppContext.privacyPolicyURL != nil {
+                Button(action: {
+                    self.showPrivacyPolicy.toggle()
+                }, label: {
+                    Text("common.app.menu.label.privacypolicy")
+                        .font(.caption)
+                })
+                .buttonStyle(.link)
+                .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] }
+            }
         }
     }
 }

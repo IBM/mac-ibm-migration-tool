@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 22/08/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -34,9 +34,7 @@ struct JamfReconView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "jamfRecon")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -78,7 +76,7 @@ struct JamfReconView: View {
             Text("recon.page.alert.error.message")
         })
         .onAppear {
-            Utils.makeWindowFloating()
+            Utils.Window.makeWindowFloating()
         }
     }
     
@@ -103,7 +101,7 @@ struct JamfReconView: View {
         }
         if errors == nil {
             logger.log("jamfReconView.runJamfRecon: Jamf Inventory Update completed", type: .default)
-            await Utils.removeLaunchAgent()
+            await Utils.LaunchAgentHelpers.removeLaunchAgent()
             AppContext.isPostRebootPhase = false
             NSSound(named: .init("Funk"))?.play()
             action(.final)

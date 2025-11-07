@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 22/08/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -41,9 +41,7 @@ struct FinalView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "final")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -178,7 +176,6 @@ struct FinalView: View {
                     .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
             }
             .padding(.horizontal, 200)
-            .padding(.bottom, 16)
             Spacer()
             Divider()
             HStack {
@@ -213,7 +210,7 @@ struct FinalView: View {
     private func runJamfRecon() async {
         guard AppContext.jamfReconMethod != .direct else {
             reconState = .done
-            await Utils.removeLaunchAgent()
+            await Utils.LaunchAgentHelpers.removeLaunchAgent()
             AppContext.isPostRebootPhase = false
             NSSound(named: .init("Funk"))?.play()
             return
@@ -246,7 +243,7 @@ struct FinalView: View {
         }
         reconState = .done
         logger.log("finalView.runJamfRecon: Jamf Inventory Update completed", type: .default)
-        await Utils.removeLaunchAgent()
+        await Utils.LaunchAgentHelpers.removeLaunchAgent()
         AppContext.isPostRebootPhase = false
         NSSound(named: .init("Funk"))?.play()
     }

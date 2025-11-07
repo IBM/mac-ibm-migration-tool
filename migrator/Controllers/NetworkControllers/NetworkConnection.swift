@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 15/11/2023.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 //  swiftlint:disable function_body_length type_body_length file_length
@@ -85,22 +85,27 @@ final class NetworkConnection {
     ///   - endpoint: The network endpoint to connect to.
     ///   - passcode: A passcode required for establishing the connection.
     init(endpoint: NWEndpoint, withPasscode passcode: String) {
-        logger.log("newtorkConnection.initOutgoingConnection: endpoint \"\(endpoint.debugDescription)\"", type: .default)
+        logger.log("networkConnection.initOutgoingConnection: endpoint \"\(endpoint.debugDescription)\"", type: .default)
         let parameters = NWParameters(passcode: passcode)
         connection = NWConnection(to: endpoint, using: parameters)
         connection.pathUpdateHandler = { path in
-            self.logger.log("newtorkConnection.pathUpdateHandler: newPath \"\(path.debugDescription)\"")
+            self.logger.log("networkConnection.pathUpdateHandler: newPath \"\(path.debugDescription)\"")
         }
         connection.betterPathUpdateHandler = { betterPathAvailable in
-            self.logger.log("newtorkConnection.betterPathUpdateHandler: betterPathAvailable \"\(betterPathAvailable.description)\"")
+            self.logger.log("networkConnection.betterPathUpdateHandler: betterPathAvailable \"\(betterPathAvailable.description)\"")
         }
         connection.viabilityUpdateHandler = { available in
-            self.logger.log("newtorkConnection.viabilityUpdateHandler: isAvailable \"\(available.description)\"")
+            self.logger.log("networkConnection.viabilityUpdateHandler: isAvailable \"\(available.description)\"")
         }
         connection.stateUpdateHandler = { newState in
-            self.logger.log("newtorkConnection.stateUpdateHandler: newState \"\(String(describing: newState))\"", type: .default)
+            self.logger.log("networkConnection.stateUpdateHandler: newState \"\(String(describing: newState))\"", type: .default)
             self.onNewConnectionState.send(newState)
             if case .ready = newState {
+                if let metadata = self.connection.metadata(definition: NWProtocolTLS.definition) as? NWProtocolTLS.Metadata {
+                    let version = sec_protocol_metadata_get_negotiated_tls_protocol_version(metadata.securityProtocolMetadata)
+                    let suite   = sec_protocol_metadata_get_negotiated_tls_ciphersuite(metadata.securityProtocolMetadata)
+                    MLogger.main.log("Negotiated TLS version: \(version), suite: \(suite)", type: .debug)
+                }
                 self.receiveNextMessage()
                 Task {
                     try? await self.sendHostName()
@@ -112,10 +117,10 @@ final class NetworkConnection {
     /// Initializes a new network connection for handling incoming connections.
     /// - Parameter connection: The incoming network connection.
     init(connection: NWConnection) {
-        logger.log("newtorkConnection.initIncomingConnection: connection \"\(connection.debugDescription)\"", type: .default)
+        logger.log("networkConnection.initIncomingConnection: connection \"\(connection.debugDescription)\"", type: .default)
         self.connection = connection
         connection.stateUpdateHandler = { newState in
-            self.logger.log("newtorkConnection.stateUpdateHandler: new state \"\(String(describing: newState))\"", type: .default)
+            self.logger.log("networkConnection.stateUpdateHandler: new state \"\(String(describing: newState))\"", type: .default)
             self.onNewConnectionState.send(newState)
             if case .ready = newState {
                 self.receiveNextMessage()
@@ -159,7 +164,7 @@ final class NetworkConnection {
     
     /// Sends the available free space of the current device to the connected device.
     func sendAvailableFreeSpace() async throws {
-        if let data = Utils.freeSpaceOnDevice.description.data(using: .utf8) {
+        if let data = Utils.Common.freeSpaceOnDevice.description.data(using: .utf8) {
             let message = NWProtocolFramer.Message(migratorMessageType: .availableSpace, infoLenght: 0)
             let context = NWConnection.ContentContext(identifier: "FreeSpace",
                                                       metadata: [message])
@@ -189,22 +194,58 @@ final class NetworkConnection {
     
     // MARK: - Private Methods
     
-    /// A wrapper method to send data asynchronously over the network connection.
+    /// A wrapper method to send data asynchronously over the network connection with retry capability.
     /// - Parameters:
     ///   - content: The data to be sent.
     ///   - contentContext: The context for the data being sent, including any associated metadata.
-    private func sendAsyncWrapper(content: Data, contentContext: NWConnection.ContentContext = .defaultMessage) async throws {
-        logger.log("newtorkConnection.sendAsync: sending message \"\(contentContext.identifier)\"", type: .debug)
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            connection.send(content: content, contentContext: contentContext, isComplete: true, completion: .contentProcessed({ error in
-                if let error = error {
-                    MLogger.main.log("newtorkConnection.sendAsync: error sending message \"\(contentContext.identifier)\", error \"\(error.localizedDescription)\"", type: .error)
-                    continuation.resume(throwing: error)
-                } else {
-                    MLogger.main.log("newtorkConnection.sendAsync: done sending message \"\(contentContext.identifier)\"")
-                    continuation.resume()
+    ///   - maxRetries: Maximum number of retry attempts (default: 3)
+    ///   - retryDelay: Delay in seconds between retries (default: 2)
+    private func sendAsyncWrapper(content: Data,
+                                  contentContext: NWConnection.ContentContext = .defaultMessage,
+                                  maxRetries: Int = 3,
+                                  retryDelay: TimeInterval = 2) async throws {
+        logger.log("networkConnection.sendAsync: sending message \"\(contentContext.identifier)\"", type: .debug)
+        
+        var currentRetry = 0
+        var lastError: Error?
+        while currentRetry <= maxRetries {
+            do {
+                await MigrationController.shared.awaitConnectionReadiness()
+                await MigrationController.shared.acquireConnectionOperationToken()
+                return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                    // Add timeout for send operation
+                    let timeoutTask = Task {
+                        try await Task.sleep(nanoseconds: 120_000_000_000)
+                        continuation.resume(throwing: NSError(domain: "NetworkConnection", code: 1002,
+                                                           userInfo: [NSLocalizedDescriptionKey: "Send operation timed out"]))
+                    }
+                    connection.send(content: content, contentContext: contentContext, isComplete: true, completion: .contentProcessed({ error in
+                        timeoutTask.cancel()
+                        if let error = error {
+                            MLogger.main.log("networkConnection.sendAsync: error sending message \"\(contentContext.identifier)\", error \"\(error.localizedDescription)\"", type: .error)
+                            continuation.resume(throwing: error)
+                        } else {
+                            MLogger.main.log("networkConnection.sendAsync: done sending message \"\(contentContext.identifier)\"")
+                            MigrationController.shared.releaseConnectionOperationToken()
+                            continuation.resume()
+                        }
+                    }))
                 }
-            }))
+            } catch {
+                MigrationController.shared.releaseConnectionOperationToken()
+                lastError = error
+                currentRetry += 1
+                if currentRetry <= maxRetries {
+                    MLogger.main.log("networkConnection.sendAsync: retry \(currentRetry)/\(maxRetries) for message \"\(contentContext.identifier)\" after error: \(error.localizedDescription)", type: .fault)
+                    try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
+                }
+            }
+        }
+        if let lastError = lastError {
+            throw lastError
+        } else {
+            throw NSError(domain: "NetworkConnection", code: 1000,
+                         userInfo: [NSLocalizedDescriptionKey: "Failed to send after \(maxRetries) retries"])
         }
     }
     
@@ -225,13 +266,27 @@ final class NetworkConnection {
         if file.type == .symlink {
             do {
                 let destinationPath = try FileManager.default.destinationOfSymbolicLink(atPath: file.url.fullURL().relativePath)
-                guard let destinationURL = URL(string: destinationPath) else {
-                    logger.log("networkConnection.sendfile: impossible to create URL from \"\(destinationPath)\"", type: .error)
+                
+                if destinationPath == file.url.fullURL().relativePath {
+                    logger.log("networkConnection.sendfile: detected circular symlink at \"\(file.url.fullURL().relativePath)\"", type: .error)
+                    MigrationReportController.shared.addError("Skipped circular symbolic link: \(file.url.fullURL().relativePath)")
                     return
                 }
+                
+                guard let destinationURL = URL(string: destinationPath) else {
+                    logger.log("networkConnection.sendfile: impossible to create URL from \"\(destinationPath)\"", type: .error)
+                    MigrationReportController.shared.addError("Skipped invalid symbolic link: \(file.url.fullURL().relativePath) -> \(destinationPath)")
+                    return
+                }
+                
+                if !FileManager.default.fileExists(atPath: destinationPath) {
+                    logger.log("networkConnection.sendfile: symbolic link points to non-existent path \"\(destinationPath)\"", type: .fault)
+                }
+                
                 logger.log("networkConnection.sendfile: file \"\(file.url.fullURL().relativePath)\" is alias of \"\(destinationPath)\"")
                 let destinationTrackedURL = MigratorFileURL(with: destinationURL)
                 let sourceTrackedURL = MigratorFileURL(with: file.url.fullURL())
+                
                 if destinationTrackedURL.source == .unknown {
                     let infoData = SymbolicLinkMessage(source: sourceTrackedURL, absoluteDestination: MigratorFileURL(with: file.url.fullURL().deletingLastPathComponent()), relativeDestination: destinationPath)
                     symlinks.append(infoData)
@@ -242,6 +297,7 @@ final class NetworkConnection {
                 return
             } catch {
                 logger.log("networkConnection.sendfile: impossible to create symlink with error -> \(error.localizedDescription)", type: .error)
+                MigrationReportController.shared.addError("Failed to process symbolic link: \(file.url.fullURL().relativePath) - \(error.localizedDescription)")
             }
         }
         
@@ -250,9 +306,12 @@ final class NetworkConnection {
             throw MigratorError.fileError(type: .noData)
         }
             
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: file.url.fullURL().relativePath) as [FileAttributeKey: Any] else {
-            logger.log("networkConnection.sendfile: failed to get attributes of file \"\(file.url.fullURL().relativePath)\"", type: .error)
-            throw MigratorError.fileError(type: .failedDuringFileHandling())
+        var attributes: [FileAttributeKey: Any] = [:]
+        do {
+            attributes = try FileManager.default.attributesOfItem(atPath: file.url.fullURL().relativePath) as [FileAttributeKey: Any]
+        } catch {
+            logger.log("networkConnection.sendfile: failed to get attributes of file \"\(file.url.fullURL().relativePath)\" - \(error.localizedDescription)", type: .error)
+            MigrationReportController.shared.addError("Failed to get attributes for file: \(file.url.fullURL().relativePath)")
         }
         
         if file.type == .directory || file.type == .app {
@@ -264,22 +323,19 @@ final class NetworkConnection {
             let message = NWProtocolFramer.Message(migratorMessageType: .directory, infoLenght: UInt32(infoDataLenght))
             let context = NWConnection.ContentContext(identifier: "Directory",
                                                       metadata: [message])
+            
             logger.log("networkConnection.sendfile: sending data of directory at \"\(file.url.fullURL().relativePath)\"")
             try await sendAsyncWrapper(content: data, contentContext: context)
             self.onFileSent.send(1)
             self.onBytesSent.send(data.count)
-
+            
             logger.log("networkConnection.sendfile: start sending content of directory \"\(file.url.fullURL().relativePath)\"")
-            if !file.childFiles.isEmpty {
-                for child in file.childFiles {
-                    try? await sendFile(child)
-                    self.onBytesSent.send(data.count)
-                }
-            } else {
-                let unretainedChilds = await file.fetchUnretainedChilds()
-                for child in unretainedChilds {
-                    try? await sendFile(child)
-                    self.onBytesSent.send(data.count)
+            let childs = file.childFiles.isEmpty ? await file.fetchUnretainedChilds() : file.childFiles
+            for child in childs {
+                do {
+                    try await sendFile(child)
+                } catch {
+                    MigrationReportController.shared.addError("migrationViewModel.migrationTask: failed to send file: \(child.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"")
                 }
             }
             return
@@ -292,7 +348,7 @@ final class NetworkConnection {
 
         var availableBytes = (attributes as NSDictionary).fileSize()
         var parsedBytes: UInt64 = 0
-    
+        
         logger.log("networkConnection.sendfile: start sending data of file \"\(file.url.fullURL().relativePath)\"")
         if availableBytes > chunkSize {
             var partNumber: UInt32 = 0
@@ -305,7 +361,7 @@ final class NetworkConnection {
             while availableBytes > 0 {
                 let infoData = FileMessage(with: file.url.fullURL(), part: Int(partNumber), attributes: attributes)
                 guard var chunk = try? fileHandle.read(upToCount: Int(min(chunkSize, availableBytes))),
-                      let infoDataLenght = try? chunk.include(object: infoData)else {
+                      let infoDataLenght = try? chunk.include(object: infoData) else {
                     try closeFile(fileHandle)
                     logger.log("networkConnection.sendfile: failed to handle file \"\(file.url.fullURL().relativePath)\", impossible to read", type: .error)
                     throw MigratorError.fileError(type: .noData)
@@ -364,7 +420,7 @@ final class NetworkConnection {
     /// - Parameter fileURL: The URL of the file to send.
     private func _sendFile(at fileURL: URL) async throws {
         logger.log("networkConnection.sendfile: preparing file \"\(fileURL.relativePath)\"")
-        guard !AppContext.excludedFileExtensions.contains(fileURL.lastPathComponent) && fileURL.lastPathComponent.first != "~" else {
+        guard !Utils.FileManagerHelpers.shouldIgnorePath(fileURL) else {
             logger.log("networkConnection.sendfile: file \"\(fileURL.relativePath)\" needs to be ignored. This should'n happen.", type: .fault)
             return
         }
@@ -372,13 +428,26 @@ final class NetworkConnection {
         let chunkSize: UInt64 = 33_554_432
         var isDirectory: ObjCBool = false
         
-        if let destinationPath = try? FileManager.default.destinationOfSymbolicLink(atPath: fileURL.relativePath),
-            destinationPath != fileURL.relativePath {
+        if let destinationPath = try? FileManager.default.destinationOfSymbolicLink(atPath: fileURL.relativePath) {
+            // Check for circular references
+            if destinationPath == fileURL.relativePath {
+                logger.log("networkConnection.sendfile: detected circular symlink at \"\(fileURL.relativePath)\"", type: .error)
+                MigrationReportController.shared.addError("Skipped circular symbolic link: \(fileURL.relativePath)")
+                return
+            }
+            
             logger.log("networkConnection.sendfile: file \"\(fileURL.relativePath)\" is alias of \"\(destinationPath)\"")
             guard let destinationURL = URL(string: destinationPath) else {
                 logger.log("networkConnection.sendfile: impossible to create URL from \"\(destinationPath)\"", type: .error)
+                MigrationReportController.shared.addError("Skipped invalid symbolic link: \(fileURL.relativePath) -> \(destinationPath)")
                 return
             }
+            
+            // Check if destination path exists (non-critical, just log it)
+            if !FileManager.default.fileExists(atPath: destinationPath) {
+                logger.log("networkConnection.sendfile: symbolic link points to non-existent path \"\(destinationPath)\"", type: .fault)
+            }
+            
             let destinationTrackedURL = MigratorFileURL(with: destinationURL)
             let sourceTrackedURL = MigratorFileURL(with: fileURL)
             if destinationTrackedURL.source == .unknown {
@@ -398,9 +467,12 @@ final class NetworkConnection {
         
         logger.log("networkConnection.sendfile: file \"\(fileURL.relativePath)\" is directory -> \"\(isDirectory.description)\"")
         
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.relativePath) as [FileAttributeKey: Any] else {
-            logger.log("networkConnection.sendfile: failed to get attributes of file \"\(fileURL.relativePath)\"", type: .error)
-            throw MigratorError.fileError(type: .failedDuringFileHandling())
+        var attributes: [FileAttributeKey: Any] = [:]
+        do {
+            attributes = try FileManager.default.attributesOfItem(atPath: fileURL.relativePath) as [FileAttributeKey: Any]
+        } catch {
+            logger.log("networkConnection.sendfile: failed to get attributes of file \"\(fileURL.relativePath)\" - \(error.localizedDescription)", type: .error)
+            MigrationReportController.shared.addError("Failed to get attributes for file: \(fileURL.relativePath)")
         }
         
         guard !isDirectory.boolValue else {
@@ -415,13 +487,16 @@ final class NetworkConnection {
             logger.log("networkConnection.sendfile: sending data of directory at \"\(fileURL.relativePath)\"")
             try await sendAsyncWrapper(content: data, contentContext: context)
             self.onBytesSent.send(data.count)
-
+            
             let childFilePaths = try FileManager.default.contentsOfDirectory(atPath: fileURL.relativePath)
             logger.log("networkConnection.sendfile: start sending content of directory \"\(fileURL.relativePath)\"")
             for childFilePath in childFilePaths {
                 guard !childFilePath.isEmpty else { return }
-                try await sendFile(fileURL.appendingPathComponent(childFilePath, isDirectory: isDirectory.boolValue))
-                self.onBytesSent.send(data.count)
+                do {
+                    try await sendFile(fileURL.appendingPathComponent(childFilePath, isDirectory: isDirectory.boolValue))
+                } catch {
+                    MigrationReportController.shared.addError("migrationViewModel.migrationTask: failed to send file: \(childFilePath) - with error: \"\(error.localizedDescription)\"")
+                }
             }
             return
         }
@@ -532,7 +607,25 @@ final class NetworkConnection {
     /// Receives and processes the next incoming message from the connected device.
     private func receiveNextMessage() {
         logger.log("networkConnection.receiveNextMessage: waiting for new messages")
-        connection.receiveMessage { (content, context, _, error) in
+        
+        guard connection.state == .ready else {
+            logger.log("networkConnection.receiveNextMessage: connection not ready, state: \(connection.state)", type: .error)
+            if connection.state != .cancelled {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                    self?.receiveNextMessage()
+                }
+            }
+            return
+        }
+        let timeoutWorkItem = DispatchWorkItem { [weak self] in
+            self?.logger.log("networkConnection.receiveNextMessage: receive operation timed out", type: .error)
+            self?.receiveNextMessage()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30.0, execute: timeoutWorkItem)
+        
+        connection.receiveMessage { [weak self] (content, context, _, error) in
+            guard let self = self else { return }
+            timeoutWorkItem.cancel()
             if let migratorMessage = context?.protocolMetadata(definition: MigratorNetworkProtocol.definition) as? NWProtocolFramer.Message {
                 switch migratorMessage.migratorMessageType {
                 case .hostname:
@@ -551,12 +644,27 @@ final class NetworkConnection {
                             self.logger.log("networkConnection.receiveNextMessage: symlink source \"\(messageInfo.source.fullURL().relativePath)\"")
                             self.logger.log("networkConnection.receiveNextMessage: symlink relative destination \"\(messageInfo.relativeDestination ?? "nil")\"")
                             self.logger.log("networkConnection.receiveNextMessage: symlink absolute destination \"\(messageInfo.absoluteDestination.fullURL().relativePath)\"")
+                            
                             var destinationPath = ""
                             if let relativeDestination = messageInfo.relativeDestination {
                                 destinationPath = relativeDestination
                             } else {
                                 destinationPath = messageInfo.absoluteDestination.fullURL().relativePath
                             }
+                            
+                            if messageInfo.source.fullURL().relativePath == destinationPath {
+                                self.logger.log("networkConnection.receiveNextMessage: detected circular symlink, skipping", type: .error)
+                                MigrationReportController.shared.addError("Skipped circular symbolic link: \(messageInfo.source.fullURL().relativePath)")
+                                return
+                            }
+                            let parentDir = messageInfo.source.fullURL().deletingLastPathComponent()
+                            if !FileManager.default.fileExists(atPath: parentDir.relativePath) {
+                                try FileManager.default.createDirectory(at: parentDir, withIntermediateDirectories: true)
+                            }
+                            if FileManager.default.fileExists(atPath: messageInfo.source.fullURL().relativePath) {
+                                try FileManager.default.removeItem(atPath: messageInfo.source.fullURL().relativePath)
+                            }
+                            
                             try FileManager.default.createSymbolicLink(atPath: messageInfo.source.fullURL().relativePath, withDestinationPath: destinationPath)
                         }
                     } catch let error {
@@ -583,14 +691,30 @@ final class NetworkConnection {
                                     try? FileManager.default.moveItem(atPath: messageInfo.source.fullURL().relativePath, toPath: "\(AppContext.backupPath)/\(messageInfo.source.fullURL().relativePath)")
                                     fallthrough
                                 case .overwrite:
-                                    guard FileManager.default.createFile(atPath: messageInfo.source.fullURL().relativePath, contents: data, attributes: messageInfo.attributes) else {
-                                        throw MigratorError.fileError(type: .failedToWriteFile)
+                                    do {
+                                        guard FileManager.default.createFile(atPath: messageInfo.source.fullURL().relativePath, contents: data, attributes: messageInfo.attributes) else {
+                                            throw MigratorError.fileError(type: .failedToWriteFile)
+                                        }
+                                    } catch {
+                                        self.logger.log("networkConnection.receiveNextMessage: failed to create file with attributes - \(error.localizedDescription)", type: .error)
+                                        guard FileManager.default.createFile(atPath: messageInfo.source.fullURL().relativePath, contents: data, attributes: nil) else {
+                                            self.logger.log("networkConnection.receiveNextMessage: failed to create file without attributes - \(error.localizedDescription)", type: .error)
+                                            throw MigratorError.fileError(type: .failedToWriteFile)
+                                        }
                                     }
                                 }
                             } else {
                                 try FileManager.default.createDirectory(atPath: directory.relativePath, withIntermediateDirectories: true)
-                                guard FileManager.default.createFile(atPath: messageInfo.source.fullURL().relativePath, contents: data, attributes: messageInfo.attributes) else {
-                                    throw MigratorError.fileError(type: .failedToWriteFile)
+                                do {
+                                    guard FileManager.default.createFile(atPath: messageInfo.source.fullURL().relativePath, contents: data, attributes: messageInfo.attributes) else {
+                                        throw MigratorError.fileError(type: .failedToWriteFile)
+                                    }
+                                } catch {
+                                    self.logger.log("networkConnection.receiveNextMessage: failed to create file with attributes - \(error.localizedDescription)", type: .error)
+                                    guard FileManager.default.createFile(atPath: messageInfo.source.fullURL().relativePath, contents: data, attributes: nil) else {
+                                        self.logger.log("networkConnection.receiveNextMessage: failed to create file without attributes - \(error.localizedDescription)", type: .error)
+                                        throw MigratorError.fileError(type: .failedToWriteFile)
+                                    }
                                 }
                             }
                         }
@@ -654,7 +778,11 @@ final class NetworkConnection {
                         try fileHandle.seekToEnd()
                         try fileHandle.write(contentsOf: data)
                         try fileHandle.close()
-                        try FileManager.default.setAttributes(messageInfo.attributes, ofItemAtPath: messageInfo.source.fullURL().relativePath)
+                        do {
+                            try FileManager.default.setAttributes(messageInfo.attributes, ofItemAtPath: messageInfo.source.fullURL().relativePath)
+                        } catch {
+                            self.logger.log("networkConnection.receiveNextMessage: failed to set attributes - \(error.localizedDescription)", type: .error)
+                        }
                     } catch let error {
                         self.logger.log("networkConnection.receiveNextMessage: failed to write chunk of data -> \"\(error.localizedDescription)\"", type: .error)
                     }
@@ -676,9 +804,8 @@ final class NetworkConnection {
             }
             if let error = error {
                 self.logger.log("networkConnection.receiveNextMessage: failed to receive message -> \"\(error.localizedDescription)\"", type: .error)
-            } else {
-                self.receiveNextMessage()
             }
+            self.receiveNextMessage()
         }
     }
 }

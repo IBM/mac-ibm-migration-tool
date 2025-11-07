@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 16/11/2023.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -36,9 +36,7 @@ struct MigrationView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "migration")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -48,10 +46,12 @@ struct MigrationView: View {
                 .padding(.bottom, 8)
             Text(viewModel.migrationProgress == 1 ? "migration.page.body.source.complete.label".localized : "migration.page.body.ongoing.label".localized)
                 .multilineTextAlignment(.center)
-                .padding(.bottom)
                 .padding(.horizontal, 40)
             Image("new_mac")
-                .padding(.vertical, 4)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 90, height: 90)
+                .tint(Color("uiIcon"))
                 .accessibilityHidden(true)
             Group {
                 Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized) + Text(viewModel.migrationController.hostName).fontWeight(.bold) + Text(viewModel.usedInterface)
@@ -71,6 +71,19 @@ struct MigrationView: View {
             }
             .padding(.horizontal, 176)
             Spacer()
+            Button(action: {
+                NSWorkspace.shared.open(MigrationReportController.shared.reportURL)
+            }, label: {
+                HStack {
+                    Image(systemName: "doc.fill")
+                    Text("final.page.report.button.label")
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 16)
+            })
+            .buttonStyle(.link)
+            .padding(.bottom, 16)
+            .hiddenConditionally(isHidden: viewModel.migrationProgress < 1 ? true : !AppContext.shouldGenerateReport)
             Divider()
             HStack {
                 if !viewModel.deviceIsConnectedToPower {

@@ -3,7 +3,8 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 09/09/2024.
-//  Copyright © 2024 IBM. All rights reserved.
+//  © Copyright IBM Corp. 2023, 2025
+//  SPDX-License-Identifier: Apache2.0
 //
 
 import Foundation
@@ -13,15 +14,25 @@ extension Double {
     /// - Parameter seconds: seconds left.
     /// - Returns: pretty formatted string describing the time left. e.g. ~ 3 hours and 5 minutes
     func prettyFormattedTimeLeft() -> String {
-        let seconds = Int(self)
-        let components = (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
-        if components.0 == 0 {
-            if components.1 == 0 {
-                return "Less than a minute"
-            }
-            return "~ \(components.1 > 0 ? "\(components.1) minute\(components.1 == 1 ? "" : "s")" : "")"
+        guard self.isFinite, !self.isNaN else { return "-" }
+        let clamped = max(self, 0)
+        let seconds = Int(clamped.rounded())
+        let hours = seconds / 3600
+        let minutes = (seconds % 3600) / 60
+        if hours == 0 && minutes == 0 {
+            return "Less than a minute"
+        }
+        if hours == 0 {
+            let minuteLabel = minutes == 1 ? "minute" : "minutes"
+            return "~ \(minutes) \(minuteLabel)"
         } else {
-            return "~ \(components.0) hour\(components.0 == 1 ? "" : "s")" + (components.1 > 0 ? " and \(components.1) minute\(components.1 == 1 ? "" : "s")" : "")
+            let hourLabel = hours == 1 ? "hour" : "hours"
+            if minutes > 0 {
+                let minuteLabel = minutes == 1 ? "minute" : "minutes"
+                return "~ \(hours) \(hourLabel) and \(minutes) \(minuteLabel)"
+            } else {
+                return "~ \(hours) \(hourLabel)"
+            }
         }
     }
 }

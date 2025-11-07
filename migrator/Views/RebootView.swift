@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 22/08/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -27,9 +27,7 @@ struct RebootView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "reboot")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -69,7 +67,7 @@ struct RebootView: View {
             timeLeft -= 1
         }
         .onAppear {
-            Utils.makeWindowFloating()
+            Utils.Window.makeWindowFloating()
         }
     }
     
@@ -83,8 +81,8 @@ struct RebootView: View {
     private func didPressMainButton() {
         AppContext.isPostRebootPhase = true
         Task {
-            await Utils.installLaunchAgent()
-            Utils.rebootMac()
+            await Utils.LaunchAgentHelpers.installLaunchAgent()
+            Utils.Common.rebootMac()
         }
     }
 }

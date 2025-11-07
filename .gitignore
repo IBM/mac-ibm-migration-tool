@@ -14,7 +14,6 @@ xcuserdata/
 
 ## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
 build/
-results/
 DerivedData/
 *.moved-aside
 *.pbxuser
@@ -92,3 +91,4 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+BuildIdentity.generated.swift
