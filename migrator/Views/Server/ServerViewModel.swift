@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 26/02/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -59,7 +59,7 @@ class ServerViewModel: ObservableObject {
     
     init() {
         self.deviceIsConnectedToPower = IOPSCopyExternalPowerAdapterDetails()?.takeRetainedValue() != nil
-        self.randomCode = Utils.generateRandomCode(digits: 6)
+        self.randomCode = Utils.Common.generateRandomCode(digits: 6)
         self.migrationController.startServer(withPasscode: randomCode)
         self.migrationController.$isConnected.sink { newValue in
             Task { @MainActor in
@@ -68,7 +68,7 @@ class ServerViewModel: ObservableObject {
                     self.connectionInterrupted = false
                     // Stops the server to prevent additional connections once one is established.
                     self.migrationController.stopServer()
-                    Utils.preventSleep()
+                    Utils.Common.preventSleep()
                 } else {
                     self.connectionInterrupted = self.connectionEstablished
                 }
@@ -89,7 +89,7 @@ class ServerViewModel: ObservableObject {
                 self.percentageCompleted = "100%"
                 self.migrationProgress = 1
                 self.cancellables.removeAll()
-                Utils.makeWindowFloating()
+                Utils.Window.makeWindowFloating()
             }
         }.store(in: &cancellables)
         NotificationCenter.default.addObserver(self, selector: #selector(devicePowerSourceDidUpdate), name: .devicePowerStatusChanged, object: nil)

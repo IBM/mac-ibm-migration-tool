@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 15/02/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -22,8 +22,10 @@ struct MigratorFileView: View {
     var allowDirectoryOverview: Bool = true
     /// Flag that make file size visible or not.
     var showFileSize: Bool = false
-    ///
+    /// Flag that controls whether to show the selection toggle.
     var showSelectionToggle: Bool = false
+    /// Flag that controls whether to show partial item info.
+    var showPartialItemInfo: Bool = false
     
     // MARK: - State Variable
     
@@ -43,7 +45,7 @@ struct MigratorFileView: View {
         guard needsDescriptiveLabel else { return file.name }
         switch file.type {
         case .directory:
-            return "\(file.name) Folder"
+            return String(format: "migrator.file.view.directory.descriptive.label".localized, file.name)
         default:
             return "\(file.name)"
         }
@@ -53,9 +55,19 @@ struct MigratorFileView: View {
     
     var body: some View {
         HStack {
-            Image(nsImage: NSWorkspace.shared.icon(forFile: file.url.fullURL().relativePath))
-                .resizable()
-                .frame(width: 20, height: 20)
+            ZStack {
+                Image(nsImage: NSWorkspace.shared.icon(forFile: file.url.fullURL().relativePath))
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                if file.isPartiallyMigrated && file.type == .directory && showPartialItemInfo {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .resizable()
+                        .frame(width: 8, height: 8)
+                        .foregroundColor(.orange)
+                        .offset(x: 7, y: 7)
+                }
+            }
+            .help(file.isPartiallyMigrated && file.type == .directory && showPartialItemInfo ? "migration.partially.migrated.folder.tooltip": "")
             if file.type == .directory && !file.childFiles.isEmpty && allowDirectoryOverview {
                 Button(action: {
                     showContent.toggle()
@@ -91,14 +103,15 @@ struct MigratorFileView: View {
                                 if child.isHidden.wrappedValue && !showHiddenFiles {
                                     EmptyView()
                                 } else {
-                                    MigratorFileView(file: child, allowDirectoryOverview: false, showFileSize: true)
+                                    MigratorFileView(file: child, allowDirectoryOverview: false, showFileSize: showFileSize, showPartialItemInfo: showPartialItemInfo)
                                 }
                             }
                             .padding(.trailing, 16)
                         }
                     }
                     .frame(maxWidth: 500, maxHeight: 400)
-                    .padding([.leading, .vertical])
+                    .padding([.leading, .top])
+                    .padding(.bottom, 4)
                     .padding(.trailing, 8)
                 })
             } else {
@@ -141,9 +154,4 @@ struct MigratorFileView: View {
             self.isSelected = file.isSelected
         }
     }
-}
-
-#Preview {
-    MigratorFileView(file: .constant(MigratorFile(with: FileManager.default.homeDirectoryForCurrentUser)))
-        .frame(width: 400, height: 50)
 }

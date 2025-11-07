@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 20/02/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -85,24 +85,13 @@ class MigrationViewModel: ObservableObject {
     init() {
         deviceIsConnectedToPower = IOPSCopyExternalPowerAdapterDetails()?.takeRetainedValue() != nil
         migrationOption = migrationController.migrationOption ?? MigrationOption(type: .none)
+        NotificationCenter.default.addObserver(self, selector: #selector(devicePowerSourceDidUpdate), name: .devicePowerStatusChanged, object: nil)
         migrationController.$connectedDeviceIsReady.sink { isReady in
             if isReady {
                 self.startTheMigration()
-            } else {
-                self.pauseMigration()
-            }
+                MigrationReportController.shared.setMigrationStart()
+            } 
         }.store(in: &cancellables)
-        Task {
-            try await migrationController.connection?.sendMigrationSize(migrationOption.size)
-        }
-        NotificationCenter.default.addObserver(self, selector: #selector(devicePowerSourceDidUpdate), name: .devicePowerStatusChanged, object: nil)
-    }
-    
-    // MARK: - Private Methods
-    
-    // swiftlint:disable function_body_length
-    /// Start the migration task.
-    private func startTheMigration() {
         migrationController.connection?.onBytesSent.sink(receiveValue: { bytesCount in
             Task { @MainActor in
                 self.bytesSent += bytesCount
@@ -113,11 +102,23 @@ class MigrationViewModel: ObservableObject {
                 self.fileSent += fileCount
             }
         }).store(in: &cancellables)
+        Task {
+            try await migrationController.connection?.sendMigrationSize(migrationOption.size)
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    // swiftlint:disable function_body_length
+    /// Start the migration task.
+    private func startTheMigration() {
+        self.logger.log("migrationViewModel.startMigration: starting migration", type: .default)
         Task { @MainActor in
             self.bytesSent = self.migrationOption.migrationFileList.reduce(1) { $0 + ($1.sent ? $1.fileSize : 0) }
             self.bytesSent = self.migrationOption.migrationAppList.reduce(self.bytesSent) { $0 + ($1.sent ? $1.fileSize : 0) }
             self.estimatedTimeLeft = String(format: "migration.page.time.estimation.label".localized, "migration.common.calculating.label".localized)
         }
+        MigrationReportController.shared.setMigrationSize(Int64(self.migrationOption.size))
         sleep(3)
         pendingDataTrasferReport = migrationController.connection?.connection.startDataTransferReport()
         dataTransferReportTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(estimateTimeLeft), userInfo: nil, repeats: false)
@@ -132,14 +133,16 @@ class MigrationViewModel: ObservableObject {
             self.migrationStartTime = Date()
             self.logger.log("migrationViewModel.migrationTask: starting migration of files", type: .default)
             for file in migrationOption.migrationFileList {
-                guard !file.sent && file.isSelected && file.type != .socket else { continue }
+                guard !file.sent && file.isSelected else { continue }
                 do {
                     MLogger.main.log("migrationViewModel.migrationTask: sending file \(file.url.fullURL().relativePath)", type: .default)
                     try await migrationController.connection?.sendFile(file)
                     MLogger.main.log("migrationViewModel.migrationTask: file sent \(file.url.fullURL().relativePath)", type: .default)
                     file.sent = true
+                    MigrationReportController.shared.addMigratedFile(file.url.fullURL().relativePath)
                 } catch {
-                    self.logger.log("migrationViewModel.migrationTask: file migration failed with error \"\(error.localizedDescription)\"", type: .error)
+                    self.logger.log("migrationViewModel.migrationTask: failed to send file: \(file.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"", type: .error)
+                    MigrationReportController.shared.addError("migrationViewModel.migrationTask: failed to send file: \(file.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"")
                 }
             }
             self.logger.log("migrationViewModel.migrationTask: files migration complete", type: .default)
@@ -151,14 +154,17 @@ class MigrationViewModel: ObservableObject {
                     try await migrationController.connection?.sendFile(app)
                     self.logger.log("migrationViewModel.migrationTask: app sent: \(app.url.fullURL().relativePath)", type: .default)
                     app.sent = true
+                    MigrationReportController.shared.addMigratedApp(app.name)
                 } catch {
-                    self.logger.log("migrationViewModel.migrationTask: app migration failed with error \"\(error.localizedDescription)\"", type: .error)
+                    self.logger.log("migrationViewModel.migrationTask: failed to send file: \(app.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"", type: .error)
+                    MigrationReportController.shared.addError("migrationViewModel.migrationTask: failed to send file: \(app.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"")
                 }
             }
             self.logger.log("migrationViewModel.migrationTask: apps migration complete", type: .default)
             do {
                 self.pendingDataTrasferReport = nil
                 try await migrationController.connection?.sendMigrationCompleted()
+                MigrationReportController.shared.setMigrationEnd()
                 await MainActor.run {
                     self.percentageCompleted = "100%"
                     self.estimatedTimeLeft = ""
@@ -166,7 +172,7 @@ class MigrationViewModel: ObservableObject {
                     self.dataTransferReportTimer?.invalidate()
                     self.dataTransferReportTimer = nil
                     NSSound(named: .init("Funk"))?.play()
-                    Utils.makeWindowFloating()
+                    Utils.Window.makeWindowFloating()
                 }
             } catch {
                 self.logger.log("migrationViewModel.migrationTask: send migration completion failed with error \"\(error.localizedDescription)\"", type: .error)

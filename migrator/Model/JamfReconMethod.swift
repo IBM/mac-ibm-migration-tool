@@ -1,9 +1,10 @@
 //
 //  JamfReconStyle.swift
-//  migrator
+//  IBM Data Shift
 //
 //  Created by Simone Martorelli on 29/09/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
+//  SPDX-License-Identifier: Apache2.0
 //
 
 /// The supported methods to run the jamf Inventory Update.

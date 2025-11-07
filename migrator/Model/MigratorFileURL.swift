@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 30/01/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -28,7 +28,7 @@ struct MigratorFileURL: Codable, Equatable, Hashable {
     // MARK: - Private Variables
     
     /// The relative path to the file.
-    private var relativePath: String
+    var relativePath: String
     
     // MARK: - Initializers
     

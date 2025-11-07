@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 08/08/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -40,7 +40,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         isDeviceConnectedToPower = IOPSCopyExternalPowerAdapterDetails()?.takeRetainedValue() != nil
         timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkPowerStatus), userInfo: nil, repeats: true)
 #if DEBUG
-        Utils.preventSleep()
+        Utils.Common.preventSleep()
 #endif
         Task { @MainActor in
             if let mainMenu = NSApplication.shared.mainMenu,
@@ -61,6 +61,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             }
             return event
         }
+        MLogger.main.log("appDelegate:applicationDidFinishLaunching application did finish launching", type: .default)
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -76,9 +77,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     /// Runs final operations and quit the app
     func quit() {
-        // Cleaning temporary settings sent by the source device.
-        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
-        UserDefaults.standard.synchronize()
+        Utils.UserDefaultsHelpers.cleanUpCustomKeys()
         exit(0)
     }
     

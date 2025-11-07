@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/11/2023.
-//  Copyright © 2023 IBM Inc. All rights reserved
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -49,9 +49,7 @@ struct ServerView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "server")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -61,9 +59,13 @@ struct ServerView: View {
                 .padding(.bottom, 8)
             Text(viewModel.connectionEstablished ? (viewModel.migrationProgress > 0 ? (viewModel.migrationProgress == 1 ? "server.page.body.migration.complete.label" : "server.page.body.ongoing.label") :  "server.page.connected.subtitle") : "server.page.subtitle")
                 .multilineTextAlignment(.center)
-                .padding(.bottom)
                 .padding(.horizontal, 40)
+                .padding(.bottom, viewModel.connectionEstablished ? 8 : 0)
             Image(viewModel.connectionEstablished ? "old_mac" : "new_mac")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 90, height: 90)
+                .tint(Color("uiIcon"))
                 .accessibilityHidden(true)
             if viewModel.connectionEstablished {
                 Group {
@@ -74,7 +76,7 @@ struct ServerView: View {
             } else {
                 Text(Host.current().localizedName ?? "server.page.default.device.name")
                     .font(.headline)
-                    .padding(.vertical, 4)
+                    .padding(.bottom, 4)
                     .accessibilityHidden(true)
             }
             VStack {
@@ -95,7 +97,7 @@ struct ServerView: View {
                             .font(.callout)
                     }
                 } else {
-                    VStack(spacing: 12) {
+                    VStack(spacing: 0) {
                         ProgressView()
                             .progressViewStyle(.circular)
                             .controlSize(.small)
@@ -103,6 +105,7 @@ struct ServerView: View {
                         Spacer()
                         Text("server.page.pairing.code.label")
                             .font(.title3)
+                            .padding(.bottom, 8)
                         CodeVerificationFieldView(code: .constant(viewModel.randomCode), viewOnly: true)
                             .accessibilityElement(children: .combine)
                         Spacer()
@@ -151,6 +154,7 @@ struct ServerView: View {
                 }
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
+            .frame(height: 56)
         }
         .overlay {
             if viewModel.connectionInterrupted {

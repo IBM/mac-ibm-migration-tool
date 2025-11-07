@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 15/08/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -36,7 +36,7 @@ struct AppleIDView: View {
                 .multilineTextAlignment(.center)
                 .font(.system(size: 27, weight: .bold))
                 .padding(.bottom, 8)
-            Text(String(format: "icloud.page.body.label".localized, Utils.systemSettingsLabel, "icloud.page.main.button.label".localized))
+            Text(String(format: "icloud.page.body.label".localized, Utils.Common.systemSettingsLabel, "icloud.page.main.button.label".localized))
                 .multilineTextAlignment(.center)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
@@ -45,7 +45,7 @@ struct AppleIDView: View {
                 logger.log("appleIDView.mainButtonAction: Opening Apple ID Preferences Panel", type: .default)
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preferences.AppleIDPrefPane")!)
             }, label: {
-                Text(String(format: "icloud.page.system.settings.button.label".localized, Utils.systemSettingsLabel))
+                Text(String(format: "icloud.page.system.settings.button.label".localized, Utils.Common.systemSettingsLabel))
                     .padding(4)
             })
             .keyboardShortcut(.defaultAction)
@@ -72,7 +72,7 @@ struct AppleIDView: View {
             if FileManager.default.ubiquityIdentityToken != nil { goToNextPage() }
         }
         .onAppear {
-            Utils.makeWindowFloating(false)
+            Utils.Window.makeWindowFloating(false)
         }
     }
     

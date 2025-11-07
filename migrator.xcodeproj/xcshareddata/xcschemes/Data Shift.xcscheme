@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1B4C5BAF2B035EBA00D4BD0B"
-               BuildableName = "Data Shift.app"
-               BlueprintName = "Data Shift"
+               BuildableName = "IBM Data Shift.app"
+               BlueprintName = "IBM Data Shift"
                ReferencedContainer = "container:migrator.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -68,8 +68,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1B4C5BAF2B035EBA00D4BD0B"
-            BuildableName = "Data Shift.app"
-            BlueprintName = "Data Shift"
+            BuildableName = "IBM Data Shift.app"
+            BlueprintName = "IBM Data Shift"
             ReferencedContainer = "container:migrator.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -85,8 +85,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1B4C5BAF2B035EBA00D4BD0B"
-            BuildableName = "Data Shift.app"
-            BlueprintName = "Data Shift"
+            BuildableName = "IBM Data Shift.app"
+            BlueprintName = "IBM Data Shift"
             ReferencedContainer = "container:migrator.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

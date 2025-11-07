@@ -3,12 +3,13 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 11/01/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
 import Network
 import CryptoKit
+import Foundation
 
 extension NWParameters {
     /// Initializes `NWParameters` with TCP and custom TLS settings, including a pre-shared key for TLS authentication.
@@ -37,23 +38,40 @@ extension NWParameters {
     /// - Returns: A configured `NWProtocolTLS.Options` instance.
     private static func tlsOptions(passcode: String) -> NWProtocolTLS.Options {
         let tlsOptions = NWProtocolTLS.Options()
-
+        
         // Derive a symmetric key from the passcode.
-        let authenticationKey = SymmetricKey(data: passcode.data(using: .utf8)!)
-        // Create an authentication code for "MigratorNetworkProtocol" using HMAC with SHA256.
-        let authenticationCode = HMAC<SHA256>.authenticationCode(for: "MigratorNetworkProtocol".data(using: .utf8)!, using: authenticationKey)
+        guard let passcodeData = passcode.data(using: .utf8) else { return tlsOptions }
+        let authenticationKey = SymmetricKey(data: passcodeData)
+
+#if DEBUG
+        let pskIdentity = "MigrationController-Debug"
+#else
+        // Use a build-unique identity provided by a GYB-generated Swift file.
+        let pskIdentity = TLSPSKIdentity.value
+#endif
+
+        // Create an authentication code for the identity using HMAC with SHA384.
+        let authenticationCode = HMAC<SHA384>.authenticationCode(for: Data(pskIdentity.utf8), using: authenticationKey)
 
         // Convert the authentication code to `DispatchData`.
         let authenticationDispatchData = authenticationCode.withUnsafeBytes {
             DispatchData(bytes: $0)
         }
+
+        // Convert the identity string to `DispatchData`.
+        guard let identityDispatchData = stringToDispatchData(pskIdentity) else { return tlsOptions }
+
         // Add the pre-shared key to the TLS options.
         sec_protocol_options_add_pre_shared_key(tlsOptions.securityProtocolOptions,
                                                 authenticationDispatchData as __DispatchData,
-                                                stringToDispatchData("MigratorNetworkProtocol")! as __DispatchData)
-        // Append the cipher suite `TLS_PSK_WITH_AES_128_GCM_SHA256` to the TLS options.
+                                                identityDispatchData as __DispatchData)
+        
         sec_protocol_options_append_tls_ciphersuite(tlsOptions.securityProtocolOptions,
-                                                    tls_ciphersuite_t(rawValue: UInt16(TLS_PSK_WITH_AES_128_GCM_SHA256))!)
+                                                    tls_ciphersuite_t(rawValue: UInt16(TLS_PSK_WITH_AES_256_GCM_SHA384))!)
+        
+        // Enforce TLS 1.2+
+        sec_protocol_options_set_min_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv12)
+
         return tlsOptions
     }
 

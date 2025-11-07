@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 17/01/2024.
-//  © Copyright IBM Corp. 2023, 2024
+//  © Copyright IBM Corp. 2023, 2025
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -23,12 +23,12 @@ struct MigrationSetupView: View {
     /// The previous page to navigate back to, by default set to the welcome page.
     let previousPage: MigratorPage = .browser
     /// The next page to navigate forward to, typically the migration setup page.
-    let nextPage: MigratorPage = .migration
+    let nextPage: MigratorPage = AppContext.shouldSkipMigrationSummary ? .migration : .recap
 
     // MARK: - Observable Variables
     
     /// Observable view model object to handle data and logic for the migration setup
-    @ObservedObject var viewModel: MigrationSetupViewModel = MigrationSetupViewModel()
+    @ObservedObject var viewModel: MigrationSetupViewModel = MigrationController.shared.migrationSetupViewModel
     
     // MARK: - State Variables
     
@@ -39,9 +39,7 @@ struct MigrationSetupView: View {
     
     var body: some View {
         VStack {
-            Image("icon")
-                .resizable()
-                .frame(width: 86, height: 86)
+            CustomizableIconView(pageIdentifier: "setup")
                 .padding(.top, 55)
                 .padding(.bottom, 8)
                 .accessibilityHidden(true)
@@ -62,7 +60,14 @@ struct MigrationSetupView: View {
                     .progressViewStyle(.circular)
                     .controlSize(.large)
                     .task(priority: .high) {
-                        await self.viewModel.loadMigrationOptions()
+                        // Only load if not already loaded
+                        if self.viewModel.pickerMigrationOptions.isEmpty {
+                            await self.viewModel.loadMigrationOptions()
+                        } else {
+                            await MainActor.run {
+                                self.viewModel.viewState = .standardSelection
+                            }
+                        }
                     }
             case .standardSelection, .advancedSelection:
                 selectionView
@@ -195,7 +200,12 @@ struct MigrationSetupView: View {
     // MARK: - Private Methods
     
     private func didPressMainButton() {
-        showDeviceSleepAlert.toggle()
+        if AppContext.shouldSkipMigrationSummary {
+            showDeviceSleepAlert.toggle()
+        } else {
+            MigrationController.shared.migrationOption = viewModel.chosenOption
+            action(nextPage)
+        }
     }
     
     private func didPressSecondaryButton() {

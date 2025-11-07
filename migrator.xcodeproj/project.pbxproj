@@ -38,9 +38,11 @@
 		53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */; };
 		532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B52C64FFE5002E270F /* WindowAccessor.swift */; };
 		532F90B82C650014002E270F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B72C650014002E270F /* AppDelegate.swift */; };
+		534A99712EBAB0A500F3E24A /* CustomizableIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */; };
+		5351C1DA2E828A1800043122 /* BuildIdentity.generated.swift.gyb in Resources */ = {isa = PBXBuildFile; fileRef = 5351C1D92E828A1800043122 /* BuildIdentity.generated.swift.gyb */; };
+		5351C1DC2E828A1A00043122 /* BuildIdentity.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5351C1DB2E828A1A00043122 /* BuildIdentity.generated.swift */; };
 		535A77912BA49A5E00BB8116 /* CodeVerificationFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */; };
 		535B5F9D2B99D7520071861E /* CodeVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535B5F9C2B99D7520071861E /* CodeVerificationView.swift */; };
-		5363AE6C2BE8D2A2004C96EF /* Array-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5363AE6B2BE8D2A2004C96EF /* Array-Extension.swift */; };
 		53665E912BDBE0C600086714 /* ConfigProfilePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E902BDBE0C600086714 /* ConfigProfilePayload.swift */; };
 		53665E932BDBE0DF00086714 /* ConfigurationProfileDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E922BDBE0DF00086714 /* ConfigurationProfileDataType.swift */; };
 		53665E952BDBE0FE00086714 /* ConfigProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E942BDBE0FE00086714 /* ConfigProfileSection.swift */; };
@@ -48,6 +50,9 @@
 		53665E992BDBE14B00086714 /* ConfigProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E982BDBE14B00086714 /* ConfigProfile.swift */; };
 		53665E9B2BDBE15F00086714 /* DeviceManagementState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */; };
 		536776C12D5F36FF0055F7A3 /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */; };
+		536A8A1C2E9E77FB00E1D9B0 /* RecapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536A8A1B2E9E77F600E1D9B0 /* RecapView.swift */; };
+		536A8A1E2E9E7A3800E1D9B0 /* RecapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536A8A1D2E9E7A3400E1D9B0 /* RecapViewModel.swift */; };
+		536A8AD42EA266AF00E1D9B0 /* MigrationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536A8AD32EA266AF00E1D9B0 /* MigrationItem.swift */; };
 		5377C2272B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */; };
 		5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */; };
 		5377C22B2B51551D00B5C9C1 /* MigratorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C22A2B51551D00B5C9C1 /* MigratorError.swift */; };
@@ -69,10 +74,13 @@
 		53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193152C8EFDE700DEFE24 /* AppContext.swift */; };
 		53B193182C8F212C00DEFE24 /* Double-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193172C8F212C00DEFE24 /* Double-Extension.swift */; };
 		53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C5D8152B7CB2110099F667 /* Int-Extension.swift */; };
+		53CC8E392E46042900B44432 /* MigrationReportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53CC8E382E46041E00B44432 /* MigrationReportController.swift */; };
 		53DE27992C78A815003AE255 /* Notification-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DE27982C78A815003AE255 /* Notification-Extension.swift */; };
 		53E313052C6CE8410090793F /* Bundle-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E313042C6CE8410090793F /* Bundle-Extension.swift */; };
 		53E65F532C772CE80010B8DD /* JamfReconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E65F522C772CE80010B8DD /* JamfReconView.swift */; };
 		53E65F552C777EBD0010B8DD /* RebootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E65F542C777EBD0010B8DD /* RebootView.swift */; };
+		53E796652E95412C002B1187 /* ResourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E796642E95412C002B1187 /* ResourceView.swift */; };
+		53E796692E954596002B1187 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E796682E954596002B1187 /* WebView.swift */; };
 		53F2DE2E2B67C05000588D2D /* MigrationSetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE2D2B67C05000588D2D /* MigrationSetupViewModel.swift */; };
 		53F2DE302B69047B00588D2D /* MigratorFileURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */; };
 		53F2DE322B69049600588D2D /* SymbolicLinkMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE312B69049600588D2D /* SymbolicLinkMessage.swift */; };
@@ -113,7 +121,7 @@
 		1B05074D2B0612B500384CD5 /* MigratorPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorPage.swift; sourceTree = "<group>"; };
 		1B05074F2B06130800384CD5 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		1B0507512B06133800384CD5 /* MigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationView.swift; sourceTree = "<group>"; };
-		1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IBM Data Shift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorApp.swift; sourceTree = "<group>"; };
 		1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
 		1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -141,9 +149,11 @@
 		53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateFilesHandlingPolicy.swift; sourceTree = "<group>"; };
 		532F90B52C64FFE5002E270F /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
 		532F90B72C650014002E270F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizableIconView.swift; sourceTree = "<group>"; };
+		5351C1D92E828A1800043122 /* BuildIdentity.generated.swift.gyb */ = {isa = PBXFileReference; lastKnownFileType = text; path = BuildIdentity.generated.swift.gyb; sourceTree = "<group>"; };
+		5351C1DB2E828A1A00043122 /* BuildIdentity.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildIdentity.generated.swift; sourceTree = "<group>"; };
 		535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationFieldView.swift; sourceTree = "<group>"; };
 		535B5F9C2B99D7520071861E /* CodeVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationView.swift; sourceTree = "<group>"; };
-		5363AE6B2BE8D2A2004C96EF /* Array-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array-Extension.swift"; sourceTree = "<group>"; };
 		53665E902BDBE0C600086714 /* ConfigProfilePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfilePayload.swift; sourceTree = "<group>"; };
 		53665E922BDBE0DF00086714 /* ConfigurationProfileDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationProfileDataType.swift; sourceTree = "<group>"; };
 		53665E942BDBE0FE00086714 /* ConfigProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfileSection.swift; sourceTree = "<group>"; };
@@ -151,6 +161,9 @@
 		53665E982BDBE14B00086714 /* ConfigProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigProfile.swift; sourceTree = "<group>"; };
 		53665E9A2BDBE15F00086714 /* DeviceManagementState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementState.swift; sourceTree = "<group>"; };
 		536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
+		536A8A1B2E9E77F600E1D9B0 /* RecapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapView.swift; sourceTree = "<group>"; };
+		536A8A1D2E9E7A3400E1D9B0 /* RecapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapViewModel.swift; sourceTree = "<group>"; };
+		536A8AD32EA266AF00E1D9B0 /* MigrationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationItem.swift; sourceTree = "<group>"; };
 		5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorNetworkProtocol.swift; sourceTree = "<group>"; };
 		5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWParameters-Extension.swift"; sourceTree = "<group>"; };
 		5377C22A2B51551D00B5C9C1 /* MigratorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorError.swift; sourceTree = "<group>"; };
@@ -172,10 +185,13 @@
 		53B193152C8EFDE700DEFE24 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		53B193172C8F212C00DEFE24 /* Double-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double-Extension.swift"; sourceTree = "<group>"; };
 		53C5D8152B7CB2110099F667 /* Int-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int-Extension.swift"; sourceTree = "<group>"; };
+		53CC8E382E46041E00B44432 /* MigrationReportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationReportController.swift; sourceTree = "<group>"; };
 		53DE27982C78A815003AE255 /* Notification-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification-Extension.swift"; sourceTree = "<group>"; };
 		53E313042C6CE8410090793F /* Bundle-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle-Extension.swift"; sourceTree = "<group>"; };
 		53E65F522C772CE80010B8DD /* JamfReconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconView.swift; sourceTree = "<group>"; };
 		53E65F542C777EBD0010B8DD /* RebootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RebootView.swift; sourceTree = "<group>"; };
+		53E796642E95412C002B1187 /* ResourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceView.swift; sourceTree = "<group>"; };
+		53E796682E954596002B1187 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		53F2DE2D2B67C05000588D2D /* MigrationSetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationSetupViewModel.swift; sourceTree = "<group>"; };
 		53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorFileURL.swift; sourceTree = "<group>"; };
 		53F2DE312B69049600588D2D /* SymbolicLinkMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolicLinkMessage.swift; sourceTree = "<group>"; };
@@ -244,6 +260,7 @@
 				1B05074D2B0612B500384CD5 /* MigratorPage.swift */,
 				53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */,
 				53237C102CA9E1D2004062CC /* JamfReconMethod.swift */,
+				536A8AD32EA266AF00E1D9B0 /* MigrationItem.swift */,
 				53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */,
 				53F2DE3B2B6905FB00588D2D /* MigratorFile.swift */,
 				5377C22A2B51551D00B5C9C1 /* MigratorError.swift */,
@@ -265,7 +282,7 @@
 		1B4C5BB12B035EBA00D4BD0B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */,
+				1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */,
 				1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */,
 				1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */,
 			);
@@ -275,6 +292,7 @@
 		1B4C5BB22B035EBA00D4BD0B /* migrator */ = {
 			isa = PBXGroup;
 			children = (
+				5351C1E02E828B7800043122 /* Generated */,
 				1B4C5BBC2B035EBD00D4BD0B /* migrator.entitlements */,
 				1B4C5BE32B03B6FE00D4BD0B /* Info.plist */,
 				53B193152C8EFDE700DEFE24 /* AppContext.swift */,
@@ -319,9 +337,10 @@
 			isa = PBXGroup;
 			children = (
 				539B25692B47FBD00012B974 /* Common */,
-				5325AE242B7514F1006DDAEB /* MigrationSetup */,
-				530923A32B8CD58B00D6BFE7 /* Server */,
 				530923A22B85006900D6BFE7 /* Migration */,
+				5325AE242B7514F1006DDAEB /* MigrationSetup */,
+				536A8A1F2E9E7ABC00E1D9B0 /* Recap */,
+				530923A32B8CD58B00D6BFE7 /* Server */,
 				1B05074B2B06129100384CD5 /* MainView.swift */,
 				535B5F9C2B99D7520071861E /* CodeVerificationView.swift */,
 				1B05074F2B06130800384CD5 /* WelcomeView.swift */,
@@ -351,7 +370,6 @@
 				53C5D8152B7CB2110099F667 /* Int-Extension.swift */,
 				1B0507462B050C5C00384CD5 /* NWBrowser-Result-Extension.swift */,
 				5300EE4E2B7F9E13002127BB /* String-Extension.swift */,
-				5363AE6B2BE8D2A2004C96EF /* Array-Extension.swift */,
 				53F2DE3F2B6A70E000588D2D /* URL-Extension.swift */,
 				53DE27982C78A815003AE255 /* Notification-Extension.swift */,
 			);
@@ -382,6 +400,7 @@
 				1B0507442B04F8E900384CD5 /* NetworkControllers */,
 				53180FD82B6BBCF300C84937 /* MigrationController.swift */,
 				53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */,
+				53CC8E382E46041E00B44432 /* MigrationReportController.swift */,
 				53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */,
 				539F23972BAC85A700E3F399 /* MLogger.swift */,
 			);
@@ -399,6 +418,15 @@
 			path = MigrationSetup;
 			sourceTree = "<group>";
 		};
+		5351C1E02E828B7800043122 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				5351C1D92E828A1800043122 /* BuildIdentity.generated.swift.gyb */,
+				5351C1DB2E828A1A00043122 /* BuildIdentity.generated.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		53665E9C2BDBE17200086714 /* DeviceManagement */ = {
 			isa = PBXGroup;
 			children = (
@@ -412,12 +440,24 @@
 			path = DeviceManagement;
 			sourceTree = "<group>";
 		};
+		536A8A1F2E9E7ABC00E1D9B0 /* Recap */ = {
+			isa = PBXGroup;
+			children = (
+				536A8A1B2E9E77F600E1D9B0 /* RecapView.swift */,
+				536A8A1D2E9E7A3400E1D9B0 /* RecapViewModel.swift */,
+			);
+			path = Recap;
+			sourceTree = "<group>";
+		};
 		539B25692B47FBD00012B974 /* Common */ = {
 			isa = PBXGroup;
 			children = (
 				539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */,
 				536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */,
 				535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */,
+				53E796642E95412C002B1187 /* ResourceView.swift */,
+				534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */,
+				53E796682E954596002B1187 /* WebView.swift */,
 				532F90B52C64FFE5002E270F /* WindowAccessor.swift */,
 				539B256E2B4817AC0012B974 /* DeviceListRow.swift */,
 				5310815A2B7E081500697D46 /* MigratorFileView.swift */,
@@ -443,22 +483,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1B4C5BAF2B035EBA00D4BD0B /* Data Shift */ = {
+		1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "Data Shift" */;
+			buildConfigurationList = 1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */;
 			buildPhases = (
+				5351C1E12E828B9000043122 /* Generate Build Identity File */,
 				1B4C5BAC2B035EBA00D4BD0B /* Sources */,
 				1B4C5BAD2B035EBA00D4BD0B /* Frameworks */,
 				1B4C5BAE2B035EBA00D4BD0B /* Resources */,
 				1B4C5BE22B03769800D4BD0B /* SwiftLint */,
+				5351C1E22E82A42200043122 /* Delete Generated Build Identity File */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "Data Shift";
+			name = "IBM Data Shift";
 			productName = migrator;
-			productReference = 1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */;
+			productReference = 1B4C5BB02B035EBA00D4BD0B /* IBM Data Shift.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1B4C5BC02B035EBD00D4BD0B /* migratorTests */ = {
@@ -534,7 +576,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1B4C5BAF2B035EBA00D4BD0B /* Data Shift */,
+				1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */,
 				1B4C5BC02B035EBD00D4BD0B /* migratorTests */,
 				1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */,
 			);
@@ -549,6 +591,7 @@
 				1B4C5BBB2B035EBD00D4BD0B /* Preview Assets.xcassets in Resources */,
 				1B4C5BB82B035EBD00D4BD0B /* Assets.xcassets in Resources */,
 				539B25712B4848C90012B974 /* Localizable.xcstrings in Resources */,
+				5351C1DA2E828A1800043122 /* BuildIdentity.generated.swift.gyb in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,6 +631,47 @@
 			shellPath = /bin/sh;
 			shellScript = "#Support for M1 Macs Homebrew location\nexport PATH=\"$PATH:/opt/homebrew/bin\"\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
+		5351C1E12E828B9000043122 /* Generate Build Identity File */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/migrator/Generated/BuildIdentity.generated.swift.gyb",
+			);
+			name = "Generate Build Identity File";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(PROJECT_DIR)/migrator/Generated/BuildIdentity.generated.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Creating .swift files from .gyb templates using the loaded secrets.\nfor INPUT_FILE in ${!SCRIPT_INPUT_FILE_*}; do\n    FILE=${!INPUT_FILE}\n    if [[ \"${FILE: -4}\" == \".gyb\" ]]; then\n        \"${PROJECT_DIR}/Gyb/gyb\" --line-directive '' -o \"${FILE%.gyb}\" \"$FILE\"\n    fi\ndone\n";
+		};
+		5351C1E22E82A42200043122 /* Delete Generated Build Identity File */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/migrator/Generated/BuildIdentity.generated.swift",
+			);
+			name = "Delete Generated Build Identity File";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "for INPUT_FILE in ${!SCRIPT_INPUT_FILE_*}; do\n    FILE=${!INPUT_FILE}\n    if [[ \"${FILE: -16}\" == \".generated.swift\" ]]; then\n        rm \"$FILE\"\n    fi\ndone\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -606,6 +690,7 @@
 				53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */,
 				1B0507412B04F6B200384CD5 /* NetworkBrowser.swift in Sources */,
 				53665E972BDBE12300086714 /* Decodable-Extension.swift in Sources */,
+				534A99712EBAB0A500F3E24A /* CustomizableIconView.swift in Sources */,
 				53F2DE3E2B6A5B7500588D2D /* Binding-Extension.swift in Sources */,
 				5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */,
 				53F2DE342B6904F900588D2D /* MigratorMessageType.swift in Sources */,
@@ -613,6 +698,7 @@
 				1BC044662B2B1E6F0007B5CB /* LinearGradient-Extension.swift in Sources */,
 				53B193142C89C7D500DEFE24 /* DefaultsMessage.swift in Sources */,
 				539B25682B47FB930012B974 /* NSTableView-Extension.swift in Sources */,
+				53E796652E95412C002B1187 /* ResourceView.swift in Sources */,
 				53F2DE302B69047B00588D2D /* MigratorFileURL.swift in Sources */,
 				53180FD92B6BBCF300C84937 /* MigrationController.swift in Sources */,
 				1B4C5BB62B035EBA00D4BD0B /* ServerView.swift in Sources */,
@@ -620,15 +706,19 @@
 				53F2DE402B6A70E000588D2D /* URL-Extension.swift in Sources */,
 				5377C22F2B57C94F00B5C9C1 /* FileMessage.swift in Sources */,
 				1B0507522B06133800384CD5 /* MigrationView.swift in Sources */,
+				53CC8E392E46042900B44432 /* MigrationReportController.swift in Sources */,
 				1B4C5BB42B035EBA00D4BD0B /* MigratorApp.swift in Sources */,
 				531E49382C77996E00344C73 /* FinalView.swift in Sources */,
 				532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */,
 				53237C112CA9E1D8004062CC /* JamfReconMethod.swift in Sources */,
+				536A8A1C2E9E77FB00E1D9B0 /* RecapView.swift in Sources */,
 				53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */,
 				536776C12D5F36FF0055F7A3 /* CustomAlertView.swift in Sources */,
+				536A8A1E2E9E7A3800E1D9B0 /* RecapViewModel.swift in Sources */,
 				5377C22D2B559D7900B5C9C1 /* Data-Extension.swift in Sources */,
 				53665E912BDBE0C600086714 /* ConfigProfilePayload.swift in Sources */,
 				53F2DE382B69055000588D2D /* NWProtocolFramer-Message-Extension.swift in Sources */,
+				536A8AD42EA266AF00E1D9B0 /* MigrationItem.swift in Sources */,
 				53F2DE3A2B69058D00588D2D /* CommunicationInterfaces.swift in Sources */,
 				535A77912BA49A5E00BB8116 /* CodeVerificationFieldView.swift in Sources */,
 				53E313052C6CE8410090793F /* Bundle-Extension.swift in Sources */,
@@ -640,7 +730,6 @@
 				532F90B82C650014002E270F /* AppDelegate.swift in Sources */,
 				5310815B2B7E081500697D46 /* MigratorFileView.swift in Sources */,
 				5377C22B2B51551D00B5C9C1 /* MigratorError.swift in Sources */,
-				5363AE6C2BE8D2A2004C96EF /* Array-Extension.swift in Sources */,
 				53E65F532C772CE80010B8DD /* JamfReconView.swift in Sources */,
 				539B256B2B47FBEE0012B974 /* NoBackgroundScroller.swift in Sources */,
 				53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */,
@@ -653,6 +742,7 @@
 				539B256D2B4817820012B974 /* View-Extension.swift in Sources */,
 				53E65F552C777EBD0010B8DD /* RebootView.swift in Sources */,
 				1B4C5BE12B0375C700D4BD0B /* Scene-Extension.swift in Sources */,
+				5351C1DC2E828A1A00043122 /* BuildIdentity.generated.swift in Sources */,
 				53F2DE3C2B6905FB00588D2D /* MigratorFile.swift in Sources */,
 				53665E932BDBE0DF00086714 /* ConfigurationProfileDataType.swift in Sources */,
 				539F23982BAC85A700E3F399 /* MLogger.swift in Sources */,
@@ -667,6 +757,7 @@
 				530923A12B85006400D6BFE7 /* MigrationViewModel.swift in Sources */,
 				5377C2312B57CD9C00B5C9C1 /* MigrationSetupView.swift in Sources */,
 				1B4C5BE52B03B80300D4BD0B /* Utils.swift in Sources */,
+				53E796692E954596002B1187 /* WebView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -692,12 +783,12 @@
 /* Begin PBXTargetDependency section */
 		1B4C5BC32B035EBD00D4BD0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
 			targetProxy = 1B4C5BC22B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 		1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
+			target = 1B4C5BAF2B035EBA00D4BD0B /* IBM Data Shift */;
 			targetProxy = 1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -756,6 +847,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "//  © Copyright IBM Corp. 2023, 2025";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -814,6 +906,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "//  © Copyright IBM Corp. 2023, 2025";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -832,7 +925,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 130;
+				CURRENT_PROJECT_VERSION = 170;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -844,16 +937,16 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2024";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2025";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "The app needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
 				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.2.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.migrator;
+				MARKETING_VERSION = 1.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.cio.be.migrator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -871,7 +964,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 130;
+				CURRENT_PROJECT_VERSION = 170;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -883,16 +976,16 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2024";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "We need to access the local network to be able to discover devices nearby.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2025";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "The app needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
 				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.2.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.migrator;
+				MARKETING_VERSION = 1.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.cio.be.migrator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -989,7 +1082,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "Data Shift" */ = {
+		1B4C5BD52B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "IBM Data Shift" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B4C5BD62B035EBD00D4BD0B /* Debug */,
