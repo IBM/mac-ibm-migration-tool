@@ -14,6 +14,7 @@ extension URL {
     private static let byteCountFormatter = ByteCountFormatter()
 
     /// Checks if the URL represents a directory and is reachable.
+    ///
     /// - Returns: A Boolean value indicating whether the URL represents a reachable directory.
     func isDirectoryAndReachable() throws -> Bool {
         guard try resourceValues(forKeys: [.isDirectoryKey]).isDirectory == true else {
@@ -23,6 +24,7 @@ extension URL {
     }
 
     /// Calculates the total allocated size of files within the directory.
+    ///
     /// - Parameter includingSubfolders: A Boolean value indicating whether to include subfolders in the calculation.
     /// - Returns: The total allocated size of files within the directory, or nil if the directory is not reachable or an error occurs.
     func directoryTotalAllocatedSize() async throws -> Int? {

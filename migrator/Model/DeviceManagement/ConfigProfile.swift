@@ -14,7 +14,7 @@ struct ConfigProfile: Decodable {
     
     // MARK: - Constants
     
-    let name: String
+    let name: String?
     let organization: String?
     let installDate: Date?
     let identifier: String?
@@ -38,7 +38,7 @@ struct ConfigProfile: Decodable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.name = try container.decode(String.self, forKey: .name)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.organization = try container.decodeIfPresent(String.self, forKey: .organization)
         let dateFormatter = DateFormatter()
         dateFormatter.locale = .current

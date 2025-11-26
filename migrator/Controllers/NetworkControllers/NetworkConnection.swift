@@ -14,7 +14,7 @@ import Combine
 
 /// Represents and manages a network connection, handling both incoming and outgoing data transfer.
 final class NetworkConnection {
-
+    
     // MARK: - Constants
     
     /// The actual network connection being managed.
@@ -72,6 +72,11 @@ final class NetworkConnection {
     var state: NWConnection.State {
         return connection.state
     }
+    var currentInterfaceType: NWInterface.InterfaceType? {
+        guard let currentPath = connection.currentPath else { return nil }
+        guard let currentInterface = currentPath.availableInterfaces.first(where: { currentPath.usesInterfaceType($0.type) }) else { return nil }
+        return currentInterface.type
+    }
     
     // MARK: - Private Constants
     
@@ -106,6 +111,9 @@ final class NetworkConnection {
                     let suite   = sec_protocol_metadata_get_negotiated_tls_ciphersuite(metadata.securityProtocolMetadata)
                     MLogger.main.log("Negotiated TLS version: \(version), suite: \(suite)", type: .debug)
                 }
+                if let interfaceTypeString = self.currentInterfaceType?.stringValue {
+                    MigrationReportController.shared.setMigrationTransferMethod(interfaceTypeString)
+                }
                 self.receiveNextMessage()
                 Task {
                     try? await self.sendHostName()
@@ -113,7 +121,7 @@ final class NetworkConnection {
             }
         }
     }
-
+    
     /// Initializes a new network connection for handling incoming connections.
     /// - Parameter connection: The incoming network connection.
     init(connection: NWConnection) {
@@ -139,6 +147,7 @@ final class NetworkConnection {
     func sendFile(_ file: MigratorFile) async throws {
         if file.type == .app {
             try await self.sendFile(file.url.fullURL())
+            MigrationReportController.shared.addMigratedApp(file.name)
         } else {
             try await _sendFile(file)
             try await sendSymlinks()
@@ -217,7 +226,7 @@ final class NetworkConnection {
                     let timeoutTask = Task {
                         try await Task.sleep(nanoseconds: 120_000_000_000)
                         continuation.resume(throwing: NSError(domain: "NetworkConnection", code: 1002,
-                                                           userInfo: [NSLocalizedDescriptionKey: "Send operation timed out"]))
+                                                              userInfo: [NSLocalizedDescriptionKey: "Send operation timed out"]))
                     }
                     connection.send(content: content, contentContext: contentContext, isComplete: true, completion: .contentProcessed({ error in
                         timeoutTask.cancel()
@@ -245,7 +254,7 @@ final class NetworkConnection {
             throw lastError
         } else {
             throw NSError(domain: "NetworkConnection", code: 1000,
-                         userInfo: [NSLocalizedDescriptionKey: "Failed to send after \(maxRetries) retries"])
+                          userInfo: [NSLocalizedDescriptionKey: "Failed to send after \(maxRetries) retries"])
         }
     }
     
@@ -305,7 +314,7 @@ final class NetworkConnection {
             logger.log("networkConnection.sendfile: file \"\(file.url.fullURL().relativePath)\" doesn't exists", type: .error)
             throw MigratorError.fileError(type: .noData)
         }
-            
+        
         var attributes: [FileAttributeKey: Any] = [:]
         do {
             attributes = try FileManager.default.attributesOfItem(atPath: file.url.fullURL().relativePath) as [FileAttributeKey: Any]
@@ -345,7 +354,7 @@ final class NetworkConnection {
             logger.log("networkConnection.sendfile: failed to handle file \"\(file.url.fullURL().relativePath)\", impossible to read", type: .error)
             throw MigratorError.fileError(type: .failedDuringFileHandling())
         }
-
+        
         var availableBytes = (attributes as NSDictionary).fileSize()
         var parsedBytes: UInt64 = 0
         
@@ -372,7 +381,7 @@ final class NetworkConnection {
                 
                 try await sendAsyncWrapper(content: chunk, contentContext: context)
                 self.onBytesSent.send(chunk.count)
-                            
+                
                 parsedBytes += min(chunkSize, availableBytes)
                 if availableBytes > chunkSize {
                     availableBytes -= chunkSize
@@ -504,10 +513,10 @@ final class NetworkConnection {
             logger.log("networkConnection.sendfile: failed to handle file \"\(fileURL.relativePath)\", impossible to read", type: .error)
             throw MigratorError.fileError(type: .failedDuringFileHandling())
         }
-
+        
         var availableBytes = (attributes as NSDictionary).fileSize()
         var parsedBytes: UInt64 = 0
-    
+        
         logger.log("networkConnection.sendfile: start sending data of file \"\(fileURL.relativePath)\"")
         if availableBytes > chunkSize {
             var partNumber: UInt32 = 0
@@ -531,7 +540,7 @@ final class NetworkConnection {
                 
                 try await sendAsyncWrapper(content: chunk, contentContext: context)
                 self.onBytesSent.send(chunk.count)
-                            
+                
                 parsedBytes += min(chunkSize, availableBytes)
                 if availableBytes > chunkSize {
                     availableBytes -= chunkSize
@@ -631,7 +640,7 @@ final class NetworkConnection {
                 case .hostname:
                     self.logger.log("networkConnection.receiveNextMessage: hostname message received", type: .default)
                     if let data = content,
-                        let hostname = String(data: data, encoding: .utf8) {
+                       let hostname = String(data: data, encoding: .utf8) {
                         self.connectedDeviceHostName = hostname
                     } else {
                         self.logger.log("networkConnection.receiveNextMessage: impossible to decode hostname", type: .error)
@@ -741,7 +750,7 @@ final class NetworkConnection {
                 case .metadata:
                     self.logger.log("networkConnection.receiveNextMessage: metadata message received", type: .default)
                     if let data = content,
-                        let migrationSize = String(data: data, encoding: .utf8) {
+                       let migrationSize = String(data: data, encoding: .utf8) {
                         self.migrationSizeInBytes = Int(migrationSize) ?? 0
                     } else {
                         self.logger.log("networkConnection.receiveNextMessage: failed to decode metadata", type: .error)
@@ -749,7 +758,7 @@ final class NetworkConnection {
                 case .availableSpace:
                     self.logger.log("networkConnection.receiveNextMessage: availableSpace message received", type: .default)
                     if let data = content,
-                        let freeSpace = String(data: data, encoding: .utf8) {
+                       let freeSpace = String(data: data, encoding: .utf8) {
                         self.connectedDeviceAvailableSpace = Int(freeSpace) ?? 0
                     } else {
                         self.logger.log("networkConnection.receiveNextMessage: failed to decode availableSpace", type: .error)
@@ -811,3 +820,16 @@ final class NetworkConnection {
 }
 
 //  swiftlint:enable function_body_length type_body_length file_length
+
+extension NWInterface.InterfaceType {
+    var stringValue: String {
+        switch self {
+        case .other: return "other"
+        case .wifi: return "wifi"
+        case .wiredEthernet: return "wiredEthernet"
+        case .loopback: return "loopback"
+        case .cellular: return "cellular"
+        @unknown default: return "unknown"
+        }
+    }
+}

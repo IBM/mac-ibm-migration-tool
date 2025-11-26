@@ -16,9 +16,8 @@ class ServerViewModel: ObservableObject {
     // MARK: - Variables
     
     var usedInterface: String {
-        guard let currentPath = self.migrationController.connection?.connection.currentPath else { return "" }
-        guard let currentInterface = currentPath.availableInterfaces.first(where: { currentPath.usesInterfaceType($0.type) }) else { return "" }
-        switch currentInterface.type {
+        guard let currentInterfaceType = self.migrationController.connection?.currentInterfaceType else { return "" }
+        switch currentInterfaceType {
         case .wifi, .cellular:
             return " " + "migration.page.technology.wifi.label".localized
         case .wiredEthernet:
@@ -77,7 +76,7 @@ class ServerViewModel: ObservableObject {
         self.migrationController.$bytesReceived.sink { bytesCount in
             Task { @MainActor in
                 self.bytesReceived = bytesCount
-                 if self.migrationController.sizeOfMigration != 0 {
+                if self.migrationController.sizeOfMigration != 0 {
                     self.migrationProgress = min(Double(self.bytesReceived)/Double(self.migrationController.sizeOfMigration), 0.99)
                     self.percentageCompleted = "\(min(99, self.bytesReceived*100/self.migrationController.sizeOfMigration))%"
                 }

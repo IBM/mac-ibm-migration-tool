@@ -47,6 +47,7 @@ class MigrationSetupViewModel: ObservableObject {
             Task { @MainActor in
                 self.isReadyForMigration = self.chosenOption.readyForMigration
             }
+            MigrationReportController.shared.setMigrationChosenOption(self.chosenOption.type.rawValue)
         }
     }
     /// Display string for available space on the destination, starts with a placeholder.
@@ -90,7 +91,7 @@ class MigrationSetupViewModel: ObservableObject {
         
         Utils.Common.preventSleep()
     }
-
+    
     // MARK: - Public Methods
     
     /// Loads metadata for each migration option asynchronously and updates the view state.

@@ -101,7 +101,7 @@ class RecapViewModel: ObservableObject {
         await withCheckedContinuation { continuation in
             Task.detached(priority: .utility) {
                 for selectedFile in selectedFiles {
-                    for exclusionURL in exclusionList {
+                    for exclusionURL in exclusionList where (try? exclusionURL.checkResourceIsReachable()) ?? false {
                         let relationship = Utils.FileManagerHelpers.getRelationship(ofItemAt: selectedFile, toItemAt: exclusionURL)
                         guard relationship == .containedBy || relationship == .same else { continue }
                         if let file = MigratorFile(with: exclusionURL, excludedItem: true) {
@@ -110,14 +110,6 @@ class RecapViewModel: ObservableObject {
                     }
                 }
                 
-                // If the entire Applications folder is selected, all the apps included in the url exclusion list will be showed in the excluded items list.
-                if selectedFiles.contains(where: { $0 == FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first! }) {
-                    for exclusionURL in exclusionList where exclusionURL.pathExtension == "app" {
-                        if let file = MigratorFile(with: exclusionURL, excludedItem: true) {
-                            await MainActor.run { self.addExcludedFile(file: file) }
-                        }
-                    }
-                }
                 await MainActor.run {
                     self.itemsExcluded.sort { (file1: MigratorFile, file2: MigratorFile) in
                         if file1.type != file2.type {

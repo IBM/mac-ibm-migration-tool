@@ -21,9 +21,8 @@ class MigrationViewModel: ObservableObject {
     var migrationController: MigrationController = MigrationController.shared
     
     var usedInterface: String {
-        guard let currentPath = self.migrationController.connection?.connection.currentPath else { return "" }
-        guard let currentInterface = currentPath.availableInterfaces.first(where: { currentPath.usesInterfaceType($0.type) }) else { return "" }
-        switch currentInterface.type {
+        guard let currentInterfaceType = self.migrationController.connection?.currentInterfaceType else { return "" }
+        switch currentInterfaceType {
         case .wifi, .cellular:
             return " " + "migration.page.technology.wifi.label".localized
         case .wiredEthernet:
@@ -32,7 +31,7 @@ class MigrationViewModel: ObservableObject {
             return ""
         }
     }
-            
+    
     // MARK: - Private Variables
     
     /// The migration option used for the migration process.
@@ -66,7 +65,7 @@ class MigrationViewModel: ObservableObject {
     
     /// Logger instance.
     private let logger: MLogger = MLogger.main
-        
+    
     // MARK: - Published Variables
     
     /// Published variable that track if the device is connected to a power source.
@@ -90,7 +89,7 @@ class MigrationViewModel: ObservableObject {
             if isReady {
                 self.startTheMigration()
                 MigrationReportController.shared.setMigrationStart()
-            } 
+            }
         }.store(in: &cancellables)
         migrationController.connection?.onBytesSent.sink(receiveValue: { bytesCount in
             Task { @MainActor in
@@ -154,7 +153,6 @@ class MigrationViewModel: ObservableObject {
                     try await migrationController.connection?.sendFile(app)
                     self.logger.log("migrationViewModel.migrationTask: app sent: \(app.url.fullURL().relativePath)", type: .default)
                     app.sent = true
-                    MigrationReportController.shared.addMigratedApp(app.name)
                 } catch {
                     self.logger.log("migrationViewModel.migrationTask: failed to send file: \(app.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"", type: .error)
                     MigrationReportController.shared.addError("migrationViewModel.migrationTask: failed to send file: \(app.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"")
@@ -180,7 +178,7 @@ class MigrationViewModel: ObservableObject {
         }
     }
     // swiftlint:enable function_body_length
-
+    
     @objc
     private func estimateTimeLeft() {
         pendingDataTrasferReport?.collect(queue: .main, completion: { report in
