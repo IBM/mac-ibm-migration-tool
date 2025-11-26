@@ -14,10 +14,10 @@ struct ConfigProfilePayload: Decodable {
     
     // MARK: - Constants
     
-    let name: String
+    let name: String?
     let organization: String?
-    let identifier: String
-    let uuid: String
+    let identifier: String?
+    let uuid: String?
     let serverURL: String?
     
     // MARK: - Private Enums
@@ -34,10 +34,10 @@ struct ConfigProfilePayload: Decodable {
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.name = try container.decode(String.self, forKey: .name)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.organization = try container.decodeIfPresent(String.self, forKey: .organization)
-        self.identifier = try container.decode(String.self, forKey: .identifier)
-        self.uuid = try container.decode(String.self, forKey: .uuid)
+        self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier)
+        self.uuid = try container.decodeIfPresent(String.self, forKey: .uuid)
         self.serverURL = (try container.decodeIfPresent(String.self, forKey: .serverURL))?.slice(from: "ServerURL = \"", to: "\"")
     }
 }

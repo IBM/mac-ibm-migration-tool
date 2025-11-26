@@ -14,7 +14,7 @@ struct ConfigProfileSection: Decodable {
     
     // MARK: - Constants
     
-    let name: String
+    let name: String?
     let profiles: [ConfigProfile]
     
     // MARK: - Private Enums

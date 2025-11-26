@@ -16,5 +16,5 @@ struct ManagedEnvironment: Codable {
     
     var name: String
     var serverURL: String
-    var reconPolicyID: String
+    var reconPolicyID: String?
 }

@@ -15,6 +15,8 @@ struct MigrationReportData {
     let migrationSizeInBytes: Int64?
     let sourceDeviceName: String?
     let targetDeviceName: String?
+    let transferMethod: String?
+    let chosenMigrationOption: String?
     let migratedFiles: [String]
     let migratedApps: [String]
     let errors: [String]
@@ -35,6 +37,8 @@ final class MigrationReportController {
     private var migrationSizeInBytes: Int64 = 0
     private var sourceDeviceName: String?
     private var targetDeviceName: String?
+    private var transferMethod: String?
+    private var chosenMigrationOption: String?
     private var migratedFiles: [String] = []
     private var migratedApps: [String] = []
     private var errors: [String] = []
@@ -59,16 +63,19 @@ final class MigrationReportController {
     
     func setMigrationStart(_ date: Date = .now) {
         self.migrationStart = date
+        self.saveToUserDefaults(key: .lastMigrationStartDate, value: date as NSDate)
         self.generateAndSavePDF()
     }
     
     func setMigrationEnd(_ date: Date = .now) {
         self.migrationEnd = date
+        self.saveToUserDefaults(key: .lastMigrationEndDate, value: date as NSDate)
         self.generateAndSavePDF()
     }
     
     func setTargetDevice(_ target: String) {
         self.targetDeviceName = target
+        self.saveToUserDefaults(key: .lastMigrationTargetDevice, value: target as NSString)
         self.generateAndSavePDF()
     }
     
@@ -86,11 +93,25 @@ final class MigrationReportController {
     
     func addError(_ errorMessage: String) {
         self.errors.append(errorMessage)
+        self.saveToUserDefaults(key: .lastMigrationErrors, value: errors as NSArray)
         self.generateAndSavePDF()
     }
     
     func setMigrationSize(_ bytes: Int64) {
         self.migrationSizeInBytes = bytes
+        self.saveToUserDefaults(key: .lastMigrationSize, value: bytes as NSNumber)
+        self.generateAndSavePDF()
+    }
+    
+    func setMigrationTransferMethod(_ method: String) {
+        self.transferMethod = method
+        self.saveToUserDefaults(key: .lastMigrationTransferMethod, value: method as NSString)
+        self.generateAndSavePDF()
+    }
+    
+    func setMigrationChosenOption(_ option: String) {
+        self.chosenMigrationOption = option
+        self.saveToUserDefaults(key: .lastMigrationChosenOption, value: option as NSString)
         self.generateAndSavePDF()
     }
     
@@ -158,6 +179,16 @@ final class MigrationReportController {
         addLine("Target Device: \(data.targetDeviceName ?? "N/P")")
         addLine("")
         
+        if let option = data.chosenMigrationOption, !option.isEmpty {
+            addLine("Selected Migration Option: \(option)")
+            addLine("")
+        }
+        
+        if let method = data.transferMethod, !method.isEmpty {
+            addLine("Transfer Method: \(method)")
+            addLine("")
+        }
+        
         addHeading("Migrated Files/Directories")
         if data.migratedFiles.isEmpty {
             addLine("None")
@@ -202,6 +233,8 @@ final class MigrationReportController {
                 migrationSizeInBytes: self.migrationSizeInBytes,
                 sourceDeviceName: self.sourceDeviceName,
                 targetDeviceName: self.targetDeviceName,
+                transferMethod: self.transferMethod,
+                chosenMigrationOption: self.chosenMigrationOption,
                 migratedFiles: self.migratedFiles,
                 migratedApps: self.migratedApps,
                 errors: self.errors
@@ -215,7 +248,7 @@ final class MigrationReportController {
     
     private func savePDF(pdfData: Data) {
         logger.log("migrationReportcontroller.savePDF: Saving PDF report to \(reportURL.relativePath)", type: .debug)
-
+        
         // If the file exists, remove it first to avoid createFile failure
         if FileManager.default.fileExists(atPath: reportURL.relativePath) {
             logger.log("migrationReportcontroller.savePDF: Existing report file found, removing it", type: .debug)
@@ -233,5 +266,9 @@ final class MigrationReportController {
             return
         }
         logger.log("migrationReportcontroller.savePDF: PDF report saved successfully!", type: .debug)
+    }
+    
+    private func saveToUserDefaults(key: Utils.UserDefaultsHelpers.ReportKeys, value: Any) {
+        UserDefaults.standard.set(value, forKey: key.rawValue)
     }
 }

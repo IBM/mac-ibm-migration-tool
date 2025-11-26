@@ -50,7 +50,7 @@ struct Utils {
                 return "common.system.settings.pre.ventura.label".localized
             }
         }
-                
+        
         /// Generate a random code.
         /// - Parameter digits: number of digits of the code.
         /// - Returns: string with the generated code.
@@ -368,6 +368,16 @@ extension Utils {
 
 extension Utils {
     struct UserDefaultsHelpers {
+        /// A collection of UserDefaults keys used to persist migration report metadata.
+        enum ReportKeys: String, CaseIterable {
+            case lastMigrationStartDate
+            case lastMigrationEndDate
+            case lastMigrationTargetDevice
+            case lastMigrationErrors
+            case lastMigrationSize
+            case lastMigrationTransferMethod
+            case lastMigrationChosenOption
+        }
         
         /// The array of keys defined in the UserDefaults domain.
         private static let customizedKeys: Dictionary<String, Any>.Keys = UserDefaults.standard.dictionaryRepresentation().keys
@@ -375,7 +385,7 @@ extension Utils {
         /// Removes any previously stored values from UserDefaults for all custom configuration keys,
         /// except for the Terms & Conditions acceptance key.
         static func cleanUpCustomKeys() {
-            for key in customizedKeys where key != AppContext.tAndCUserAcceptanceKey {
+            for key in customizedKeys where (key != AppContext.tAndCUserAcceptanceKey && !ReportKeys.allCases.contains(where: { $0.rawValue == key })) {
                 UserDefaults.standard.removeObject(forKey: key)
             }
         }

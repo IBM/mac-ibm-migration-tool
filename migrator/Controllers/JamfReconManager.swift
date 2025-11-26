@@ -12,7 +12,7 @@ import Foundation
 /// The JamfReconManager actor is designed to manage and monitor the execution of a specific Jamf policy,
 /// particularly related to inventory updates (recon), using AppleScript to interact with system processes.
 actor JamfReconManager {
-
+    
     // MARK: - Constants
     
     /// Logger instance for logging events and messages
@@ -24,7 +24,7 @@ actor JamfReconManager {
     var reconPolicyID: String {
         switch DeviceManagementHelper.shared.state {
         case .managed(env: let env):
-            return env.reconPolicyID
+            return env.reconPolicyID ?? "null"
         default:
             return ""
         }
