@@ -83,7 +83,10 @@ cd mac-ibm-migration-tool
 open migrator.xcodeproj
 ```
 
-3. Build and run:
+3. Rebrand the app:
+   - Follow the [wiki guide](../../wiki/How-to-rebrand-the-app).
+
+4. Build and run:
    - Select the `migrator` scheme
    - Choose your target device
    - Press `Cmd + R` to build and run
