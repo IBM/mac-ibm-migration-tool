@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 31/01/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -24,7 +24,6 @@ extension URL {
     }
 
     /// Calculates the total allocated size of files within the directory.
-    ///
     /// - Parameter includingSubfolders: A Boolean value indicating whether to include subfolders in the calculation.
     /// - Returns: The total allocated size of files within the directory, or nil if the directory is not reachable or an error occurs.
     func directoryTotalAllocatedSize() async throws -> Int? {

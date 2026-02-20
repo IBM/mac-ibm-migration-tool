@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 22/08/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -40,10 +40,11 @@ struct JamfReconView: View {
                 .accessibilityHidden(true)
             Text("recon.page.title.label")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text(String(format: "recon.page.body.label".localized, AppContext.orgName, "recon.page.main.button.run.label".localized))
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
             Spacer()
@@ -54,6 +55,7 @@ struct JamfReconView: View {
                         .controlSize(.small)
                         .accessibilityHidden(true)
                     Text("recon.page.informational.bottom.ongoing.label")
+                        .customFont(.body)
                         .padding(.leading, 8)
                 }
                 Spacer()
@@ -74,6 +76,7 @@ struct JamfReconView: View {
         }
         .alert("recon.page.alert.error.title", isPresented: $encounteredError, actions: { }, message: {
             Text("recon.page.alert.error.message")
+                .customFont(.body)
         })
         .onAppear {
             Utils.Window.makeWindowFloating()
@@ -82,6 +85,7 @@ struct JamfReconView: View {
     
     var mainButtonLabel: some View {
         Text("recon.page.main.button.run.label")
+            .customFont(.body)
             .padding(4)
     }
     

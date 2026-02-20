@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 26/02/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -46,6 +46,10 @@ class ServerViewModel: ObservableObject {
     @Published var percentageCompleted: String = "server.page.progressbar.top.percentage.start.label".localized
     /// Random pairing code.
     @Published var randomCode: String = ""
+    /// Tracks whether the service is registered on the network (indicates Local Network permission status).
+    @Published var isServiceRegistered: Bool = false
+    /// Tracks whether the listener is running but service is not registered (indicates potential permission issue).
+    @Published var showLocalNetworkWarning: Bool = false
     
     // MARK: - Private Variables
     
@@ -53,6 +57,10 @@ class ServerViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     /// Counts the number of bytes received from file trasfer messages.
     private var bytesReceived: Int = 1
+    /// Timer to delay showing the Local Network warning to avoid flashing when service registers successfully.
+    private var warningDelayTask: Task<Void, Never>?
+    /// Delay in seconds before showing the Local Network warning.
+    private let warningDelaySeconds: TimeInterval = 3.0
     
     // MARK: - Initializers
     
@@ -65,7 +73,6 @@ class ServerViewModel: ObservableObject {
                 if newValue {
                     self.connectionEstablished = newValue
                     self.connectionInterrupted = false
-                    // Stops the server to prevent additional connections once one is established.
                     self.migrationController.stopServer()
                     Utils.Common.preventSleep()
                 } else {
@@ -73,10 +80,35 @@ class ServerViewModel: ObservableObject {
                 }
             }
         }.store(in: &cancellables)
+        self.migrationController.$isServiceRegistered.sink { isRegistered in
+            Task { @MainActor in
+                self.isServiceRegistered = isRegistered
+                if isRegistered {
+                    // Service registered successfully, cancel any pending warning
+                    self.warningDelayTask?.cancel()
+                    self.showLocalNetworkWarning = false
+                } else if self.migrationController.migrationState == .discovery {
+                    // Service not registered, schedule warning after delay
+                    self.scheduleWarningDisplay()
+                }
+            }
+        }.store(in: &cancellables)
+        self.migrationController.$migrationState.sink { state in
+            Task { @MainActor in
+                if state == .discovery && !self.isServiceRegistered {
+                    // Listener started but service not registered yet, schedule warning
+                    self.scheduleWarningDisplay()
+                } else {
+                    // Not in discovery state, cancel any pending warning
+                    self.warningDelayTask?.cancel()
+                    self.showLocalNetworkWarning = false
+                }
+            }
+        }.store(in: &cancellables)
         self.migrationController.$bytesReceived.sink { bytesCount in
             Task { @MainActor in
                 self.bytesReceived = bytesCount
-                if self.migrationController.sizeOfMigration != 0 {
+                 if self.migrationController.sizeOfMigration != 0 {
                     self.migrationProgress = min(Double(self.bytesReceived)/Double(self.migrationController.sizeOfMigration), 0.99)
                     self.percentageCompleted = "\(min(99, self.bytesReceived*100/self.migrationController.sizeOfMigration))%"
                 }
@@ -99,6 +131,26 @@ class ServerViewModel: ObservableObject {
     }
     
     // MARK: - Private Functions
+    
+    /// Schedules the display of the Local Network warning after a delay.
+    /// This prevents the warning from flashing briefly when the service registers successfully.
+    private func scheduleWarningDisplay() {
+        // Cancel any existing delay task
+        warningDelayTask?.cancel()
+        
+        // Schedule new delay task
+        warningDelayTask = Task { @MainActor in
+            do {
+                try await Task.sleep(nanoseconds: UInt64(warningDelaySeconds * 1_000_000_000))
+                // After delay, check if we should still show the warning
+                if self.migrationController.migrationState == .discovery && !self.isServiceRegistered {
+                    self.showLocalNetworkWarning = true
+                }
+            } catch {
+                // Task was cancelled, do nothing
+            }
+        }
+    }
     
     /// Handle the devicePowerStatusChanged notification.
     @objc

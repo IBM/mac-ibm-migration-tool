@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 30/01/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -21,4 +21,5 @@ enum MigratorMessageType: UInt32 {
     case directory = 7      // Represents a message indicating a directory, possibly used when initiating the transfer of a directory's contents.
     case metadata = 8       // Represents a metadata message.
     case defaults = 9       // Represents a message with UserDefaults values.
+    case deviceInfo = 10    // Represents a message containing device information including architecture.
 }

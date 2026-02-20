@@ -3,10 +3,10 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/11/2023.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
-// swiftlint:disable file_length
+// swiftlint:disable file_length nesting
 
 import os.log
 import Foundation
@@ -50,7 +50,7 @@ struct Utils {
                 return "common.system.settings.pre.ventura.label".localized
             }
         }
-        
+                
         /// Generate a random code.
         /// - Parameter digits: number of digits of the code.
         /// - Returns: string with the generated code.
@@ -172,16 +172,16 @@ extension Utils {
                 if finalUrl.starts(with: "/") {
                     finalUrl.removeFirst()
                 }
-                return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(finalUrl)
+                return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("#\(finalUrl)#")
             }
             if urlString.contains("$APPFOLDER") {
                 var finalUrl = urlString.replacingOccurrences(of: "$APPFOLDER", with: "")
                 if finalUrl.starts(with: "/") {
                     finalUrl.removeFirst()
                 }
-                return FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent(finalUrl)
+                return FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("#\(finalUrl)#")
             }
-            return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(urlString)
+            return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("#\(urlString)#")
         }
     }
 }
@@ -240,6 +240,12 @@ extension Utils {
             
             let firstComponents = firstStandardized.pathComponents
             let secondComponents = secondStandardized.pathComponents
+            
+            if firstComponents.count == secondComponents.count {
+                if url(firstStandardized, matchesPatternURL: secondStandardized) {
+                    return .same
+                }
+            }
             
             let minCount = min(firstComponents.count, secondComponents.count)
             
@@ -321,7 +327,8 @@ extension Utils {
             }
             return false
         }
-        
+        // swiftlint:enable function_body_length
+
         /// Determines whether a given path should be ignored during file operations.
         /// - Parameter pathURL: The URL to check against exclusion rules.
         /// - Returns: True if the path should be ignored, false otherwise.
@@ -359,10 +366,55 @@ extension Utils {
                     }
                 }
             }
-            
             return shouldIgnore
         }
-        // swiftlint:enable function_body_length
+        
+        /// Returns true if `url` matches `patternURL`, where components in `patternURL`
+        /// are treated as regular expressions using `NSRegularExpression`.
+        static func url(_ url: URL, matchesPatternURL patternURL: URL) -> Bool {
+            let lhs = url.standardizedFileURL
+            let rhs = patternURL.standardizedFileURL
+            let lhsComponents = lhs.pathComponents
+            let rhsComponents = rhs.pathComponents
+            
+            guard lhsComponents.count == rhsComponents.count else { return false }
+            
+            for idx in 0..<lhsComponents.count {
+                let lhsComp = lhsComponents[idx]
+                let rhsComp = rhsComponents[idx]
+                if rhsComp == "/" || lhsComp == "/" {
+                    if rhsComp != lhsComp { return false }
+                    continue
+                }
+                
+                if let regex = nsRegexFromPatternComponent(rhsComp) {
+                    let range = NSRange(location: 0, length: (lhsComp as NSString).length)
+                    let fullPattern = "^(?:" + regex.pattern + ")$"
+                    guard let fullRegex = try? NSRegularExpression(pattern: fullPattern) else { return false }
+                    if idx == lhsComponents.count - 1 {
+                        return fullRegex.firstMatch(in: lhsComp, options: [], range: range) != nil
+                    } else {
+                        if fullRegex.firstMatch(in: lhsComp, options: [], range: range) == nil { return false }
+                    }
+                } else {
+                    if idx == lhsComponents.count - 1 {
+                        return lhsComp == rhsComp
+                    } else {
+                        if lhsComp != rhsComp { return false }
+                    }
+                }
+            }
+
+            return false
+        }
+        
+        /// Returns an `NSRegularExpression` if successful, otherwise nil (meaning treat as literal).
+        private static func nsRegexFromPatternComponent(_ component: String) -> NSRegularExpression? {
+            guard component.count >= 2 else {
+                return nil
+            }
+            return try? NSRegularExpression(pattern: component)
+        }
     }
 }
 
@@ -385,7 +437,9 @@ extension Utils {
         /// Removes any previously stored values from UserDefaults for all custom configuration keys,
         /// except for the Terms & Conditions acceptance key.
         static func cleanUpCustomKeys() {
-            for key in customizedKeys where (key != AppContext.tAndCUserAcceptanceKey && !ReportKeys.allCases.contains(where: { $0.rawValue == key })) {
+            for key in customizedKeys where (key != AppContext.tAndCUserAcceptanceKey
+                                             && key != AppContext.loggingLevelUserDefaultsKey
+                                             && !ReportKeys.allCases.contains(where: { $0.rawValue == key })) {
                 UserDefaults.standard.removeObject(forKey: key)
             }
         }
@@ -429,4 +483,4 @@ extension Utils {
     }
 }
 
-// swiftlint:enable file_length
+// swiftlint:enable file_length nesting

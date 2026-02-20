@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created on 07/10/2025.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -59,7 +59,7 @@ struct ResourceView: View {
         VStack(spacing: 0) {
             HStack {
                 Text(title)
-                    .font(.headline)
+                    .customFont(.headline)
                     .padding(.leading)
                 Spacer()
                 if !requireUserAcceptance {
@@ -86,8 +86,9 @@ struct ResourceView: View {
                             .font(.system(size: 50))
                             .foregroundColor(.orange)
                         Text(String(format: "remote.resource.view.error.loading.label".localized, resource.absoluteString))
-                            .font(.title2)
+                            .customFont(.title2)
                         Text("remote.resource.view.error.hint.label")
+                            .customFont(.body)
                             .foregroundColor(.secondary)
                         Button("remote.resource.view.error.retry.button.label") {
                             isLoading = true

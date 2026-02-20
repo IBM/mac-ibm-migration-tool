@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 15/03/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -62,7 +62,7 @@ struct CodeVerificationFieldView: View {
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.center)
                         .frame(width: 43, height: 60)
-                        .font(.system(size: 36, weight: .semibold))
+                        .customFont(size: 36, weight: .semibold)
                         .background(
                             Color("bigButtonUnselected")
                                 .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -73,7 +73,7 @@ struct CodeVerificationFieldView: View {
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.center)
                         .frame(width: 43, height: 60)
-                        .font(.system(size: 36, weight: .semibold))
+                        .customFont(size: 36, weight: .semibold)
                         .focused($charFocusState, equals: ElementFocusState.char(index))
                         .background(Color("bigButtonUnselected")
                                 .clipShape(RoundedRectangle(cornerRadius: 16))

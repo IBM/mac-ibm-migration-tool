@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 16/11/2023.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -50,63 +50,30 @@ struct WelcomeView: View {
                 .accessibilityHidden(true)
             Text(String(format: "welcome.page.title".localized, Bundle.main.name))
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text("welcome.page.subtitle")
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
-            HStack(spacing: 86) {
-                VStack {
-                    Button(action: {
-                        nextPage = .server
-                    }, label: {
-                        Image("new_mac")
-                            .frame(width: 120, height: 120)
-                            .tint(Color("uiIcon"))
-                            .background(content: {
-                                if nextPage == .server {
-                                    LinearGradient.bigButtonSelected(colorScheme: colorScheme)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                } else {
-                                    Color("bigButtonUnselected")
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                }
-                            })
-                    })
-                    .buttonStyle(.plain)
-                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.3), radius: 2.5, x: 0, y: 0.5)
-                    .padding(.bottom, 6)
-                    .accessibilityLabel("accessibility.welcomePage.leftButton.label")
-                    .accessibilityHint("accessibility.welcomePage.leftButton.hint")
-                    Text("welcome.page.button.big.left.label")
-                        .accessibilityHidden(true)
-                }
-                VStack {
-                    Button(action: {
-                        nextPage = .browser
-                    }, label: {
-                        Image("old_mac")
-                            .frame(width: 120, height: 120)
-                            .tint(Color("uiIcon"))
-                            .background(content: {
-                                if nextPage == .browser {
-                                    LinearGradient.bigButtonSelected(colorScheme: colorScheme)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                } else {
-                                    Color("bigButtonUnselected")
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                }
-                            })
-                    })
-                    .buttonStyle(.plain)
-                    .shadow(color: Color.black.opacity(0.3), radius: 2.5, x: 0, y: 0.5)
-                    .padding(.bottom, 6)
-                    .accessibilityLabel("accessibility.welcomePage.rightButton.label")
-                    .accessibilityHint("accessibility.welcomePage.rightButton.hint")
-                    Text("welcome.page.button.big.right.label")
-                        .accessibilityHidden(true)
-                }
+            HStack(spacing: 15) {
+                CardButton(image: Image("new_mac"),
+                           label: "welcome.page.button.big.left.label".localized,
+                           action: {
+                    action(.server)
+                })
+                .frame(width: 200)
+                .accessibilityLabel("accessibility.welcomePage.leftButton.label")
+                .accessibilityHint("accessibility.welcomePage.leftButton.hint")
+                CardButton(image: Image("old_mac"),
+                           label: "welcome.page.button.big.right.label".localized,
+                           action: {
+                    action(.browser)
+                })
+                .frame(width: 200)
+                .accessibilityLabel("accessibility.welcomePage.rightButton.label")
+                .accessibilityHint("accessibility.welcomePage.rightButton.hint")
             }
             Spacer()
             Divider()
@@ -115,15 +82,6 @@ struct WelcomeView: View {
                     versionCopyrightPrivacy
                 }
                 Spacer()
-                Button(action: {
-                    action(nextPage)
-                }, label: {
-                    Text("welcome.page.button.main.label")
-                        .padding(4)
-                })
-                .disabled(nextPage == .welcome)
-                .keyboardShortcut(.defaultAction)
-                .accessibilityHint("accessibility.welcomePage.mainButton.hint")
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
             .frame(height: 56)
@@ -134,16 +92,19 @@ struct WelcomeView: View {
                 exit(0)
             }, label: {
                 Text(String(format: "welcome.page.fda.error.first.action.title".localized, Utils.Common.systemSettingsLabel))
+                    .customFont(.body)
             })
             .accessibilityHint("accessibility.welcomePage.fdaAlert.defaultButton.hint")
             Button {
                 exit(0)
             } label: {
                 Text("welcome.page.fda.error.second.action.title")
+                    .customFont(.body)
             }
             .accessibilityHint("accessibility.welcomePage.fdaAlert.secondaryButton.hint")
         }, message: {
             Text(String(format: "welcome.page.fda.error.message".localized, appName, Utils.Common.systemSettingsLabel, appName))
+                .customFont(.body)
         })
         .alert(String(format: "welcome.page.management.error.title".localized, AppContext.orgName), isPresented: $showManagementError, actions: {
             Button(action: {
@@ -151,10 +112,12 @@ struct WelcomeView: View {
                 exit(0)
             }, label: {
                 Text("welcome.page.management.error.first.action.title")
+                    .customFont(.body)
             })
             .accessibilityHint("accessibility.welcomePage.mdmAlert.defaultButton.hint")
         }, message: {
             Text(String(format: "welcome.page.management.error.message".localized, AppContext.orgName, AppContext.orgName))
+                .customFont(.body)
         })
         .sheet(isPresented: $showTermsAndConditions) {
             ResourceView(title: "common.app.menu.label.termsandconditon".localized,
@@ -173,12 +136,13 @@ struct WelcomeView: View {
                 self.showTermsAndConditions.toggle()
             }
             // Trying to access a file unaccessible without Full Disk Access permissions as there isn't a way to ask for those permission with an API. This trick allow the app to be in the Full Disk Access app list.
-            #if !DEBUG
+#if !DEBUG
             try? FileManager.default.copyItem(atPath: "/Library/Preferences/com.apple.TimeMachine.plist", toPath: "/private/tmp/com.apple.TimeMachine.plist")
             // If the app is not able to read at this path it means that it doesn't have FDA permissions so an alert is showed to ask the user to allow it.
             if !FileManager.default.isReadableFile(atPath: "/Library/Preferences/com.apple.TimeMachine.plist") {
                 showFDAError.toggle()
             }
+#endif
             if !AppContext.shouldSkipMDMCheck {
                 switch DeviceManagementHelper.shared.state {
                 case .unmanaged, .unknown, .managedByUnknownOrg, .none:
@@ -187,7 +151,7 @@ struct WelcomeView: View {
                     break
                 }
             }
-            #endif
+            
         }
     }
     
@@ -195,12 +159,12 @@ struct WelcomeView: View {
         VStack(alignment: .leading, spacing: 2) {
             if !Bundle.main.marketingVersion.isEmpty && !Bundle.main.buildNumber.isEmpty {
                 Text(String(format: "welcome.page.bundle.version.label".localized, Bundle.main.marketingVersion, Bundle.main.buildNumber))
-                    .font(.caption)
+                    .customFont(.caption)
                     .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] }
             }
             if !Bundle.main.copyright.isEmpty {
                 Text(Bundle.main.copyright)
-                    .font(.caption)
+                    .customFont(.caption)
                     .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] }
             }
             if AppContext.privacyPolicyURL != nil {
@@ -208,7 +172,7 @@ struct WelcomeView: View {
                     self.showPrivacyPolicy.toggle()
                 }, label: {
                     Text("common.app.menu.label.privacypolicy")
-                        .font(.caption)
+                        .customFont(.caption)
                 })
                 .buttonStyle(.link)
                 .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] }

@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/10/2025.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -25,7 +25,7 @@ struct RecapView: View {
     let nextPage: MigratorPage = .migration
     
     let includedFiles: [MigratorFile] = MigrationController.shared.migrationOption.migrationFileList.filter { $0.isSelected }
-    let includedApps: [MigratorFile] =  MigrationController.shared.migrationOption.migrationAppList.filter { $0.isSelected }
+    let includedApps: [MigratorFile] =  MigrationController.shared.migrationOption.migrationAppList.filter { $0.isSelected }.map { $0.migratorFile }
     
     // MARK: - State Variables
     
@@ -51,7 +51,7 @@ struct RecapView: View {
                 .accessibilityHidden(true)
             Text("recap.page.title")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom)
             if viewModel.isLoading {
                 Spacer()
@@ -61,8 +61,7 @@ struct RecapView: View {
                     }
                 Spacer()
             } else {
-                fileSection
-                duplicateWarningBar
+                pageBody
             }
             Spacer()
             Divider()
@@ -87,6 +86,7 @@ struct RecapView: View {
             .accessibilityHint("accessibility.recapView.deviceSleepAlert.mainButton.hint")
         } message: {
             Text("migration.devicesleep.alert.message")
+                .customFont(.body)
         }
         .alert("migration.fileinteraction.alert.title", isPresented: $showFileInteractionAlert) {
             Button("migration.fileinteraction.alert.main.action.label") {
@@ -97,6 +97,7 @@ struct RecapView: View {
             .accessibilityHint("accessibility.recapView.fileInteractionAlert.mainButton.hint")
         } message: {
             Text("migration.fileinteraction.alert.message")
+                .customFont(.body)
         }
     }
     
@@ -104,7 +105,7 @@ struct RecapView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 Text("recap.page.will.be.migrated.title")
-                    .font(.headline)
+                    .customFont(.headline)
                     .padding(.bottom, 4)
                 ForEach(includedFiles) { item in
                     if item.isHidden && !showHiddenFiles {
@@ -123,10 +124,10 @@ struct RecapView: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity)
-            .layoutPriority(1)
             .padding()
         }
+        .frame(idealWidth: 250)
+        .layoutPriority(0.9)
         .background {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color("discoveryViewBackground"))
@@ -137,7 +138,7 @@ struct RecapView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 Text("recap.page.wont.be.migrated.title")
-                    .font(.headline)
+                    .customFont(.headline)
                     .padding(.bottom, 4)
                 ForEach(viewModel.itemsExcluded) { item in
                     if item.isHidden && !showHiddenFiles {
@@ -148,10 +149,10 @@ struct RecapView: View {
                     }
                 }
             }
-            .frame(maxWidth: .infinity)
-            .layoutPriority(1)
             .padding()
         }
+        .frame(idealWidth: 250)
+        .layoutPriority(0.9)
         .background {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color("discoveryViewBackground"))
@@ -162,10 +163,12 @@ struct RecapView: View {
         HStack(alignment: .center) {
             Image(systemName: "exclamationmark.circle.fill")
             Text(viewModel.duplicateFileMessage)
+                .customFont(.body)
             Spacer()
         }
         .padding()
-        .frame(width: 550)
+        .frame(idealWidth: 500, maxWidth: .infinity)
+        .layoutPriority(0.9)
         .background {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color("discoveryViewBackground"))
@@ -176,11 +179,15 @@ struct RecapView: View {
         HStack {
             Spacer()
             Button(action: { didPressSecondaryButton() }, label: {
-                Text("recap.page.secondary.button.label").padding(4)
+                Text("recap.page.secondary.button.label")
+                    .customFont(.body)
+                    .padding(4)
             })
             .accessibilityHint("accessibility.recapView.secondaryButton.hint")
             Button(action: { didPressMainButton() }, label: {
-                Text("recap.page.main.button.label").padding(4)
+                Text("recap.page.main.button.label")
+                    .customFont(.body)
+                    .padding(4)
             })
             .disabled(viewModel.isLoading)
             .padding(.leading, 6)
@@ -189,13 +196,14 @@ struct RecapView: View {
         }
     }
     
-    var fileSection: some View {
-        Group {
+    var pageBody: some View {
+        VStack {
             HStack {
                 Toggle(isOn: $showHiddenFiles, label: { })
                     .controlSize(.mini)
                     .toggleStyle(.switch)
                 Text(String(format: "migration.setup.directory.content.hidden.label".localized, showHiddenFiles ? "migration.setup.directory.content.hidden.label.hide".localized : "migration.setup.directory.content.hidden.label.show".localized))
+                    .customFont(.body)
                 Spacer()
             }
             HStack(spacing: 10) {
@@ -208,8 +216,10 @@ struct RecapView: View {
                     excludedSection
                 }
             }
+            duplicateWarningBar
         }
-        .frame(width: 550)
+        .frame(idealWidth: 500, maxWidth: 700)
+        .layoutPriority(1)
     }
     
     // MARK: - Private Methods

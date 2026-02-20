@@ -346,6 +346,281 @@
         }
       }
     },
+    "app.architecture.applications.count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applications (%lld):"
+          }
+        }
+      }
+    },
+    "app.architecture.badge.appleSilicon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Silicon"
+          }
+        }
+      }
+    },
+    "app.architecture.badge.intel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intel"
+          }
+        }
+      }
+    },
+    "app.architecture.badge.universal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Universal"
+          }
+        }
+      }
+    },
+    "app.architecture.badge.unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        }
+      }
+    },
+    "app.architecture.confirmation.ignore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignore These Apps"
+          }
+        }
+      }
+    },
+    "app.architecture.confirmation.migrate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Migrate Anyway"
+          }
+        }
+      }
+    },
+    "app.architecture.confirmation.review" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review Migration Selection"
+          }
+        }
+      }
+    },
+    "app.architecture.description.appleSiliconOnly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Silicon only"
+          }
+        }
+      }
+    },
+    "app.architecture.description.intelOnly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intel-only (requires Rosetta 2 on Apple Silicon)"
+          }
+        }
+      }
+    },
+    "app.architecture.description.universal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Universal (runs natively on both Intel and Apple Silicon)"
+          }
+        }
+      }
+    },
+    "app.architecture.description.unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Architecture unknown"
+          }
+        }
+      }
+    },
+    "app.architecture.doc.link.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read more about using Intel-based apps on a Mac with Apple silicon."
+          }
+        }
+      }
+    },
+    "app.architecture.filter.showIntelOnly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Intel-only apps"
+          }
+        }
+      }
+    },
+    "app.architecture.tooltip.intel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app bundle is built for Intel processor-based Macs."
+          }
+        }
+      }
+    },
+    "app.architecture.tooltip.silicon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app bundle is built for Apple Silicon processor-based Macs."
+          }
+        }
+      }
+    },
+    "app.architecture.tooltip.universal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This app bundle is compatible with both Intel and Apple Silicon processor-based Macs."
+          }
+        }
+      }
+    },
+    "app.architecture.tooltip.unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible to fetch app architecture."
+          }
+        }
+      }
+    },
+    "app.architecture.warning.incompatible.info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These Apple Silicon-only applications cannot run on Intel Macs. You will need to find Intel-compatible versions or alternative applications after migration."
+          }
+        }
+      }
+    },
+    "app.architecture.warning.message.intelToSilicon.norosetta" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The following applications are exclusively compatible with Intel processors and require Rosetta 2 to function on your Apple Silicon Mac."
+          }
+        }
+      }
+    },
+    "app.architecture.warning.message.intelToSilicon.rosetta" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The following applications are exclusively compatible with Intel processors and require Rosetta 2 to function on your Apple Silicon Mac. Rest assured, %@ has already detected that Rosetta 2 is pre-installed on your Apple Silicon device."
+          }
+        }
+      }
+    },
+    "app.architecture.warning.message.siliconToIntel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The following applications are Apple Silicon-only and will NOT run on your Intel Mac."
+          }
+        }
+      }
+    },
+    "app.architecture.warning.rosetta.info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rosetta 2 allows Intel apps to run on Apple Silicon, but may have reduced performance. These apps may need to be updated or replaced with Apple Silicon-compatible versions."
+          }
+        }
+      }
+    },
+    "app.architecture.warning.title.intelToSilicon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intel-Only Applications Detected"
+          }
+        }
+      }
+    },
+    "app.architecture.warning.title.siliconToIntel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Silicon-Only Applications Detected"
+          }
+        }
+      }
+    },
     "app.name.backup" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -938,6 +1213,50 @@
         }
       }
     },
+    "migration.option.compact.app.singular" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 app"
+          }
+        }
+      }
+    },
+    "migration.option.compact.apps.count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld apps"
+          }
+        }
+      }
+    },
+    "migration.option.compact.folder.singular" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 folder"
+          }
+        }
+      }
+    },
+    "migration.option.compact.folders.count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld folders"
+          }
+        }
+      }
+    },
     "migration.option.complete.applications.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -971,6 +1290,50 @@
         }
       }
     },
+    "migration.option.detail.apps.section" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applications"
+          }
+        }
+      }
+    },
+    "migration.option.detail.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "migration.option.detail.files.section" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files & Folders"
+          }
+        }
+      }
+    },
+    "migration.option.detail.sheet.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Migration Contents"
+          }
+        }
+      }
+    },
     "migration.option.lite.desktop.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -989,6 +1352,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Documents Folder"
+          }
+        }
+      }
+    },
+    "migration.option.view.details.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to view all migration items"
           }
         }
       }
@@ -1278,6 +1652,10 @@
           }
         }
       }
+    },
+    "No items to display" : {
+      "comment" : "A message displayed when there are no files or applications",
+      "isCommentAutoGenerated" : true
     },
     "reboot.page.body.label" : {
       "localizations" : {
@@ -1634,6 +2012,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This device"
+          }
+        }
+      }
+    },
+    "server.page.localnetwork.warning.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the device doesn't appear in the %@ on your old device, Local Network access might not be enabled. Go to %@ > Privacy & Security > Local Network, find %@ in the list, and toggle it on. Then restart the app on this device."
           }
         }
       }

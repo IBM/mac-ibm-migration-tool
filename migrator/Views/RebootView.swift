@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 22/08/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -33,18 +33,18 @@ struct RebootView: View {
                 .accessibilityHidden(true)
             Text("reboot.page.title.label")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text("reboot.page.body.label")
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
             Spacer()
             Divider()
             HStack {
                 Text(String(format: "reboot.page.bottom.timer.label".localized, timeLeft.timeFormattedString))
-                    .font(.title3)
-                    .bold()
+                    .customFont(.title3, weight: .bold)
                 Spacer()
                 Button(action: {
                     didPressMainButton()
@@ -73,6 +73,7 @@ struct RebootView: View {
     
     var mainButtonLabel: some View {
         Text("reboot.page.main.button.label")
+            .customFont(.body)
             .padding(4)
     }
     
