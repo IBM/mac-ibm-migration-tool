@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 16/11/2023.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -42,10 +42,11 @@ struct MigrationView: View {
                 .accessibilityHidden(true)
             Text(viewModel.migrationProgress == 1 ? "migration.page.title.complete.label".localized : "migration.page.title.ongoing.label".localized)
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text(viewModel.migrationProgress == 1 ? "migration.page.body.source.complete.label".localized : "migration.page.body.ongoing.label".localized)
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.horizontal, 40)
             Image("new_mac")
                 .resizable()
@@ -53,8 +54,12 @@ struct MigrationView: View {
                 .frame(width: 90, height: 90)
                 .tint(Color("uiIcon"))
                 .accessibilityHidden(true)
-            Group {
-                Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized) + Text(viewModel.migrationController.hostName).fontWeight(.bold) + Text(viewModel.usedInterface)
+            HStack(spacing: 0) {
+                Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized)
+                    .customFont(.body)
+                Text(viewModel.migrationController.hostName).customFont(style: .body, weight: .bold)
+                Text(viewModel.usedInterface)
+                    .customFont(.body)
             }
             .padding(.vertical, 4)
             VStack {
@@ -63,10 +68,10 @@ struct MigrationView: View {
                     .controlSize(.regular)
                 HStack {
                     Text(viewModel.estimatedTimeLeft)
-                        .font(.callout)
+                        .customFont(.callout)
                     Spacer()
                     Text(viewModel.percentageCompleted)
-                        .font(.callout)
+                        .customFont(.callout)
                 }
             }
             .padding(.horizontal, 176)
@@ -77,6 +82,7 @@ struct MigrationView: View {
                 HStack {
                     Image(systemName: "doc.fill")
                     Text("final.page.report.button.label")
+                        .customFont(.body)
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 16)
@@ -96,6 +102,7 @@ struct MigrationView: View {
                     .accessibilityHint("accessibility.migrationView.powerWarningButton.hint")
                     .popover(isPresented: $showWarningPopover, arrowEdge: .bottom, content: {
                         Text("migration.page.warning.button.popover.text")
+                            .customFont(.body)
                             .padding()
                     })
                 }
@@ -104,6 +111,7 @@ struct MigrationView: View {
                     appDelegate.quit()
                 }, label: {
                     Text("migration.page.main.button.label")
+                        .customFont(.body)
                         .padding(4)
                 })
                 .hiddenConditionally(isHidden: viewModel.migrationProgress < 1)
@@ -111,6 +119,18 @@ struct MigrationView: View {
                 .accessibilityHint("accessibility.migrationView.mainButton.hint")
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
+        }
+        .task {
+            self.viewModel.startMigration()
+        }
+        .overlay {
+            if viewModel.connectionInterrupted {
+                CustomAlertView(title: "connection.error.alert.title".localized, message: "connection.error.alert.restoring.message".localized) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.regular)
+                }
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 17/01/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -34,6 +34,8 @@ struct MigrationSetupView: View {
     
     @State private var showDeviceSleepAlert: Bool = false
     @State private var showFileInteractionAlert: Bool = false
+    @State private var showIntelAppConfirmation: Bool = false
+    @State private var isLoading: Bool = false
     
     // MARK: - Views
     
@@ -45,11 +47,12 @@ struct MigrationSetupView: View {
                 .accessibilityHidden(true)
             Text("migration.setup.page.title")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             if $viewModel.viewState.wrappedValue != MigrationSetupViewModel.MigrationSetupViewState.advancedSelection {
                 Text("migration.setup.page.subtitle")
                     .multilineTextAlignment(.center)
+                    .customFont(.body)
                     .padding(.bottom)
                     .padding(.horizontal, 40)
             }
@@ -71,30 +74,37 @@ struct MigrationSetupView: View {
                     }
             case .standardSelection, .advancedSelection:
                 selectionView
-                    .padding(.horizontal, viewModel.viewState == .advancedSelection ? 130 : 180)
-                    .padding(.bottom, viewModel.viewState == .advancedSelection ? 15 : 25)
+                    .padding(.horizontal, viewModel.viewState == .advancedSelection ? 130 : 160)
+                    .padding(.bottom, 15)
             }
             Spacer()
             Divider()
             HStack {
                 bottomLabelView
                 Spacer()
-                Button(action: {
-                    didPressSecondaryButton()
-                }, label: {
-                    secondaryButtonLabel
-                })
-                .hiddenConditionally(isHidden: viewModel.viewState != .advancedSelection)
-                .accessibilityHint("accessibility.migrationSetupView.secondaryButton.hint")
-                Button(action: {
-                    didPressMainButton()
-                }, label: {
-                    mainButtonLabel
-                })
-                .disabled(!(viewModel.isSizeCalculationFinal && viewModel.isReadyForMigration))
-                .padding(.leading, 6)
-                .keyboardShortcut(.defaultAction)
-                .accessibilityHint("accessibility.migrationSetupView.mainButton.hint")
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.small)
+                        .padding(.leading, 6)
+                } else {
+                    Button(action: {
+                        didPressSecondaryButton()
+                    }, label: {
+                        secondaryButtonLabel
+                    })
+                    .hiddenConditionally(isHidden: viewModel.viewState != .advancedSelection)
+                    .accessibilityHint("accessibility.migrationSetupView.secondaryButton.hint")
+                    Button(action: {
+                        didPressMainButton()
+                    }, label: {
+                        mainButtonLabel
+                    })
+                    .disabled(!(viewModel.isSizeCalculationFinal && viewModel.isReadyForMigration))
+                    .padding(.leading, 6)
+                    .keyboardShortcut(.defaultAction)
+                    .accessibilityHint("accessibility.migrationSetupView.mainButton.hint")
+                }
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
@@ -116,6 +126,7 @@ struct MigrationSetupView: View {
             .accessibilityHint("accessibility.migrationSetupView.devicSleepAlert.mainButton.hint")
         } message: {
             Text("migration.devicesleep.alert.message")
+                .customFont(.body)
         }
         .alert("migration.fileinteraction.alert.title", isPresented: $showFileInteractionAlert) {
             Button("migration.fileinteraction.alert.main.action.label") {
@@ -127,6 +138,14 @@ struct MigrationSetupView: View {
             .accessibilityHint("accessibility.migrationSetupView.fileInteractionAlert.mainButton.hint")
         } message: {
             Text("migration.fileinteraction.alert.message")
+                .customFont(.body)
+        }
+        .sheet(isPresented: $showIntelAppConfirmation) {
+            IncompatibleAppConfirmationView(incompatibleApps: MigrationController.shared.intelOnlyAppsForConfirmation,
+                                            destinationArchitecture: MigrationController.shared.destinationDeviceArchitecture ?? .appleSilicon,
+                                            onConfirm: didTapIncompatibleAppConfirmationProceedButton,
+                                            onReview: didTapIncompatibleAppConfirmationReviewButton,
+                                            onIgnore: didTapIncompatibleAppConfirmationIgnoreButton)
         }
     }
     
@@ -134,6 +153,7 @@ struct MigrationSetupView: View {
         HStack {
             if viewModel.viewState == .loadingMetadata || !viewModel.isSizeCalculationFinal {
                 Text("migration.setup.page.bottom.info.loading.label")
+                    .customFont(.body)
                     .padding(.trailing, 8)
                 ProgressView()
                     .progressViewStyle(.circular)
@@ -141,6 +161,7 @@ struct MigrationSetupView: View {
                     .accessibilityHidden(true)
             } else {
                 Text(viewModel.availableSpaceOnDestinationLabel)
+                    .customFont(.body)
             }
         }
     }
@@ -148,16 +169,23 @@ struct MigrationSetupView: View {
     private var selectionView: some View {
         ZStack {
             Color("discoveryViewBackground")
-                .clipShape(RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 6 : 20))
+                .clipShape(RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 12 : 20))
                 .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
                 .accessibilityHidden(true)
             if viewModel.viewState == .advancedSelection {
                 AdavancedSelectionView(migrationOption: $viewModel.chosenOption)
+                    .transition(.opacity)
             } else {
                 VStack(alignment: .leading) {
                     Picker("", selection: $viewModel.chosenOption) {
                         ForEach($viewModel.pickerMigrationOptions) { element in
-                            MigrationOptionView(option: element.wrappedValue)
+                            VStack {
+                                MigrationOptionView(option: element.wrappedValue)
+                                    .padding(.trailing, 31)
+                                Divider()
+                                    .padding(.leading, -38)
+                                    .padding(.trailing, -7)
+                            }
                                 .tag(element.wrappedValue)
                         }
                     }
@@ -176,6 +204,7 @@ struct MigrationSetupView: View {
                             }
                         }, label: {
                             Text("migration.setup.page.advanced.setup.button.label")
+                                .customFont(.body)
                         })
                         .buttonStyle(.link)
                         .accessibilityHint("accessibility.migrationSetupView.advancedSelectionButton.hint")
@@ -183,27 +212,38 @@ struct MigrationSetupView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
                 }
+                .transition(.opacity)
             }
         }
+        .mask(
+            RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 12 : 20)
+                .padding(.top, viewModel.viewState == .advancedSelection ? -11 : 0)
+        )
     }
     
     private var mainButtonLabel: some View {
         Text("migration.setup.page.main.button.label")
+            .customFont(.body)
             .padding(4)
     }
     
     private var secondaryButtonLabel: some View {
         Text("migration.setup.page.button.secondary.label")
+            .customFont(.body)
             .padding(4)
     }
 
     // MARK: - Private Methods
     
     private func didPressMainButton() {
+        MigrationController.shared.migrationOption = viewModel.chosenOption
+        if !MigrationController.shared.validateAppSelection() {
+            showIntelAppConfirmation = true
+            return
+        }
         if AppContext.shouldSkipMigrationSummary {
             showDeviceSleepAlert.toggle()
         } else {
-            MigrationController.shared.migrationOption = viewModel.chosenOption
             action(nextPage)
         }
     }
@@ -213,6 +253,38 @@ struct MigrationSetupView: View {
             $viewModel.viewState.wrappedValue = .standardSelection
             $viewModel.chosenOption.wrappedValue = MigrationOption(type: .none)
             $viewModel.isReadyForMigration.wrappedValue = false
+        }
+    }
+    
+    private func didTapIncompatibleAppConfirmationReviewButton() {
+        MigrationController.shared.resetIntelAppMigration()
+    }
+    
+    private func didTapIncompatibleAppConfirmationProceedButton() {
+        if AppContext.shouldSkipMigrationSummary {
+            showDeviceSleepAlert = true
+        } else {
+            action(nextPage)
+        }
+    }
+    
+    private func didTapIncompatibleAppConfirmationIgnoreButton() {
+        Task { @MainActor in
+            self.isLoading = true
+        }
+        MigrationController.shared.removeIncompatibleApps { success in
+            if success {
+                if AppContext.shouldSkipMigrationSummary {
+                    showDeviceSleepAlert = true
+                } else {
+                    action(nextPage)
+                }
+            } else {
+                MigrationController.shared.resetIntelAppMigration()
+                Task { @MainActor in
+                    self.isLoading = false
+                }
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 09/09/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 // swiftlint:disable file_length
@@ -104,6 +104,16 @@ struct AppContext {
     /// Managed setting available using `generateReportKey` defaults key.
     private static let fallbackShouldGenerateReport: Bool = false
     
+    /// Flag that specifies whether the app should check for incompatible app architectures during migration setup.
+    /// When enabled, the app will warn users about Intel-only apps on Apple Silicon destinations and vice versa.
+    /// Managed setting available using `validateAppsArchitecture` defaults key.
+    private static let fallbackShouldValidateAppsArchitecture: Bool = true
+    
+    /// The custom font family name to use throughout the app.
+    /// If not set or empty, the app will use system fonts.
+    /// Managed setting available using `customFontFamily` defaults key.
+    private static let fallbackCustomFontFamily: String = ""
+    
     // MARK: - Default File Scan Variables
     
     /// Custom list of paths tha needs to be ignored during file discovery.
@@ -115,8 +125,12 @@ struct AppContext {
                                                   FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Safari.app"),
                                                   FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Utilities"),
                                                   FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Xcode.app"),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent(#".+ Creator Studio\.app"#),
                                                   FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first,
-                                                  FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?.appendingPathComponent("FileProvider")]
+                                                  FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?.appendingPathComponent("FileProvider"),
+                                                  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".local"),
+                                                  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".cache"),
+                                                  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".cisco")]
     
     /// Custom list of explicitely allowed paths that needs to be included during file discovery.
     static var defaultExplicitAllowList: [URL?] = [FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
@@ -132,7 +146,9 @@ struct AppContext {
     static var defaultExcludedFilePrefixes: [String] = ["MigrationReport_",
                                                         "~",
                                                         ".DS_Store",
-                                                        ".localized"]
+                                                        ".localized",
+                                                        "node_modules",
+                                                        "Safari.app"]
 }
 
 // MARK: - Non customizable elements
@@ -140,12 +156,6 @@ struct AppContext {
 extension AppContext {
     
     // MARK: - Private User Defaults Keys
-    
-    /// UserDefaults key representing the logging verbosity level. Possible values:
-    /// - `noLog`: No logs are written.
-    /// - `standard`: A standard amount of logs are written.
-    /// - `debug`: A verbose log level used for debugging migration issues. This may generate large log files during migration. Use cautiously.
-    private static let loggingLevelUserDefaultsKey: String = "loggingLevel"
     
     /// UserDefaults key indicating whether the device is in the post-reboot phase during migration.
     /// This key is managed automatically by the app, and manual changes should be avoided.
@@ -218,6 +228,12 @@ extension AppContext {
     /// UserDefaults key indicating whether the app should generate the migration report on the user desktop.
     private static let generateReportKey: String = "generateReport"
     
+    /// UserDefaults key indicating whether the app should check for incompatible app architectures.
+    private static let validateAppsArchitectureKey: String = "checkAppsArchitecture"
+    
+    /// UserDefaults key used to pull managed setting defining the custom font family name.
+    private static let customFontFamilyKey: String = "customFontFamily"
+    
     /// UserDefaults keys for custom page icons
     private static let welcomePageIconKey: String = "welcomePageIcon"
     private static let browserPageIconKey: String = "browserPageIcon"
@@ -231,6 +247,12 @@ extension AppContext {
     private static let finalPageIconKey: String = "finalPageIcon"
     
     // MARK: - Public User Defaults Keys
+    
+    /// UserDefaults key representing the logging verbosity level. Possible values:
+    /// - `noLog`: No logs are written.
+    /// - `standard`: A standard amount of logs are written.
+    /// - `debug`: A verbose log level used for debugging migration issues. This may generate large log files during migration. Use cautiously.
+    static let loggingLevelUserDefaultsKey: String = "loggingLevel"
     
     /// UserDefaults key indicating whether the app should skip the device reboot step after migration.
     static let skipRebootUserDefaultsKey: String = "skipDeviceReboot"
@@ -404,6 +426,12 @@ extension AppContext {
     }
     static var shouldGenerateReport: Bool {
         return Utils.UserDefaultsHelpers.managedValue(forKey: generateReportKey, defaultValue: fallbackShouldGenerateReport)
+    }
+    static var shouldValidateAppsArchitecture: Bool {
+        return Utils.UserDefaultsHelpers.managedValue(forKey: validateAppsArchitectureKey, defaultValue: fallbackShouldValidateAppsArchitecture)
+    }
+    static var customFontFamily: String {
+        return Utils.UserDefaultsHelpers.managedValue(forKey: customFontFamilyKey, defaultValue: fallbackCustomFontFamily)
     }
     
     /// Returns the custom icon source for a given page identifier

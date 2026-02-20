@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 29/01/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -91,7 +91,7 @@ class MigrationSetupViewModel: ObservableObject {
         
         Utils.Common.preventSleep()
     }
-    
+
     // MARK: - Public Methods
     
     /// Loads metadata for each migration option asynchronously and updates the view state.
@@ -164,8 +164,10 @@ class MigrationSetupViewModel: ObservableObject {
     /// Async method that calculate the size of the migration options based on the files they contain.
     private func loadMigrationOptionsSizes() async {
         for migrationOption in pickerMigrationOptions {
+            await migrationOption.detectAppArchitectures()
             await migrationOption.fetchFilesSizeAndCount()
         }
+        await advancedMigrationOption.detectAppArchitectures()
         await advancedMigrationOption.fetchFilesSizeAndCount()
     }
     

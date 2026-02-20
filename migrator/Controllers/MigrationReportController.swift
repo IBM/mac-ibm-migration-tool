@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 08/08/2025.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -132,11 +132,25 @@ final class MigrationReportController {
     private func buildPDF(from data: MigrationReportData) -> Data? {
         let pdfDocument = PDFDocument()
         let content = buildPrintableContent(from: data)
-        let pageRect = CGRect(x: 0, y: 0, width: 595, height: 842) // A4
+        
+        let a4Width: CGFloat = 595
+        let a4Height: CGFloat = 842
+        let margin: CGFloat = 40
+        
+        // Calculate the height needed for the content
+        let contentWidth = a4Width - margin
+        let contentSize = content.boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude),
+                                               options: [.usesLineFragmentOrigin, .usesFontLeading])
+        
+        // Use minimum between content height + margins and A4 height
+        let requiredHeight = contentSize.height + margin
+        let pageHeight = max(requiredHeight, a4Height)
+        
+        let pageRect = CGRect(x: 0, y: 0, width: a4Width, height: pageHeight)
         
         let image = NSImage(size: pageRect.size)
         image.lockFocus()
-        content.draw(in: CGRect(x: 20, y: 20, width: pageRect.width - 40, height: pageRect.height - 40))
+        content.draw(in: CGRect(x: 20, y: 20, width: contentWidth, height: pageHeight - 40))
         image.unlockFocus()
         
         if let page = PDFPage(image: image) {
@@ -248,7 +262,7 @@ final class MigrationReportController {
     
     private func savePDF(pdfData: Data) {
         logger.log("migrationReportcontroller.savePDF: Saving PDF report to \(reportURL.relativePath)", type: .debug)
-        
+
         // If the file exists, remove it first to avoid createFile failure
         if FileManager.default.fileExists(atPath: reportURL.relativePath) {
             logger.log("migrationReportcontroller.savePDF: Existing report file found, removing it", type: .debug)

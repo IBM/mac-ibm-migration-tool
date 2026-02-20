@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 07/03/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -56,11 +56,12 @@ struct CodeVerificationView: View {
                 .accessibilityHidden(true)
             Text("code.verification.page.title")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
                 .accessibilitySortPriority(1)
             Text("code.verification.page.subtitle")
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
                 .accessibilitySortPriority(0.9)
@@ -108,6 +109,7 @@ struct CodeVerificationView: View {
             .accessibilityHint("accessibility.cvPage.error.button.hint")
         } message: {
             Text("code.verification.alert.code.error.message")
+                .customFont(.body)
         }
         .alert("code.verification.alert.connection.error.title", isPresented: $showConnectionError) {
             Button("code.verification.alert.connection.error.action") {
@@ -116,6 +118,7 @@ struct CodeVerificationView: View {
             .accessibilityHint("accessibility.cvPage.error.button.hint")
         } message: {
             Text("code.verification.alert.connection.error.message")
+                .customFont(.body)
         }
         .onReceive(migrationController.$migrationState, perform: { newState in
             switch newState {
@@ -138,11 +141,13 @@ struct CodeVerificationView: View {
     
     var mainButtonLabel: some View {
         Text("browser.page.button.main.label")
+            .customFont(.body)
             .padding(4)
     }
     
     var secondaryButtonLabel: some View {
         Text("browser.page.button.secondary.label")
+            .customFont(.body)
             .padding(4)
     }
     

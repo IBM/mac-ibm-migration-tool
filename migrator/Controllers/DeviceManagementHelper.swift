@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 04/09/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -43,70 +43,64 @@ final class DeviceManagementHelper {
             self.knownEnvs = knownEnvsArray
         }
         
-        fetchProfiles { [weak self] profiles in
+        fetchProfiles { [weak self] serverURL in
             guard let self = self else { return }
             
-            guard !profiles.isEmpty else {
+            guard let serverURL = serverURL else {
                 self.state = .unmanaged
                 MLogger.main.log("deviceManagementHelper:loadDeviceManagementState no matching management profile found.", type: .default)
                 return
             }
             
-            if let (managementProfile, payload) = self.findManagementProfile(in: profiles) {
-                self.handleManagementProfile(managementProfile: managementProfile, payload: payload, completion: { state in
-                    self.state = state
-                })
-            } else {
-                self.state = .unmanaged
-                MLogger.main.log("deviceManagementHelper:loadDeviceManagementState no matching management profile found.", type: .default)
-            }
+            self.handleServerURL(url: serverURL, completion: { state in
+                self.state = state
+            })
         }
     }
     
     // MARK: - Private Methods
     
     /// Executes the command to fetch profiles and parses the result.
-    private func fetchProfiles(completion: @escaping ([ConfigProfile]) -> Void) {
+    private func fetchProfiles(completion: @escaping (String?) -> Void) {
         MLogger.main.log("deviceManagementHelper:fetchProfiles fecthing installed profiles...", type: .default)
-        let command = "system_profiler -json SPConfigurationProfileDataType"
+        let command = "profiles status -type enrollment | grep \"MDM server\" | awk -F': ' '{print $2}'"
         let task = Process()
         let pipe = Pipe()
+        let errorPipe = Pipe()
         
         task.standardOutput = pipe
-        task.standardError = pipe
+        task.standardError = errorPipe
         task.arguments = ["-c", command]
-        task.launchPath = "/bin/zsh"
+        task.launchPath = "/bin/sh"
+        task.environment = [
+            "PATH": "/usr/bin:/bin:/usr/sbin:/sbin"
+        ]
+        
         task.launch()
+        task.waitUntilExit()
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         let output = String(data: data, encoding: .utf8) ?? ""
         
-        do {
-            let dataType = try ConfigurationProfileDataType(from: output.replacingOccurrences(of: "\n", with: ""))
-            let profiles = dataType.sections.first(where: { $0.name == "spconfigprofile_section_deviceconfigprofiles" })?.profiles ?? []
-            MLogger.main.log("deviceManagementHelper:fetchProfiles successfully retrieved and parsed \(profiles.count) installed profiles.", type: .default)
-            completion(profiles)
-        } catch {
-            MLogger.main.log("deviceManagementHelper:fetchProfiles failed to fecth installed profiles with error: \(error.localizedDescription), result of the command: \(output)", type: .error)
-            completion([])
+        // Extract only the last non-empty line which should contain the serverURL
+        let lines = output.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        
+        guard let serverURL = lines.last, !serverURL.isEmpty else {
+            MLogger.main.log("deviceManagementHelper:fetchProfiles device appear not to be managed. No Server URL found. Result of the command: \(output)", type: .error)
+            completion(nil)
+            return
         }
-    }
-    
-    /// Finds the management profile with `com.apple.mdm` payload.
-    private func findManagementProfile(in profiles: [ConfigProfile]) -> (ConfigProfile, ConfigProfilePayload)? {
-        profiles.first { profile in
-            profile.payloads?.contains { $0.name == "com.apple.mdm" } ?? false
-        }.flatMap { profile in
-            guard let payload = profile.payloads?.first(where: { $0.name == "com.apple.mdm" }) else { return nil }
-            return (profile, payload)
-        }
+        
+        MLogger.main.log("deviceManagementHelper:fetchProfiles successfully retrieved and parsed Server URL: \(serverURL)", type: .default)
+        completion(serverURL)
     }
     
     /// Handles the logic for managing a profile.
-    private func handleManagementProfile(managementProfile: ConfigProfile,
-                                         payload: ConfigProfilePayload,
-                                         completion: @escaping (DeviceManagementState) -> Void) {
-        if let env = findMatchingEnvironment(for: payload.serverURL) {
+    private func handleServerURL(url: String,
+                                 completion: @escaping (DeviceManagementState) -> Void) {
+        if let env = findMatchingEnvironment(for: url) {
             MLogger.main.log("deviceManagementHelper:loadDeviceManagementState found matching management profile.", type: .default)
             completion(.managed(env: env))
         } else {
@@ -116,8 +110,8 @@ final class DeviceManagementHelper {
     }
     
     /// Finds a matching enviroment and environment for the given server URL.
-    private func findMatchingEnvironment(for serverURL: String?) -> ManagedEnvironment? {
-        guard let serverURLString = serverURL, let serverURL = URL(string: serverURLString) else { return nil }
+    private func findMatchingEnvironment(for serverURLString: String) -> ManagedEnvironment? {
+        guard let serverURL = URL(string: serverURLString) else { return nil }
         for environment in knownEnvs ?? [] {
             guard let envServerURL = URL(string: environment.serverURL) else { continue }
             if #available(macOS 13.0, *) {

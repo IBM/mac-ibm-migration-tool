@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 15/02/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -67,8 +67,10 @@ struct AdavancedSelectionView: View {
         VStack(spacing: 0) {
             Picker(selection: $advancedSelectionSegment) {
                 Text(AdvancedSelectionSection.files.title.localized + (selectedFilesNum > 0 ? " (\(migrationOption.selectedFiles))" : ""))
+                    .customFont(.body)
                     .tag(AdvancedSelectionSection.files)
                 Text(AdvancedSelectionSection.applications.title.localized + (selectedAppsNum > 0 ? " (\(migrationOption.selectedApps))" : ""))
+                    .customFont(.body)
                     .tag(AdvancedSelectionSection.applications)
             } label: {}
                 .pickerStyle(.segmented)
@@ -84,6 +86,7 @@ struct AdavancedSelectionView: View {
                     Spacer()
                     if #available(macOS 13.0, *) {
                         Text("migration.setup.page.advanced.select.all")
+                            .customFont(.body)
                         Toggle(sources: $migrationOption.migrationFileList, isOn: \.isSelected) { }
                             .padding(.trailing, 16)
                     }
@@ -102,16 +105,21 @@ struct AdavancedSelectionView: View {
                     Spacer()
                     if #available(macOS 13.0, *) {
                         Text("migration.setup.page.advanced.select.all")
+                            .customFont(.body)
                         Toggle(sources: $migrationOption.migrationAppList, isOn: \.isSelected) { }
                             .padding(.trailing, 16)
                     }
                 }
-                List($migrationOption.migrationAppList) { file in
-                    if file.isHidden.wrappedValue && !showHiddenFiles {
+                List($migrationOption.migrationAppList) { $app in
+                    if app.migratorFile.isHidden && !showHiddenFiles {
                         EmptyView()
                     } else {
                         HStack {
-                            MigratorFileView(file: file, showFileSize: true, showSelectionToggle: true)
+                            MigratorFileView(file: .constant(app.migratorFile), showFileSize: true, showSelectionToggle: false)
+                            Spacer()
+                            architectureBadge(for: app)
+                            Toggle(isOn: $app.isSelected) { }
+                                .toggleStyle(.checkbox)
                         }
                     }
                 }
@@ -123,6 +131,7 @@ struct AdavancedSelectionView: View {
                     .controlSize(.mini)
                     .toggleStyle(.switch)
                 Text(String(format: "migration.setup.directory.content.hidden.label".localized, showHiddenFiles ? "migration.setup.directory.content.hidden.label.hide".localized : "migration.setup.directory.content.hidden.label.show".localized))
+                    .customFont(.body)
                 Spacer()
             }
             .padding()
@@ -134,6 +143,51 @@ struct AdavancedSelectionView: View {
         .onReceive(self.migrationOption.$selectedApps, perform: { number in
             self.selectedAppsNum = number
         })
+    }
+    
+    // MARK: - Helper Views
+    
+    /// Creates an architecture badge for a discovered application
+    @ViewBuilder
+    private func architectureBadge(for app: DiscoveredApplication) -> some View {
+        switch app.architectureType {
+        case .intelOnly:
+            Text("app.architecture.badge.intel".localized)
+                .customFont(.caption)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.orange.opacity(0.2))
+                .foregroundColor(.orange)
+                .cornerRadius(4)
+                .help(Text(app.architectureType.tooltip))
+        case .universal:
+            Text("app.architecture.badge.universal".localized)
+                .customFont(.caption)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.green.opacity(0.2))
+                .foregroundColor(.green)
+                .cornerRadius(4)
+                .help(Text(app.architectureType.tooltip))
+        case .appleSiliconOnly:
+            Text("app.architecture.badge.appleSilicon".localized)
+                .customFont(.caption)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.blue.opacity(0.2))
+                .foregroundColor(.blue)
+                .cornerRadius(4)
+                .help(Text(app.architectureType.tooltip))
+        case .unknown:
+            Text("app.architecture.badge.unknown".localized)
+                .customFont(.caption)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.gray.opacity(0.2))
+                .foregroundColor(.gray)
+                .cornerRadius(4)
+                .help(Text(app.architectureType.tooltip))
+        }
     }
 }
 

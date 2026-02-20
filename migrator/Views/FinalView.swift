@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 22/08/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -48,19 +48,21 @@ struct FinalView: View {
             if reconState != .done && DeviceManagementHelper.shared.isJamfReconAvailable {
                 Text("final.page.title.recon.label")
                     .multilineTextAlignment(.center)
-                    .font(.system(size: 27, weight: .bold))
+                    .customFont(size: 27, weight: .bold)
                     .padding(.bottom, 8)
                 Text(String(format: "final.page.body.recon.label".localized, AppContext.orgName))
                     .multilineTextAlignment(.center)
+                    .customFont(.body)
                     .padding(.bottom)
                     .padding(.horizontal, 40)
             } else {
                 Text("final.page.title.label")
                     .multilineTextAlignment(.center)
-                    .font(.system(size: 27, weight: .bold))
+                    .customFont(size: 27, weight: .bold)
                     .padding(.bottom, 8)
                 Text("final.page.body.label")
                     .multilineTextAlignment(.center)
+                    .customFont(.body)
                     .padding(.bottom)
                     .padding(.horizontal, 40)
             }
@@ -71,7 +73,7 @@ struct FinalView: View {
                         .frame(width: 52, height: 34.125)
                         .accessibilityHidden(true)
                     Text("final.page.body.component.migration.title.label")
-                        .font(.title2)
+                        .customFont(.title2)
                         .padding(.leading, 8)
                     Spacer()
                     Image(systemName: "checkmark.circle.fill")
@@ -91,7 +93,7 @@ struct FinalView: View {
                             .padding(.horizontal, 11.35)
                             .accessibilityHidden(true)
                         Text("final.page.body.component.appleid.title.label")
-                            .font(.title2)
+                            .customFont(.title2)
                             .padding(.leading, 8)
                         Spacer()
                         Image(systemName: "checkmark.circle.fill")
@@ -112,7 +114,7 @@ struct FinalView: View {
                             .frame(width: 52, height: 34.125)
                             .accessibilityHidden(true)
                         Text("final.page.body.component.reboot.title.label")
-                            .font(.title2)
+                            .customFont(.title2)
                             .padding(.leading, 8)
                         Spacer()
                         Image(systemName: "checkmark.circle.fill")
@@ -133,7 +135,7 @@ struct FinalView: View {
                             .frame(width: 52, height: 34.125)
                             .accessibilityHidden(true)
                         Text("final.page.body.component.inventory.title.label")
-                            .font(.title2)
+                            .customFont(.title2)
                             .padding(.leading, 8)
                         Spacer()
                         switch reconState {
@@ -141,12 +143,14 @@ struct FinalView: View {
                             EmptyView()
                         case .queued:
                             Text("final.page.recon.state.queued.label")
+                                .customFont(.body)
                             ProgressView()
                                 .controlSize(.small)
                                 .frame(width: 25, height: 25)
                                 .accessibilityHidden(true)
                         case .running:
                             Text("final.page.recon.state.running.label")
+                                .customFont(.body)
                             ProgressView()
                                 .controlSize(.small)
                                 .frame(width: 25, height: 25)
@@ -183,6 +187,7 @@ struct FinalView: View {
                     .resizable()
                     .frame(width: 20, height: 20)
                 Text("final.page.bottom.informational.label")
+                    .customFont(.body)
                 Spacer()
                 Button(action: {
                     appDelegate.quit()
@@ -201,6 +206,7 @@ struct FinalView: View {
     
     var mainButtonLabel: some View {
         Text("final.page.main.button.label")
+            .customFont(.body)
             .padding(4)
     }
     

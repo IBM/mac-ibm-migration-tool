@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 05/01/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -23,6 +23,7 @@ struct DeviceListRow: View {
     var body: some View {
         HStack {
             Text(result.name.wrappedValue)
+                .customFont(.body)
             Spacer()
             if result.interfaces.contains(where: { $0.wrappedValue == .thunderbolt }) {
                 Image(systemName:  "cable.connector.horizontal")

@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 04/09/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -12,7 +12,7 @@ import Foundation
 /// The JamfReconManager actor is designed to manage and monitor the execution of a specific Jamf policy,
 /// particularly related to inventory updates (recon), using AppleScript to interact with system processes.
 actor JamfReconManager {
-    
+
     // MARK: - Constants
     
     /// Logger instance for logging events and messages

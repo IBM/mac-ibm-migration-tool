@@ -6,3 +6,4 @@ disabled_rules:
   - notification_center_detachment
   - trailing_whitespace
   - colon
+  - function_body_length

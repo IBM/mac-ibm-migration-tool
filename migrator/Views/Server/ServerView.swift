@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/11/2023.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -34,8 +34,10 @@ struct ServerView: View {
     
     // MARK: - State Variables
     
-    /// State variable to track warning popover appearance.
-    @State private var showWarningPopover: Bool = true
+    /// State variable to track power warning popover appearance.
+    @State private var showPowerPopover: Bool = false
+    /// State variable to track local network warning popover appearance.
+    @State private var showLocalNetworkPopover: Bool = true
     
     // MARK: - Initializers
     
@@ -55,10 +57,11 @@ struct ServerView: View {
                 .accessibilityHidden(true)
             Text(viewModel.connectionEstablished ? (viewModel.migrationProgress > 0 ? (viewModel.migrationProgress == 1 ? "server.page.title.migration.complete.label" : "server.page.title.migration.ongoing.label") : "server.page.connected.title") : "server.page.title")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text(viewModel.connectionEstablished ? (viewModel.migrationProgress > 0 ? (viewModel.migrationProgress == 1 ? "server.page.body.migration.complete.label" : "server.page.body.ongoing.label") :  "server.page.connected.subtitle") : "server.page.subtitle")
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.horizontal, 40)
                 .padding(.bottom, viewModel.connectionEstablished ? 8 : 0)
             Image(viewModel.connectionEstablished ? "old_mac" : "new_mac")
@@ -68,14 +71,18 @@ struct ServerView: View {
                 .tint(Color("uiIcon"))
                 .accessibilityHidden(true)
             if viewModel.connectionEstablished {
-                Group {
-                    Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized) + Text(migrationController.hostName).fontWeight(.bold) + Text(viewModel.usedInterface)
+                HStack(spacing: 0) {
+                    Text(viewModel.migrationProgress == 1 ? "migration.page.progressbar.top.complete.label".localized : "migration.page.progressbar.top.ongoing.label".localized)
+                        .customFont(.body)
+                    Text(migrationController.hostName).customFont(.body, weight: .bold)
+                    Text(viewModel.usedInterface)
+                        .customFont(.body)
                 }
                 .padding(.vertical, 4)
                 .accessibilityElement(children: .combine)
             } else {
                 Text(Host.current().localizedName ?? "server.page.default.device.name")
-                    .font(.headline)
+                    .customFont(.headline)
                     .padding(.bottom, 4)
                     .accessibilityHidden(true)
             }
@@ -94,7 +101,7 @@ struct ServerView: View {
                     HStack {
                         Spacer()
                         Text("\(viewModel.percentageCompleted)")
-                            .font(.callout)
+                            .customFont(.callout)
                     }
                 } else {
                     VStack(spacing: 0) {
@@ -104,7 +111,7 @@ struct ServerView: View {
                             .accessibilityHidden(true)
                         Spacer()
                         Text("server.page.pairing.code.label")
-                            .font(.title3)
+                            .customFont(.title3)
                             .padding(.bottom, 8)
                         CodeVerificationFieldView(code: .constant(viewModel.randomCode), viewOnly: true)
                             .accessibilityElement(children: .combine)
@@ -115,19 +122,53 @@ struct ServerView: View {
             .padding(.horizontal, 176)
             Spacer()
             Divider()
-            HStack {
+            HStack(spacing: 4) {
                 if !viewModel.deviceIsConnectedToPower {
                     Button {
-                        showWarningPopover.toggle()
+                        showPowerPopover.toggle()
                     } label: {
                         Image(systemName: "exclamationmark")
+                            .font(.title2)
+                            .padding(4)
                     }
                     .clipShape(Circle())
                     .accessibilityHint("accessibility.serverView.powerWarningButton.hint")
-                    .popover(isPresented: $showWarningPopover, arrowEdge: .bottom, content: {
+                    .popover(isPresented: $showPowerPopover, arrowEdge: .bottom) {
                         Text("migration.page.warning.button.popover.text")
+                            .foregroundColor(.orange)
+                            .customFont(.body)
                             .padding()
-                    })
+                    }
+                }
+                if viewModel.showLocalNetworkWarning && !viewModel.connectionEstablished {
+                    Button {
+                        showLocalNetworkPopover.toggle()
+                    } label: {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.red)
+                            .font(.title2)
+                            .padding(4)
+                    }
+                    .clipShape(Circle())
+                    .popover(isPresented: $showLocalNetworkPopover, arrowEdge: .bottom) {
+                        VStack(spacing: 8) {
+                            Text(String(format: "server.page.localnetwork.warning.label".localized, Bundle.main.name, Utils.Common.systemSettingsLabel, Bundle.main.name))
+                                .lineLimit(nil)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .customFont(.body)
+                            Button {
+                                if let url = URL(string: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_LocalNetwork") {
+                                    NSWorkspace.shared.open(url)
+                                }
+                            } label: {
+                                Text(String(format: "icloud.page.system.settings.button.label".localized, Utils.Common.systemSettingsLabel))
+                                    .customFont(.body)
+                            }
+                        }
+                        .frame(maxWidth: 300)
+                        .padding()
+                    }
                 }
                 Spacer()
                 if viewModel.connectionEstablished {
@@ -135,6 +176,7 @@ struct ServerView: View {
                         action(.server.next())
                     }, label: {
                         Text("server.page.button.main.continue.label")
+                            .customFont(.body)
                             .padding(4)
                     })
                     .disabled(viewModel.migrationProgress != 1)
@@ -146,6 +188,7 @@ struct ServerView: View {
                         action(previousPage)
                     }, label: {
                         Text("server.page.button.main.label")
+                            .customFont(.body)
                             .foregroundColor(Color.red)
                             .padding(4)
                     })

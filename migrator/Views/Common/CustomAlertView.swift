@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/02/2025.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -22,11 +22,11 @@ struct CustomAlertView<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text(title)
-                .fontWeight(.semibold)
-                .font(.title2)
+                .customFont(.title2, weight: .semibold)
                 .padding(.vertical, 4)
             if let message = message {
                 Text(message)
+                    .customFont(.body)
                     .padding(.bottom, 8)
             }
             content

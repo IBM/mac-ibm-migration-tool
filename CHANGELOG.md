@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-02-20
+
+### General Updates
+**Enhancements**
+* New Welcome screen with actionable buttons.
+* New default app font (IBM Plex).
+* New scrolling text areas for files with long name.
+**Bug Fixes**
+* Resolved an issue that could cause the app to unexpectedly quit on the old device during the migration process.
+* Resolved a bug that could cause the migration logic to stall.
+* Resolved a bug that could cause the missing migration of part of an application bundle.
+
+### Device Pairing
+**Enhancements**
+* Enabled a scheduled check for Local Network access when the device is being discovered. #47
+
+### Migration Setup
+**Enhancements**
+* Data Shift now checks the compatible architecture for the applications in scope of the migration and provides the user with an option to ignore, review, or migrate those. #40 
+* Improved the UI that represent the migration options.
+
+### Configuration
+**Enhancements**
+* It’s now possible to use regular expressions in the path components of URLs added to the URLExclusionList and AllowList. #52 
+
 ## [1.3.0] - 2025-11-05
 
 ### Device Connection
@@ -144,8 +169,8 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-[1.3.0]: https://github.ibm.com/Mac-At-IBM/migration-tool/releases/tag/v-1.3.0-b-170
-[1.2.0]: https://github.ibm.com/Mac-At-IBM/migration-tool/releases/tag/v-1.2.0-b-121
-[1.1.1]: https://github.ibm.com/Mac-At-IBM/migration-tool/releases/tag/v-1.1.1-b-106
-[1.1.0]: https://github.ibm.com/Mac-At-IBM/migration-tool/releases/tag/v-1.1.0-b-103
-[1.0.0]: https://github.ibm.com/Mac-At-IBM/migration-tool/releases/tag/v-1.0.0-b-92
+[1.4.0]: https://github.com/IBM/mac-ibm-migration-tool/releases/tag/v-1.4.0-b-214
+[1.3.0]: https://github.com/IBM/mac-ibm-migration-tool/releases/tag/v-1.3.0-b-172
+[1.2.1]: https://github.com/IBM/mac-ibm-migration-tool/releases/tag/v-1.2.1-b-130
+[1.2.0]: https://github.com/IBM/mac-ibm-migration-tool/releases/tag/v-1.2.0-b-121
+[1.1.0]: https://github.com/IBM/mac-ibm-migration-tool/releases/tag/v-1.1.0-b-100

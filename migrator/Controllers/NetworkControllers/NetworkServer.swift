@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/11/2023.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -20,6 +20,8 @@ final class NetworkServer {
     let onNewConnection = PassthroughSubject<NWConnection, Never>()
     /// Publishes updates on the listener's state to track its lifecycle and status.
     let onNewListenerState = PassthroughSubject<NWListener.State, Never>()
+    /// Publishes updates on the service registration state to track if the service is advertised on the network.
+    let onServiceRegistrationUpdate = PassthroughSubject<NWListener.ServiceRegistrationChange, Never>()
     
     // MARK: - Private Variables
     
@@ -50,6 +52,11 @@ final class NetworkServer {
             self?.onNewConnection.send(newConnection)
         }
         
+        // Handler for service registration updates.
+        listener?.serviceRegistrationUpdateHandler = { [weak self] change in
+            self?.onServiceRegistrationUpdate.send(change)
+        }
+                
         listener?.start(queue: .main)
     }
     

@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-Apache%202-1984E5)
 ![Swift version](https://img.shields.io/badge/swift-5.9.0-1984E5?logo=swift)
-![Project version](https://img.shields.io/badge/version-1.3.0-1984E5)
+![Project version](https://img.shields.io/badge/version-1.4.0-1984E5)
 ![macOS](https://img.shields.io/badge/macOS-12+-bright%20green)
 
 ## Overview
@@ -212,7 +212,7 @@ All source files must include the following copyright and license header:
 
 ```text
 //
-// © Copyright IBM Corp. 2023, 2025
+// © Copyright IBM Corp. 2023, 2026
 // SPDX-License-Identifier: Apache2.0
 //
 ```

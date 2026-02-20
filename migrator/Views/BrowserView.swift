@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 14/12/2023.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -55,10 +55,11 @@ struct BrowserView: View {
                 .accessibilityHidden(true)
             Text("browser.page.title")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text("browser.page.subtitle")
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
             deviceList
@@ -67,6 +68,7 @@ struct BrowserView: View {
                 .accessibilityElement(children: .contain)
             Spacer()
             Text(String(format: "browser.page.reminder.label".localized, Bundle.main.name, "welcome.page.button.big.left.label".localized))
+                .customFont(.body)
                 .padding(.bottom, 4)
                 .multilineTextAlignment(.center)
             Divider()
@@ -131,11 +133,13 @@ struct BrowserView: View {
     
     var mainButtonLabel: some View {
         Text("browser.page.button.main.label")
+            .customFont(.body)
             .padding(4)
     }
     
     var secondaryButtonLabel: some View {
         Text("browser.page.button.secondary.label")
+            .customFont(.body)
             .padding(4)
     }
     

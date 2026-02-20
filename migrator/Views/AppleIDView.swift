@@ -3,7 +3,7 @@
 //  IBM Data Shift
 //
 //  Created by Simone Martorelli on 15/08/2024.
-//  © Copyright IBM Corp. 2023, 2025
+//  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //
 
@@ -34,10 +34,11 @@ struct AppleIDView: View {
                 .accessibilityHidden(true)
             Text("icloud.page.title.label")
                 .multilineTextAlignment(.center)
-                .font(.system(size: 27, weight: .bold))
+                .customFont(size: 27, weight: .bold)
                 .padding(.bottom, 8)
             Text(String(format: "icloud.page.body.label".localized, Utils.Common.systemSettingsLabel, "icloud.page.main.button.label".localized))
                 .multilineTextAlignment(.center)
+                .customFont(.body)
                 .padding(.bottom)
                 .padding(.horizontal, 40)
             Spacer()
@@ -46,6 +47,7 @@ struct AppleIDView: View {
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preferences.AppleIDPrefPane")!)
             }, label: {
                 Text(String(format: "icloud.page.system.settings.button.label".localized, Utils.Common.systemSettingsLabel))
+                    .customFont(.body)
                     .padding(4)
             })
             .keyboardShortcut(.defaultAction)
@@ -78,6 +80,7 @@ struct AppleIDView: View {
     
     var mainButtonLabel: some View {
         Text("icloud.page.main.button.label")
+            .customFont(.body)
             .padding(4)
     }
     
