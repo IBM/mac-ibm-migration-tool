@@ -135,7 +135,6 @@ struct ServerView: View {
                     .accessibilityHint("accessibility.serverView.powerWarningButton.hint")
                     .popover(isPresented: $showPowerPopover, arrowEdge: .bottom) {
                         Text("migration.page.warning.button.popover.text")
-                            .foregroundColor(.orange)
                             .customFont(.body)
                             .padding()
                     }
@@ -189,7 +188,7 @@ struct ServerView: View {
                     }, label: {
                         Text("server.page.button.main.label")
                             .customFont(.body)
-                            .foregroundColor(Color.red)
+                            .foregroundColor(.red)
                             .padding(4)
                     })
                     .keyboardShortcut(.cancelAction)

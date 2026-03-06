@@ -69,6 +69,8 @@ class MigrationSetupViewModel: ObservableObject {
             updateButtonLabel()
         }
     }
+    /// Minimum required available space in bytes (20GB)
+    private let minimumRequiredSpace: Int = 20 * 1024 * 1024 * 1024
     
     // MARK: - Initializers
     
@@ -145,6 +147,13 @@ class MigrationSetupViewModel: ObservableObject {
         self.isSizeCalculationFinal = false
         self.connectionInterrupted = false
         self.availableSpaceOnDestination = -1
+    }
+    
+    /// Checks if the available space after migration would be below the minimum required (10GB)
+    func hasInsufficientSpace() -> Bool {
+        guard availableSpaceOnDestination != -1 else { return false }
+        let remainingSpace = availableSpaceOnDestination - chosenOption.size
+        return remainingSpace < minimumRequiredSpace
     }
     
     // MARK: - Private Methods

@@ -99,12 +99,12 @@ struct MigrationView: View {
                         Image(systemName: "exclamationmark")
                     }
                     .clipShape(Circle())
-                    .accessibilityHint("accessibility.migrationView.powerWarningButton.hint")
-                    .popover(isPresented: $showWarningPopover, arrowEdge: .bottom, content: {
+                    .accessibilityHint("accessibility.migrationView.warningButton.hint")
+                    .popover(isPresented: $showWarningPopover, arrowEdge: .bottom) {
                         Text("migration.page.warning.button.popover.text")
                             .customFont(.body)
                             .padding()
-                    })
+                    }
                 }
                 Spacer()
                 Button(action: {
