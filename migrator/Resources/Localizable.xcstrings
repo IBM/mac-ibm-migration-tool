@@ -1931,6 +1931,17 @@
         }
       }
     },
+    "resource.view.acceptance.checkbox.alert.continue.button.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
     "resource.view.acceptance.checkbox.disagree.button.label" : {
       "comment" : "A label for a button that dismisses the view without accepting the associated resource.",
       "localizations" : {
@@ -2232,7 +2243,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The app wasn't able to detect %@ management on the device. Please enroll the device in the %@ program before starting the migration."
+            "value" : "%@ wasn't able to detect %@ management on the device. Please enroll the device in the %@ program before starting the migration."
           }
         }
       }
