@@ -103,7 +103,10 @@ struct WelcomeView: View {
             }
             .accessibilityHint("accessibility.welcomePage.fdaAlert.secondaryButton.hint")
         }, message: {
-            Text(String(format: "welcome.page.fda.error.message".localized, appName, Utils.Common.systemSettingsLabel, appName))
+            Text(String(format: "welcome.page.fda.error.message".localized,
+                        appName,
+                        String(format: "welcome.page.fda.error.first.action.title".localized, Utils.Common.systemSettingsLabel),
+                        appName))
                 .customFont(.body)
         })
         .alert(String(format: "welcome.page.management.error.title".localized, AppContext.orgName), isPresented: $showManagementError, actions: {
@@ -116,7 +119,7 @@ struct WelcomeView: View {
             })
             .accessibilityHint("accessibility.welcomePage.mdmAlert.defaultButton.hint")
         }, message: {
-            Text(String(format: "welcome.page.management.error.message".localized, AppContext.orgName, AppContext.orgName))
+            Text(String(format: "welcome.page.management.error.message".localized, Bundle.main.name, AppContext.orgName, AppContext.orgName))
                 .customFont(.body)
         })
         .sheet(isPresented: $showTermsAndConditions) {

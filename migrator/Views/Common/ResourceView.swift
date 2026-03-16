@@ -114,7 +114,8 @@ struct ResourceView: View {
                     .padding(.leading)
                     Spacer()
                     Button("resource.view.acceptance.checkbox.agree.button.label") {
-                        self.showConfirmation.toggle()
+                        UserDefaults.standard.set(true, forKey: acceptanceDefaultsKey)
+                        presentationMode.wrappedValue.dismiss()
                     }
                     .keyboardShortcut(.defaultAction)
                     .padding(.trailing)
@@ -130,10 +131,7 @@ struct ResourceView: View {
         .alert(isPresented: $showConfirmation) {
             Alert(title: Text("resource.view.acceptance.alert.title"),
                   message: Text(acceptanceMessageLabel.localized),
-                  primaryButton:.default(Text("resource.view.acceptance.checkbox.agree.button.label"), action: {
-                UserDefaults.standard.set(true, forKey: acceptanceDefaultsKey)
-                presentationMode.wrappedValue.dismiss()
-            }),
+                  primaryButton:.default(Text("resource.view.acceptance.checkbox.alert.continue.button.label"), action: { }),
                   secondaryButton: .destructive(Text("resource.view.acceptance.checkbox.disagree.button.label"), action: {
                 exit(0)
             }))

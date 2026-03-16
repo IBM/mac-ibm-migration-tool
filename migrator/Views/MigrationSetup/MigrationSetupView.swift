@@ -36,6 +36,7 @@ struct MigrationSetupView: View {
     @State private var showFileInteractionAlert: Bool = false
     @State private var showIntelAppConfirmation: Bool = false
     @State private var isLoading: Bool = false
+    @State private var showInsufficientSpacePopover: Bool = false
     
     // MARK: - Views
     
@@ -100,7 +101,7 @@ struct MigrationSetupView: View {
                     }, label: {
                         mainButtonLabel
                     })
-                    .disabled(!(viewModel.isSizeCalculationFinal && viewModel.isReadyForMigration))
+                    .disabled(!(viewModel.isSizeCalculationFinal && viewModel.isReadyForMigration) || viewModel.hasInsufficientSpace())
                     .padding(.leading, 6)
                     .keyboardShortcut(.defaultAction)
                     .accessibilityHint("accessibility.migrationSetupView.mainButton.hint")
@@ -160,8 +161,26 @@ struct MigrationSetupView: View {
                     .controlSize(.small)
                     .accessibilityHidden(true)
             } else {
+                if viewModel.hasInsufficientSpace() {
+                    Button {
+                        showInsufficientSpacePopover.toggle()
+                    } label: {
+                        Image(systemName: "exclamationmark")
+                            .foregroundColor(.red)
+                            .font(.title2)
+                            .padding(4)
+                    }
+                    .clipShape(Circle())
+                    .accessibilityHint("accessibility.migrationView.warningButton.hint")
+                    .popover(isPresented: $showInsufficientSpacePopover, arrowEdge: .bottom) {
+                        Text("migration.setup.page.bottom.info.storage.help")
+                            .customFont(.body)
+                            .padding()
+                    }
+                }
                 Text(viewModel.availableSpaceOnDestinationLabel)
                     .customFont(.body)
+                    .foregroundColor(viewModel.hasInsufficientSpace() ? .red : nil)
             }
         }
     }

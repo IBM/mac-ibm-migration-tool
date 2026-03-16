@@ -1005,7 +1005,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 214;
+				CURRENT_PROJECT_VERSION = 216;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -1018,8 +1018,7 @@
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2026";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "The app needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
-				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "$(EXECUTABLE_NAME) needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -1044,7 +1043,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 214;
+				CURRENT_PROJECT_VERSION = 216;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -1057,8 +1056,7 @@
 				INFOPLIST_FILE = migrator/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2026";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "The app needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
-				INFOPLIST_KEY_NSSystemAdministrationUsageDescription = "We need access to the disk to collect all the data needed for the migration.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "$(EXECUTABLE_NAME) needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
