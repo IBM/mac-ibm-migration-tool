@@ -162,7 +162,7 @@ struct MigrationItemsDetailSheet: View {
                 .font(.system(size: 48))
                 .foregroundColor(.secondary)
             
-            Text("No items to display")
+            Text("migration.option.details.empty.list.label")
                 .customFont(.body)
                 .foregroundColor(.secondary)
         }
