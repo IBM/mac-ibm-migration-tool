@@ -50,7 +50,7 @@ struct Utils {
                 return "common.system.settings.pre.ventura.label".localized
             }
         }
-                
+        
         /// Generate a random code.
         /// - Parameter digits: number of digits of the code.
         /// - Returns: string with the generated code.
@@ -161,27 +161,66 @@ extension Utils {
 
 extension Utils {
     struct Customization {
+        fileprivate static let regexDelimeter = "#"
+        
+        /// Checks if a string contains regex special characters that require pattern matching.
+        /// Dots are intentionally excluded because they commonly appear in file names.
+        /// - Parameter str: The string to check for regex patterns.
+        /// - Returns: True if the string contains regex special characters, false otherwise.
+        fileprivate static func containsRegexPattern(_ str: String) -> Bool {
+            let regexChars = CharacterSet(charactersIn: "\\+*?[]{}()^$|")
+            return str.rangeOfCharacter(from: regexChars) != nil
+        }
+        
+        /// Wraps regex path components in delimiters while keeping plain components literal.
+        /// - Parameter path: The path suffix to normalize.
+        /// - Returns: Normalized path components ready to be appended to a base URL.
+        private static func normalizedPathComponents(from path: String) -> [String] {
+            path
+                .split(separator: "/", omittingEmptySubsequences: true)
+                .map(String.init)
+                .map { component in
+                    guard containsRegexPattern(component) else { return component }
+                    return "\(regexDelimeter)\(component)\(regexDelimeter)"
+                }
+        }
+        
+        /// Appends normalized path components to a base URL.
+        /// - Parameters:
+        ///   - components: The path components to append.
+        ///   - baseURL: The base URL to append them to.
+        /// - Returns: The resulting URL.
+        private static func appendingPathComponents(_ components: [String], to baseURL: URL) -> URL {
+            components.reduce(baseURL) { partialURL, component in
+                partialURL.appendingPathComponent(component)
+            }
+        }
         
         /// Parses a profile URL string that may contain special placeholders like $HOMEFOLDER or $APPFOLDER
-        /// and converts it to an actual URL.
+        /// and converts it to an actual URL. Regex support is limited to isolated path components so plain
+        /// file names such as `Safari.app` continue to be treated as literals.
         /// - Parameter urlString: The URL string to parse, which may contain placeholders.
         /// - Returns: A URL object representing the parsed path, or nil if parsing fails.
         static func parseProfileURL(_ urlString: String) -> URL? {
             if urlString.contains("$HOMEFOLDER") {
-                var finalUrl = urlString.replacingOccurrences(of: "$HOMEFOLDER", with: "")
-                if finalUrl.starts(with: "/") {
-                    finalUrl.removeFirst()
-                }
-                return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("#\(finalUrl)#")
+                let finalUrl = urlString.replacingOccurrences(of: "$HOMEFOLDER", with: "")
+                let pathComponents = normalizedPathComponents(from: finalUrl)
+                return appendingPathComponents(pathComponents, to: FileManager.default.homeDirectoryForCurrentUser)
             }
             if urlString.contains("$APPFOLDER") {
-                var finalUrl = urlString.replacingOccurrences(of: "$APPFOLDER", with: "")
-                if finalUrl.starts(with: "/") {
-                    finalUrl.removeFirst()
+                let finalUrl = urlString.replacingOccurrences(of: "$APPFOLDER", with: "")
+                let pathComponents = normalizedPathComponents(from: finalUrl)
+                guard let applicationsURL = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first else {
+                    return nil
                 }
-                return FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("#\(finalUrl)#")
+                return appendingPathComponents(pathComponents, to: applicationsURL)
             }
-            return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("#\(urlString)#")
+            
+            let pathComponents = normalizedPathComponents(from: urlString)
+            if urlString.starts(with: "/") {
+                return appendingPathComponents(pathComponents, to: URL(fileURLWithPath: "/"))
+            }
+            return appendingPathComponents(pathComponents, to: FileManager.default.homeDirectoryForCurrentUser)
         }
     }
 }
@@ -241,21 +280,19 @@ extension Utils {
             let firstComponents = firstStandardized.pathComponents
             let secondComponents = secondStandardized.pathComponents
             
-            if firstComponents.count == secondComponents.count {
-                if url(firstStandardized, matchesPatternURL: secondStandardized) {
-                    return .same
-                }
+            if components(firstComponents, matchPatternComponents: secondComponents) {
+                return .same
+            }
+            if firstComponents.count > secondComponents.count &&
+                components(Array(firstComponents.prefix(secondComponents.count)), matchPatternComponents: secondComponents) {
+                return .contains
+            }
+            if firstComponents.count < secondComponents.count &&
+                components(firstComponents, matchPatternComponents: Array(secondComponents.prefix(firstComponents.count))) {
+                return .containedBy
             }
             
-            let minCount = min(firstComponents.count, secondComponents.count)
-            
-            for ind in 0..<minCount {
-                guard firstComponents[ind] == secondComponents[ind] else {
-                    return .notRelated
-                }
-            }
-            
-            return firstComponents.count > secondComponents.count ? .contains : .containedBy
+            return .notRelated
         }
         
         // swiftlint:disable function_body_length
@@ -328,7 +365,7 @@ extension Utils {
             return false
         }
         // swiftlint:enable function_body_length
-
+        
         /// Determines whether a given path should be ignored during file operations.
         /// - Parameter pathURL: The URL to check against exclusion rules.
         /// - Returns: True if the path should be ignored, false otherwise.
@@ -374,46 +411,48 @@ extension Utils {
         static func url(_ url: URL, matchesPatternURL patternURL: URL) -> Bool {
             let lhs = url.standardizedFileURL
             let rhs = patternURL.standardizedFileURL
-            let lhsComponents = lhs.pathComponents
-            let rhsComponents = rhs.pathComponents
+            return components(lhs.pathComponents, matchPatternComponents: rhs.pathComponents)
+        }
+        
+        /// Returns an `NSRegularExpression` if the component is meant to be treated as a regex.
+        private static func nsRegexFromPatternComponent(_ component: String) -> NSRegularExpression? {
+            let normalizedComponent: String
             
-            guard lhsComponents.count == rhsComponents.count else { return false }
+            if component.hasPrefix(Utils.Customization.regexDelimeter),
+               component.hasSuffix(Utils.Customization.regexDelimeter),
+               component.count > 2 {
+                normalizedComponent = String(component.dropFirst().dropLast())
+            } else if Utils.Customization.containsRegexPattern(component) {
+                normalizedComponent = component
+            } else {
+                return nil
+            }
             
-            for idx in 0..<lhsComponents.count {
-                let lhsComp = lhsComponents[idx]
-                let rhsComp = rhsComponents[idx]
-                if rhsComp == "/" || lhsComp == "/" {
-                    if rhsComp != lhsComp { return false }
+            return try? NSRegularExpression(pattern: "^(?:\(normalizedComponent))$")
+        }
+        
+        /// Matches URL path components against pattern components, allowing regex in the pattern side.
+        private static func components(_ pathComponents: [String], matchPatternComponents patternComponents: [String]) -> Bool {
+            guard pathComponents.count == patternComponents.count else { return false }
+            
+            for (pathComponent, patternComponent) in zip(pathComponents, patternComponents) {
+                if patternComponent == "/" || pathComponent == "/" {
+                    guard patternComponent == pathComponent else { return false }
                     continue
                 }
                 
-                if let regex = nsRegexFromPatternComponent(rhsComp) {
-                    let range = NSRange(location: 0, length: (lhsComp as NSString).length)
-                    let fullPattern = "^(?:" + regex.pattern + ")$"
-                    guard let fullRegex = try? NSRegularExpression(pattern: fullPattern) else { return false }
-                    if idx == lhsComponents.count - 1 {
-                        return fullRegex.firstMatch(in: lhsComp, options: [], range: range) != nil
-                    } else {
-                        if fullRegex.firstMatch(in: lhsComp, options: [], range: range) == nil { return false }
+                if let regex = nsRegexFromPatternComponent(patternComponent) {
+                    let range = NSRange(pathComponent.startIndex..<pathComponent.endIndex, in: pathComponent)
+                    guard regex.firstMatch(in: pathComponent, options: [], range: range) != nil else {
+                        return false
                     }
-                } else {
-                    if idx == lhsComponents.count - 1 {
-                        return lhsComp == rhsComp
-                    } else {
-                        if lhsComp != rhsComp { return false }
-                    }
+                    continue
                 }
+                
+                guard pathComponent == patternComponent else { return false }
             }
-
-            return false
-        }
-        
-        /// Returns an `NSRegularExpression` if successful, otherwise nil (meaning treat as literal).
-        private static func nsRegexFromPatternComponent(_ component: String) -> NSRegularExpression? {
-            guard component.count >= 2 else {
-                return nil
-            }
-            return try? NSRegularExpression(pattern: component)
+            
+            return true
         }
     }
 }

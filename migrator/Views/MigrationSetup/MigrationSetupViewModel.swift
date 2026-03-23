@@ -149,6 +149,11 @@ class MigrationSetupViewModel: ObservableObject {
         self.availableSpaceOnDestination = -1
     }
     
+    /// Checks if available space data has been received from the destination device
+    func hasAvailableSpaceData() -> Bool {
+        return availableSpaceOnDestination != -1
+    }
+    
     /// Checks if the available space after migration would be below the minimum required (10GB)
     func hasInsufficientSpace() -> Bool {
         guard availableSpaceOnDestination != -1 else { return false }

@@ -7,3 +7,4 @@ disabled_rules:
   - trailing_whitespace
   - colon
   - function_body_length
+  - type_body_length

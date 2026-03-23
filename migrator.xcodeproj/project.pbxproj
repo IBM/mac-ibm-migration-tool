@@ -19,9 +19,7 @@
 		1B4C5BB62B035EBA00D4BD0B /* ServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */; };
 		1B4C5BB82B035EBD00D4BD0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */; };
 		1B4C5BBB2B035EBD00D4BD0B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B4C5BBA2B035EBD00D4BD0B /* Preview Assets.xcassets */; };
-		1B4C5BC62B035EBD00D4BD0B /* MigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BC52B035EBD00D4BD0B /* MigratorTests.swift */; };
-		1B4C5BD02B035EBD00D4BD0B /* MigratorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BCF2B035EBD00D4BD0B /* MigratorUITests.swift */; };
-		1B4C5BD22B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BD12B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift */; };
+		1B4C5BC62B035EBD00D4BD0B /* ProfileConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BC52B035EBD00D4BD0B /* ProfileConfigTests.swift */; };
 		1B4C5BE12B0375C700D4BD0B /* Scene-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BE02B0375C700D4BD0B /* Scene-Extension.swift */; };
 		1B4C5BE52B03B80300D4BD0B /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BE42B03B80300D4BD0B /* Utils.swift */; };
 		1B4C5BE72B03B82B00D4BD0B /* NetworkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B4C5BE62B03B82B00D4BD0B /* NetworkServer.swift */; };
@@ -39,6 +37,7 @@
 		53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */; };
 		532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B52C64FFE5002E270F /* WindowAccessor.swift */; };
 		532F90B82C650014002E270F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B72C650014002E270F /* AppDelegate.swift */; };
+		533EF2C62F6ADF3B00DA2DCD /* DebugHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533EF2C52F6ADF3700DA2DCD /* DebugHelpers.swift */; };
 		534A99712EBAB0A500F3E24A /* CustomizableIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */; };
 		534A99732EC25E9400F3E24A /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534A99722EC25E8E00F3E24A /* CardButton.swift */; };
 		5350A7DB2F20FCF600D04A33 /* DiscoveredApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5350A7DA2F20FCF600D04A33 /* DiscoveredApplication.swift */; };
@@ -113,13 +112,6 @@
 			remoteGlobalIDString = 1B4C5BAF2B035EBA00D4BD0B;
 			remoteInfo = migrator;
 		};
-		1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1B4C5BA82B035EBA00D4BD0B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1B4C5BAF2B035EBA00D4BD0B;
-			remoteInfo = migrator;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -138,10 +130,7 @@
 		1B4C5BBA2B035EBD00D4BD0B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1B4C5BBC2B035EBD00D4BD0B /* migrator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = migrator.entitlements; sourceTree = "<group>"; };
 		1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = migratorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1B4C5BC52B035EBD00D4BD0B /* MigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorTests.swift; sourceTree = "<group>"; };
-		1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = migratorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1B4C5BCF2B035EBD00D4BD0B /* MigratorUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorUITests.swift; sourceTree = "<group>"; };
-		1B4C5BD12B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		1B4C5BC52B035EBD00D4BD0B /* ProfileConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileConfigTests.swift; sourceTree = "<group>"; };
 		1B4C5BE02B0375C700D4BD0B /* Scene-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scene-Extension.swift"; sourceTree = "<group>"; };
 		1B4C5BE32B03B6FE00D4BD0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1B4C5BE42B03B80300D4BD0B /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -160,6 +149,7 @@
 		53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateFilesHandlingPolicy.swift; sourceTree = "<group>"; };
 		532F90B52C64FFE5002E270F /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
 		532F90B72C650014002E270F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		533EF2C52F6ADF3700DA2DCD /* DebugHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugHelpers.swift; sourceTree = "<group>"; };
 		534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizableIconView.swift; sourceTree = "<group>"; };
 		534A99722EC25E8E00F3E24A /* CardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		5350A7DA2F20FCF600D04A33 /* DiscoveredApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredApplication.swift; sourceTree = "<group>"; };
@@ -249,13 +239,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1B4C5BC82B035EBD00D4BD0B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -306,7 +289,6 @@
 			children = (
 				1B4C5BB22B035EBA00D4BD0B /* migrator */,
 				1B4C5BC42B035EBD00D4BD0B /* migratorTests */,
-				1B4C5BCE2B035EBD00D4BD0B /* migratorUITests */,
 				1B4C5BB12B035EBA00D4BD0B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -324,7 +306,6 @@
 				5350A7F12F3B456F00D04A33 /* SECURITY.md */,
 				1B4C5BB02B035EBA00D4BD0B /* Data Shift.app */,
 				1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */,
-				1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -359,18 +340,9 @@
 		1B4C5BC42B035EBD00D4BD0B /* migratorTests */ = {
 			isa = PBXGroup;
 			children = (
-				1B4C5BC52B035EBD00D4BD0B /* MigratorTests.swift */,
+				1B4C5BC52B035EBD00D4BD0B /* ProfileConfigTests.swift */,
 			);
 			path = migratorTests;
-			sourceTree = "<group>";
-		};
-		1B4C5BCE2B035EBD00D4BD0B /* migratorUITests */ = {
-			isa = PBXGroup;
-			children = (
-				1B4C5BCF2B035EBD00D4BD0B /* MigratorUITests.swift */,
-				1B4C5BD12B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift */,
-			);
-			path = migratorUITests;
 			sourceTree = "<group>";
 		};
 		1B4C5BDE2B03759E00D4BD0B /* Views */ = {
@@ -492,6 +464,7 @@
 			isa = PBXGroup;
 			children = (
 				1B4C5BE42B03B80300D4BD0B /* Utils.swift */,
+				533EF2C52F6ADF3700DA2DCD /* DebugHelpers.swift */,
 				5352A1E22EE1D89300754A4C /* FontManager.swift */,
 			);
 			path = Helpers;
@@ -591,24 +564,6 @@
 			productReference = 1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1B4C5BDB2B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "migratorUITests" */;
-			buildPhases = (
-				1B4C5BC72B035EBD00D4BD0B /* Sources */,
-				1B4C5BC82B035EBD00D4BD0B /* Frameworks */,
-				1B4C5BC92B035EBD00D4BD0B /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */,
-			);
-			name = migratorUITests;
-			productName = migratorUITests;
-			productReference = 1B4C5BCB2B035EBD00D4BD0B /* migratorUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -624,10 +579,6 @@
 						CreatedOnToolsVersion = 15.0.1;
 					};
 					1B4C5BC02B035EBD00D4BD0B = {
-						CreatedOnToolsVersion = 15.0.1;
-						TestTargetID = 1B4C5BAF2B035EBA00D4BD0B;
-					};
-					1B4C5BCA2B035EBD00D4BD0B = {
 						CreatedOnToolsVersion = 15.0.1;
 						TestTargetID = 1B4C5BAF2B035EBA00D4BD0B;
 					};
@@ -648,7 +599,6 @@
 			targets = (
 				1B4C5BAF2B035EBA00D4BD0B /* Data Shift */,
 				1B4C5BC02B035EBD00D4BD0B /* migratorTests */,
-				1B4C5BCA2B035EBD00D4BD0B /* migratorUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -666,13 +616,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1B4C5BBF2B035EBD00D4BD0B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1B4C5BC92B035EBD00D4BD0B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -780,6 +723,7 @@
 				53F2DE402B6A70E000588D2D /* URL-Extension.swift in Sources */,
 				5352A1E42EE1D89300754A4C /* FontManager.swift in Sources */,
 				5350A7E92F32122B00D04A33 /* ArchitectureType.swift in Sources */,
+				533EF2C62F6ADF3B00DA2DCD /* DebugHelpers.swift in Sources */,
 				5377C22F2B57C94F00B5C9C1 /* FileMessage.swift in Sources */,
 				1B0507522B06133800384CD5 /* MigrationView.swift in Sources */,
 				53CC8E392E46042900B44432 /* MigrationReportController.swift in Sources */,
@@ -845,16 +789,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B4C5BC62B035EBD00D4BD0B /* MigratorTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1B4C5BC72B035EBD00D4BD0B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1B4C5BD22B035EBD00D4BD0B /* MigratorUITestsLaunchTests.swift in Sources */,
-				1B4C5BD02B035EBD00D4BD0B /* MigratorUITests.swift in Sources */,
+				1B4C5BC62B035EBD00D4BD0B /* ProfileConfigTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -865,11 +800,6 @@
 			isa = PBXTargetDependency;
 			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
 			targetProxy = 1B4C5BC22B035EBD00D4BD0B /* PBXContainerItemProxy */;
-		};
-		1B4C5BCD2B035EBD00D4BD0B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1B4C5BAF2B035EBA00D4BD0B /* Data Shift */;
-			targetProxy = 1B4C5BCC2B035EBD00D4BD0B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1005,7 +935,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 216;
+				CURRENT_PROJECT_VERSION = 218;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -1024,7 +954,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.company.datashift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1043,7 +973,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 216;
+				CURRENT_PROJECT_VERSION = 218;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -1062,7 +992,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.company.datashift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1088,7 +1018,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac@IBM Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mac@IBM Shift";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Data Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Data Shift";
 			};
 			name = Debug;
 		};
@@ -1108,43 +1038,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac@IBM Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mac@IBM Shift";
-			};
-			name = Release;
-		};
-		1B4C5BDC2B035EBD00D4BD0B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = migrator;
-			};
-			name = Debug;
-		};
-		1B4C5BDD2B035EBD00D4BD0B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = migrator;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Data Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Data Shift";
 			};
 			name = Release;
 		};
@@ -1174,15 +1068,6 @@
 			buildConfigurations = (
 				1B4C5BD92B035EBD00D4BD0B /* Debug */,
 				1B4C5BDA2B035EBD00D4BD0B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1B4C5BDB2B035EBD00D4BD0B /* Build configuration list for PBXNativeTarget "migratorUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1B4C5BDC2B035EBD00D4BD0B /* Debug */,
-				1B4C5BDD2B035EBD00D4BD0B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

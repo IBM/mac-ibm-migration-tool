@@ -64,7 +64,7 @@ final class NetworkConnection {
         }
     }
     /// Stores the available space on the connected device and publishes changes to subscribers.
-    var connectedDeviceAvailableSpace: Int = 0 {
+    var connectedDeviceAvailableSpace: Int = -1 {
         didSet {
             self.onAvailableSpaceChange.send(connectedDeviceAvailableSpace)
         }

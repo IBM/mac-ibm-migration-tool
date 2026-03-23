@@ -303,17 +303,33 @@ extension AppContext {
         return policy
     }
     private static var managedExcludedURLs: [URL?] {
+#if DEBUG
+        return DebugHelpers.AppContext.debugExcludedPathsList.compactMap { urlString in
+            Utils.Customization.parseProfileURL(urlString)
+        } + Utils.UserDefaultsHelpers.managedValue(forKey: excludedPathsListKey, defaultValue: []).compactMap { urlString in
+            return Utils.Customization.parseProfileURL(urlString)
+        }
+#else
         return Utils.UserDefaultsHelpers.managedValue(forKey: excludedPathsListKey, defaultValue: []).compactMap { urlString in
             return Utils.Customization.parseProfileURL(urlString)
         }
-    }
+#endif
+    } 
     static var urlExclusionList: [URL?] {
         return managedExcludedURLs + defaultUrlExclusionList
     }
     private static var managedAllowedURLs: [URL?] {
+#if DEBUG
+        return DebugHelpers.AppContext.debugAllowedPathsList.compactMap { urlString in
+            Utils.Customization.parseProfileURL(urlString)
+        } + Utils.UserDefaultsHelpers.managedValue(forKey: allowedPathsListKey, defaultValue: []).compactMap { urlString in
+            return Utils.Customization.parseProfileURL(urlString)
+        }
+#else
         return Utils.UserDefaultsHelpers.managedValue(forKey: allowedPathsListKey, defaultValue: []).compactMap { urlString in
             return Utils.Customization.parseProfileURL(urlString)
         }
+#endif
     }
     static var explicitAllowList: [URL?] {
         return managedAllowedURLs + defaultExplicitAllowList
