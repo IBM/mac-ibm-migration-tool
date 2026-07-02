@@ -11,6 +11,12 @@
 
 <img alt="IBM Data Shift" src="images/readme_img.png" width="100%">
 
+## Awards
+
+<img width="60" height="60" alt="GlobeeTech_Silver" src="https://github.com/user-attachments/assets/453ccd88-d38b-4bd6-bbde-eab862187a07"/>  
+
+[2026 Silver Globee® Awards for Techonology - Best Business Process Automation (BPA) Solution - Best of Category](https://globeeawards.com/2026-winners-technology/)
+
 ## As seen on
 
 [JNUC 2024 Session 1077](https://www.youtube.com/watch?v=S_exJoiVb20)  
