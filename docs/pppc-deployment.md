@@ -8,9 +8,6 @@ For **IBM Data Shift** to work properly it requires Full Disk Access, plus acces
 
 The app needs the following permissions:
 
-- **SystemPolicyDesktopFolder**
-- **SystemPolicyDocumentsFolder**
-- **SystemPolicyDownloadsFolder**
 - **SystemPolicyAllFiles**
 
 Example:

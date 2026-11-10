@@ -190,4 +190,4 @@ If you find a vulnerability:
 3. Provide as much detail as possible.
 4. Allow reasonable time for a fix.
 
-More resources: [SECURITY.md]({{ site.repo_url }}/blob/main/docs/SECURITY.md) and the [architecture diagram]({{ site.repo_url }}/blob/main/docs/architecture-diagram.md) in the repository.
+More resources: [SECURITY.md]({{ site.repo_url }}/blob/main/SECURITY.md) in the repository.
