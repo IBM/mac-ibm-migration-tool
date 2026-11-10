@@ -71,7 +71,7 @@
 - **macOS**: 15.0 (Monterey) or later
 - **Swift**: 6.0 or later (complete concurrency checking)
 - **Xcode**: 27 or later (for building from source)
-- **Network**: Wi-Fi or Thunderbolt connection between devices
+- **Network**: Wi-Fi or Cable connection between devices
 - **Permissions**: Full Disk Access required for complete data migration
 
 ## How It Works
