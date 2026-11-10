@@ -83,6 +83,7 @@ struct MigratorFileView: View {
                             Toggle(isOn: $showHiddenFiles, label: { })
                             .controlSize(.mini)
                             .toggleStyle(.switch)
+                            .accessibilityLabel(String(format: "migration.setup.directory.content.hidden.label".localized, showHiddenFiles ? "migration.setup.directory.content.hidden.label.hide".localized : "migration.setup.directory.content.hidden.label.show".localized))
                             Text(String(format: "migration.setup.directory.content.hidden.label".localized, showHiddenFiles ? "migration.setup.directory.content.hidden.label.hide".localized : "migration.setup.directory.content.hidden.label.show".localized))
                                 .customFont(.body)
                                 .lineLimit(1)
@@ -137,6 +138,7 @@ struct MigratorFileView: View {
                 Toggle(isOn: $isSelected.onUpdate {
                     self.$file.isSelected.wrappedValue = self.isSelected
                 }, label: {})
+                .accessibilityLabel("accessibility.migratorFileView.selectionToggle.label")
             }
         }
         .opacity(file.isHidden ? 0.7 : 1)

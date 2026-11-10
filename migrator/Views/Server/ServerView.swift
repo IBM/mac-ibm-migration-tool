@@ -46,7 +46,21 @@ struct ServerView: View {
     init(action: @escaping (MigratorPage) -> Void) {
         self.action = action
     }
-      
+
+    // MARK: - Computed Properties
+
+    /// Title for the pairing overlay, varying with `viewModel.pendingPairingAlert`.
+    private var pairingAlertTitle: String {
+        switch viewModel.pendingPairingAlert {
+        case .none:
+            return ""
+        case .requestPending:
+            return "server.page.pairing.request.title".localized
+        case .accepted:
+            return "server.page.pairing.code.alert.title".localized
+        }
+    }
+
     // MARK: - Views
     
     var body: some View {
@@ -57,7 +71,7 @@ struct ServerView: View {
                 .accessibilityHidden(true)
             Text(viewModel.connectionEstablished ? (viewModel.migrationProgress > 0 ? (viewModel.migrationProgress == 1 ? "server.page.title.migration.complete.label" : "server.page.title.migration.ongoing.label") : "server.page.connected.title") : "server.page.title")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             Text(viewModel.connectionEstablished ? (viewModel.migrationProgress > 0 ? (viewModel.migrationProgress == 1 ? "server.page.body.migration.complete.label" : "server.page.body.ongoing.label") :  "server.page.connected.subtitle") : "server.page.subtitle")
                 .multilineTextAlignment(.center)
@@ -110,11 +124,8 @@ struct ServerView: View {
                             .controlSize(.small)
                             .accessibilityHidden(true)
                         Spacer()
-                        Text("server.page.pairing.code.label")
+                        Text("server.page.pairing.waiting.label")
                             .customFont(.title3)
-                            .padding(.bottom, 8)
-                        CodeVerificationFieldView(code: .constant(viewModel.randomCode), viewOnly: true)
-                            .accessibilityElement(children: .combine)
                         Spacer()
                     }
                 }
@@ -132,6 +143,7 @@ struct ServerView: View {
                             .padding(4)
                     }
                     .clipShape(Circle())
+                    .accessibilityLabel("accessibility.serverView.powerWarningButton.label")
                     .accessibilityHint("accessibility.serverView.powerWarningButton.hint")
                     .popover(isPresented: $showPowerPopover, arrowEdge: .bottom) {
                         Text("migration.page.warning.button.popover.text")
@@ -149,6 +161,8 @@ struct ServerView: View {
                             .padding(4)
                     }
                     .clipShape(Circle())
+                    .accessibilityLabel("accessibility.serverView.localNetworkWarningButton.label")
+                    .accessibilityHint("accessibility.serverView.localNetworkWarningButton.hint")
                     .popover(isPresented: $showLocalNetworkPopover, arrowEdge: .bottom) {
                         VStack(spacing: 8) {
                             Text(String(format: "server.page.localnetwork.warning.label".localized, Bundle.main.name, Utils.Common.systemSettingsLabel, Bundle.main.name))
@@ -199,11 +213,71 @@ struct ServerView: View {
             .frame(height: 56)
         }
         .overlay {
-            if viewModel.connectionInterrupted {
+            if viewModel.isPaused {
+                CustomAlertView(title: "server.page.paused.alert.title".localized,
+                                message: String(format: "server.page.paused.alert.message".localized, viewModel.sourceHostName)) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.regular)
+                }
+            } else if viewModel.connectionInterrupted {
                 CustomAlertView(title: "connection.error.alert.title".localized, message: "connection.error.alert.restoring.message".localized) {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .controlSize(.regular)
+                }
+            } else if viewModel.isPairingLocked {
+                CustomAlertView(title: "server.page.pairing.locked.alert.title".localized, message: "server.page.pairing.locked.alert.message".localized) {
+                    Button {
+                        viewModel.generateNewCodeAndUnlock()
+                    } label: {
+                        Text("server.page.pairing.locked.alert.button.label")
+                            .customFont(.body)
+                            .padding(4)
+                    }
+                    .keyboardShortcut(.defaultAction)
+                }
+            } else {
+                switch viewModel.pendingPairingAlert {
+                case .requestPending(let hostname):
+                    CustomAlertView(title: pairingAlertTitle,
+                                     message: String(format: "server.page.pairing.request.message".localized, hostname)) {
+                        HStack {
+                            Button {
+                                viewModel.declineIncomingPairingRequest()
+                            } label: {
+                                Text("server.page.pairing.request.decline.button.label")
+                                    .customFont(.body)
+                                    .padding(4)
+                            }
+                            Button {
+                                viewModel.acceptIncomingPairingRequest()
+                            } label: {
+                                Text("server.page.pairing.request.accept.button.label")
+                                    .customFont(.body)
+                                    .padding(4)
+                            }
+                            .keyboardShortcut(.defaultAction)
+                        }
+                    }
+                case .accepted:
+                    CustomAlertView(title: pairingAlertTitle,
+                                    message: "server.page.pairing.code.alert.message".localized) {
+                        VStack {
+                            CodeVerificationFieldView(code: .constant(viewModel.randomCode), readOnly: true)
+                                .padding(.bottom, 16)
+                            Button {
+                                viewModel.cancelAcceptedPairingRequest()
+                            } label: {
+                                Text("server.page.pairing.code.alert.cancel.button.label")
+                                    .customFont(.body)
+                                    .padding(4)
+                            }
+                            .keyboardShortcut(.cancelAction)
+                        }
+                    }
+                case .none:
+                    EmptyView()
                 }
             }
         }

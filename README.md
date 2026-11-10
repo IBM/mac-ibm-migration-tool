@@ -1,9 +1,10 @@
 # IBM Data Shift
 
 ![License](https://img.shields.io/badge/license-Apache%202-1984E5)
-![Swift version](https://img.shields.io/badge/swift-5.9.0-1984E5?logo=swift)
-![Project version](https://img.shields.io/badge/version-1.4.0-1984E5)
-![macOS](https://img.shields.io/badge/macOS-12+-bright%20green)
+![Swift version](https://img.shields.io/badge/swift-6.0-1984E5?logo=swift)
+![Project version](https://img.shields.io/badge/version-2.0.0-1984E5)
+![TLS](https://img.shields.io/badge/TLS-1.3-1984E5)
+![macOS](https://img.shields.io/badge/macOS-15+-bright%20green)
 
 ## Overview
 
@@ -23,6 +24,7 @@
 - Support for both **Wi-Fi** and **Thunderbolt** direct connections
 - Automatic peer-to-peer network discovery using Bonjour (DNS-SD)
 - Real-time progress tracking with time estimation
+- **Pause & resume** - pause from the source Mac, disconnect the devices, and resume later from the same point
 
 ### 🔒 **Enterprise-Ready**
 - Integration with **Jamf Pro** for managed environments
@@ -30,15 +32,25 @@
 - Automated inventory updates post-migration
 - Configurable via MDM profiles (UserDefaults)
 
+### 🛡️ **Secure Pairing**
+- Device-to-device transport secured with **TLS 1.3**, using an ephemeral, in-memory-only certificate
+- Verification code exchange authenticated at the application layer with a CPace-style PAKE bound to the TLS channel, resistant to relay/man-in-the-middle attacks
+- Destination device must explicitly accept or decline each incoming pairing request before its code can be used
+- Automatic lockout after repeated incorrect verification code attempts
+- Received paths and symbolic links are validated, so a migration can only write inside the user's home folder and `/Applications`
+
 ### ⚙️ **Highly Customizable**
 - Extensive configuration options through UserDefaults
 - Custom branding support (organization name, icons, colors)
 - Configurable file inclusion/exclusion rules
 - Flexible duplicate file handling policies
 - Optional Terms & Conditions acceptance flow
+- **Customizable Migration Presets** - replace the built-in Lite/Complete options with your own named bundles of categories and paths
 
 ### 📊 **Advanced File Management**
 - Intelligent file discovery with customizable filters
+- **Automatic app support file discovery** - migrates Application Support, Containers, Group Containers, Preferences, and more
+- **Granular preferences migration** - discover and selectively migrate macOS system preferences (Dock, Finder, Keyboard, Trackpad, Accessibility, and more) by category
 - Support for symbolic links preservation
 - Duplicate file detection and handling
 - Optional migration report generation
@@ -51,8 +63,8 @@
 ## System Requirements
 
 - **macOS**: 12.0 (Monterey) or later
-- **Swift**: 5.9.0 or later
-- **Xcode**: 14.0 or later (for building from source)
+- **Swift**: 6.0 or later (complete concurrency checking)
+- **Xcode**: 16.0 or later (for building from source)
 - **Network**: Wi-Fi or Thunderbolt connection between devices
 - **Permissions**: Full Disk Access required for complete data migration
 
@@ -60,7 +72,7 @@
 
 1. **Device Discovery**: Launch the app on both the source (old) and destination (new) Mac
 2. **Connection**: Devices automatically discover each other over the local network
-3. **Verification**: Secure pairing with verification code
+3. **Verification**: Destination device accepts the incoming pairing request, then both devices confirm a verification code over a TLS 1.3 encrypted channel
 4. **Configuration**: Choose migration options (Lite, Complete, or Advanced)
 5. **Transfer**: Files are transferred directly between devices with real-time progress
 6. **Completion**: Optional post-migration steps (Apple ID verification, Jamf recon, device restart)
@@ -83,10 +95,7 @@ cd mac-ibm-migration-tool
 open migrator.xcodeproj
 ```
 
-3. Rebrand the app:
-   - Follow the [wiki guide](../../wiki/How-to-rebrand-the-app).
-
-4. Build and run:
+3. Build and run:
    - Select the `migrator` scheme
    - Choose your target device
    - Press `Cmd + R` to build and run
@@ -105,6 +114,10 @@ IBM Data Shift can be extensively configured via MDM profiles or local UserDefau
 - `backupPath`: Path for duplicate file backups (default: "~/Desktop/Migration.Backup")
 - `skipDeviceReboot`: Skip post-migration reboot prompt (default: false)
 - `generateReport`: Generate migration report on desktop (default: false)
+- `migrateAppSupportFiles`: Discover, display, and migrate app support files (Application Support, Containers, Preferences) (default: true)
+- `migratePreferences`: Discover, display, and migrate macOS system preferences (default: true)
+- `migrationPresets`: Array replacing the built-in `Lite`/`Complete` options with admin-defined presets, each with an `id`, `name`, `categories` (`desktop`, `documents`, `userFolder`, `apps`, `preferences`), and optional `additionalPaths`
+- `excludeApplicationsFolder`: Completely exclude all Applications folders (`/Applications`, `~/Applications`, `/System/Applications`) from migration regardless of the selected preset or Advanced option. Enforced both during option setup and at the file-scanner level, so a full user-folder preset cannot bring them back (default: false)
 
 ### File Filtering
 - `excludedPathsList`: Array of paths to exclude from migration
@@ -116,7 +129,7 @@ IBM Data Shift can be extensively configured via MDM profiles or local UserDefau
 - `mdmEnvironments`: Array of managed environments with server URLs and recon policy IDs
 - `skipJamfRecon`: Skip Jamf inventory update (default: false)
 - `jamfReconMethod`: Method for running recon (`selfServicePolicy` or `binary`)
-- `storePath`: Path to Jamf Self Service app
+- `storePath`: Path to Jamf Self Service app (must be an absolute path to an existing `.app` bundle, otherwise the default is used)
 
 ### UI Customization
 - `welcomePageIcon`: Custom icon for welcome page
@@ -173,6 +186,9 @@ Key components:
 - [`NetworkBrowser.swift`](migrator/Controllers/NetworkControllers/NetworkBrowser.swift): Device discovery
 - [`NetworkServer.swift`](migrator/Controllers/NetworkControllers/NetworkServer.swift): Server-side networking
 - [`NetworkConnection.swift`](migrator/Controllers/NetworkControllers/NetworkConnection.swift): Client-side networking
+- [`EphemeralTLSIdentity.swift`](migrator/Controllers/NetworkControllers/EphemeralTLSIdentity.swift): In-memory-only TLS 1.3 server identity for pairing
+- [`PairingAuthenticator.swift`](migrator/Controllers/NetworkControllers/PairingAuthenticator.swift): CPace-style PAKE used to verify the pairing code at the application layer
+- [`PreferencesDiscovery.swift`](migrator/Controllers/PreferencesDiscovery.swift): Discovery, read, and write of macOS system preferences
 - [`AppContext.swift`](migrator/AppContext.swift): Centralized configuration management
 
 ## Contributing

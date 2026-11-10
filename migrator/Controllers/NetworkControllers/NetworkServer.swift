@@ -12,6 +12,7 @@ import Combine
 
 /// Manages a network listener for discovering and accepting connections from network clients.
 /// This class specifically listens for Bonjour services of type "_migrator._tcp".
+@MainActor
 final class NetworkServer {
     
     // MARK: - Published Properties
@@ -31,37 +32,69 @@ final class NetworkServer {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .network)
         
     // MARK: - Lifecycle Methods
     
     /// Starts the network listener to make the device discoverable as a service of type "_migrator._tcp".
-    /// The listener will only accept connections that provide a matching passcode.
-    /// - Parameter passcode: A passcode required for clients to connect to this service.
-    func start(withPasscode passcode: String) throws {
-        let parameters = NWParameters(passcode: passcode)
+    /// TLS 1.3 only provides confidentiality here via an ephemeral, in-memory server identity;
+    /// the pairing code is checked afterwards at the application layer (see `PairingAuthenticator`),
+    /// so callers still need to pass the passcode to each `NetworkConnection` built from
+    /// `onNewConnection`.
+    func start() throws {
+        logger.log("networkServer.start: generating ephemeral TLS identity and starting listener for service \"\(AppContext.networkServiceIdentifier)._tcp\"", type: .default)
+        let identity = try EphemeralTLSIdentity.makeIdentity()
+        let parameters = NWParameters(tlsIdentity: identity)
         listener = try NWListener(using: parameters)
         listener?.service = NWListener.Service(type: AppContext.networkServiceIdentifier+"._tcp")
+        // `NWListener`'s handlers aren't `@MainActor`-annotated, but every handler below is
+        // started on the `.main` queue, so they always fire there.
         // Handler for listener state updates.
         listener?.stateUpdateHandler = { [weak self] newState in
-            self?.onNewListenerState.send(newState)
+            MainActor.assumeIsolated {
+                switch newState {
+                case .ready:
+                    self?.logger.log("networkServer.stateUpdateHandler: listener ready, advertising service", type: .default)
+                case .failed(let error):
+                    self?.logger.log("networkServer.stateUpdateHandler: listener failed -> \"\(error.localizedDescription)\"", type: .error)
+                case .cancelled:
+                    self?.logger.log("networkServer.stateUpdateHandler: listener cancelled", type: .default)
+                default:
+                    break
+                }
+                self?.onNewListenerState.send(newState)
+            }
         }
-        
+
         // Handler for establishing new connections.
         listener?.newConnectionHandler = { [weak self] newConnection in
-            self?.onNewConnection.send(newConnection)
+            MainActor.assumeIsolated {
+                self?.logger.log("networkServer.newConnectionHandler: accepted incoming connection from \"\(newConnection.endpoint.debugDescription)\"", type: .default)
+                self?.onNewConnection.send(newConnection)
+            }
         }
-        
+
         // Handler for service registration updates.
         listener?.serviceRegistrationUpdateHandler = { [weak self] change in
-            self?.onServiceRegistrationUpdate.send(change)
+            MainActor.assumeIsolated {
+                switch change {
+                case .add(let endpoint):
+                    self?.logger.log("networkServer.serviceRegistrationUpdateHandler: service registered as \"\(endpoint.debugDescription)\"", type: .default)
+                case .remove(let endpoint):
+                    self?.logger.log("networkServer.serviceRegistrationUpdateHandler: service unregistered -> \"\(endpoint.debugDescription)\"", type: .error)
+                @unknown default:
+                    break
+                }
+                self?.onServiceRegistrationUpdate.send(change)
+            }
         }
-                
+
         listener?.start(queue: .main)
     }
-    
+
     /// Stops the currently running network listener.
     func stop() {
+        logger.log("networkServer.stop: stopping listener", type: .default)
         listener?.cancel()
         listener = nil
     }

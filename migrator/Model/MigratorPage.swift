@@ -26,6 +26,7 @@ enum MigratorPage: CaseIterable {
     /// Generates a SwiftUI view for the corresponding page.
     /// - Parameter action: A closure to handle actions triggered within the views.
     /// - Returns: A SwiftUI view representing the page.
+    @MainActor
     @ViewBuilder
     func view(action: @escaping (MigratorPage) -> Void) -> some View {
         switch self {

@@ -46,10 +46,10 @@ struct CodeVerificationFieldView: View {
     /// - Parameters:
     ///   - code: The binded variable that stores the code entered by the user.
     ///   - viewOnly: A boolean value that indicates whether the view should be displayed in read-only mode.
-    init(code: Binding<String>, viewOnly: Bool = false) {
+    init(code: Binding<String>, readOnly: Bool = false) {
         self._code = code
         self._chars = State(initialValue: Array(repeating: "", count: 6))
-        self.readOnly = viewOnly
+        self.readOnly = readOnly
     }
     
     // MARK: - Views
@@ -61,24 +61,22 @@ struct CodeVerificationFieldView: View {
                     Text(chars[index])
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.center)
-                        .frame(width: 43, height: 60)
-                        .customFont(size: 36, weight: .semibold)
-                        .background(
-                            Color("bigButtonUnselected")
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
-                        )
+                        .frame(minWidth: 43, maxWidth: 43, minHeight: 60)
+                        .customFont(.largeTitle, weight: .semibold)
+                        .background(Color("bigButtonUnselected")
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0))
                 } else {
                     TextField("", text: $chars[index])
                         .textFieldStyle(.plain)
                         .multilineTextAlignment(.center)
-                        .frame(width: 43, height: 60)
-                        .customFont(size: 36, weight: .semibold)
+                        .frame(minWidth: 43, maxWidth: 43, minHeight: 60)
+                        .customFont(.largeTitle, weight: .semibold)
                         .focused($charFocusState, equals: ElementFocusState.char(index))
                         .background(Color("bigButtonUnselected")
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
                                 .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0))
-                        .onChange(of: chars[index]) { newVal in
+                        .onChange(of: chars[index]) { _, newVal in
                             if newVal.count == 1 {
                                 if index < 6 - 1 {
                                     charFocusState = ElementFocusState.char(index + 1)
@@ -112,6 +110,13 @@ struct CodeVerificationFieldView: View {
         .onAppear {
             updateElements()
         }
+        .onChange(of: code) { _, newCode in
+            guard newCode.isEmpty, chars.contains(where: { !$0.isEmpty }) else { return }
+            chars = Array(repeating: "", count: 6)
+            DispatchQueue.main.async {
+                charFocusState = .char(0)
+            }
+        }
     }
     
     // MARK: - Private Methods
@@ -126,5 +131,5 @@ struct CodeVerificationFieldView: View {
 }
 
 #Preview {
-    CodeVerificationFieldView(code: .constant("543216"), viewOnly: false)
+    CodeVerificationFieldView(code: .constant("543216"), readOnly: false)
 }

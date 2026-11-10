@@ -34,6 +34,8 @@ struct BrowserView: View {
     
     /// State variable that store the selected network device result from the browsing action.
     @State private var selectedResult: NetworkDevice?
+    /// Focus state of the device list. Without focus, the selection is drawn in grey instead of the accent color.
+    @FocusState private var isListFocused: Bool
 
     // MARK: - Initializers
     
@@ -55,7 +57,7 @@ struct BrowserView: View {
                 .accessibilityHidden(true)
             Text("browser.page.title")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             Text("browser.page.subtitle")
                 .multilineTextAlignment(.center)
@@ -101,10 +103,16 @@ struct BrowserView: View {
     
     var deviceList: some View {
         ZStack {
-            Color("discoveryViewBackground")
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
-                .accessibilityHidden(true)
+            if #available(macOS 26.0, *) {
+                Color.clear
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20))
+                    .accessibilityHidden(true)
+            } else {
+                Color("discoveryViewBackground")
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                    .accessibilityHidden(true)
+            }
             VStack(alignment: .center) {
                 ProgressView()
                     .progressViewStyle(.circular)
@@ -116,7 +124,12 @@ struct BrowserView: View {
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(result.name.wrappedValue)
                 }
-                .onChange(of: migrationController.browserResults) { newResults in
+                .focused($isListFocused)
+                .onAppear {
+                    // Give the list focus so the first selection uses the accent color.
+                    isListFocused = true
+                }
+                .onChange(of: migrationController.browserResults) { _, newResults in
                     if !newResults.contains(where: { $0.id == selectedResult?.id }) {
                         selectedResult = nil
                     }

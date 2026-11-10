@@ -11,7 +11,7 @@ import SwiftUI
 import AppKit
 
 /// Manager class for handling custom font loading and registration
-final class FontManager {
+final class FontManager: Sendable {
     /// Shared singleton instance
     static let shared = FontManager()
     
@@ -29,9 +29,6 @@ final class FontManager {
         return AppContext.customFontFamily
     }
     
-    /// Flag to track if fonts have been registered
-    private var fontsRegistered = false
-    
     /// Flag to indicate if custom fonts should be used
     private var shouldUseCustomFonts: Bool {
         return !customFontFamily.isEmpty
@@ -45,7 +42,7 @@ final class FontManager {
     
     /// Registers all custom fonts from the Resources folder
     private func registerCustomFonts() {
-        guard !fontsRegistered && shouldUseCustomFonts else { return }
+        guard shouldUseCustomFonts else { return }
         let fontWeights: [FontWeight] = FontWeight.allCases
         for weight in fontWeights {
             let fontName = "\(customFontFamily)\(weight.rawValue.isEmpty ? "" : "-\(weight.rawValue)")"
@@ -58,22 +55,15 @@ final class FontManager {
                 }
             }
         }
-        fontsRegistered = true
     }
     
     /// Registers a single font file
     /// - Parameter url: The URL of the font file
     private func registerFont(from url: URL) {
-        guard let fontDataProvider = CGDataProvider(url: url as CFURL),
-              let font = CGFont(fontDataProvider) else {
-            MLogger.main.log("Failed to load font from: \(url.lastPathComponent).", type: .fault)
-            return
-        }
-        
         var error: Unmanaged<CFError>?
-        if !CTFontManagerRegisterGraphicsFont(font, &error) {
+        if !CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error) {
             if let error = error?.takeRetainedValue() {
-                MLogger.main.log("Error registering font: \(error).", type: .fault)
+                MLogger.main.log("fontManager.registerFont: failed to register font \"\(url.lastPathComponent)\" -> \"\(error)\"", type: .fault)
             }
         }
     }

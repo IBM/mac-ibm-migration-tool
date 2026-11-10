@@ -8,18 +8,18 @@
 //
 
 import XCTest
-@testable import Data_Shift
+@testable import Mac_IBM_Data_Shift
 
 final class ProfileConfigTests: XCTestCase {
-    
+
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-    
+
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     // MARK: - parseProfileURL Tests
     
     /// Test that plain paths with $HOMEFOLDER are parsed without # delimiters
@@ -158,7 +158,7 @@ final class ProfileConfigTests: XCTestCase {
             
             let hasDelimiters = result?.path.contains("#") ?? false
             XCTAssertEqual(hasDelimiters, testCase.shouldHaveDelimiters,
-                           "Failed for: \(testCase.input). Expected delimiters: \(testCase.shouldHaveDelimiters), got: \(hasDelimiters)")
+                          "Failed for: \(testCase.input). Expected delimiters: \(testCase.shouldHaveDelimiters), got: \(hasDelimiters)")
         }
     }
     

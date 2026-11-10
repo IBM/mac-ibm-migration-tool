@@ -15,7 +15,7 @@ struct AppleIDView: View {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .general)
     
     // MARK: - Constants
 
@@ -43,7 +43,7 @@ struct AppleIDView: View {
                 .padding(.horizontal, 40)
             Spacer()
             Button(action: {
-                logger.log("appleIDView.mainButtonAction: Opening Apple ID Preferences Panel", type: .default)
+                logger.log("appleIDView.mainButtonAction: opening Apple ID preferences panel", type: .default)
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preferences.AppleIDPrefPane")!)
             }, label: {
                 Text(String(format: "icloud.page.system.settings.button.label".localized, Utils.Common.systemSettingsLabel))

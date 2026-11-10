@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import Combine
 
 /// Struct representing the page that ask the user to restart the device.
 struct RebootView: View {
@@ -33,7 +34,7 @@ struct RebootView: View {
                 .accessibilityHidden(true)
             Text("reboot.page.title.label")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             Text("reboot.page.body.label")
                 .multilineTextAlignment(.center)

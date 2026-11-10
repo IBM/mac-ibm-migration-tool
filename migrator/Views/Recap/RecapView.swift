@@ -25,7 +25,7 @@ struct RecapView: View {
     let nextPage: MigratorPage = .migration
     
     let includedFiles: [MigratorFile] = MigrationController.shared.migrationOption.migrationFileList.filter { $0.isSelected }
-    let includedApps: [MigratorFile] =  MigrationController.shared.migrationOption.migrationAppList.filter { $0.isSelected }.map { $0.migratorFile }
+    let includedApps: [DiscoveredApplication] =  MigrationController.shared.migrationOption.migrationAppList.filter { $0.isSelected }
     
     // MARK: - State Variables
     
@@ -35,6 +35,8 @@ struct RecapView: View {
     @State private var showFileInteractionAlert: Bool = false
     /// Indicates whether hidden files and applications should be shown in the recap lists.
     @State private var showHiddenFiles: Bool = false
+    /// Tracks expanded application support file rows.
+    @State private var expandedAppIDs: Set<UUID> = []
     
     // MARK: - Observable Variables
     
@@ -51,7 +53,7 @@ struct RecapView: View {
                 .accessibilityHidden(true)
             Text("recap.page.title")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom)
             if viewModel.isLoading {
                 Spacer()
@@ -115,13 +117,19 @@ struct RecapView: View {
                             .padding(.leading, 4)
                     }
                 }
-                ForEach(includedApps) { item in
-                    if item.isHidden && !showHiddenFiles {
+                ForEach(includedApps) { app in
+                    if app.migratorFile.isHidden && !showHiddenFiles {
                         EmptyView()
                     } else {
-                        MigratorFileView(file: .constant(item), needsDescriptiveLabel: true, showFileSize: false)
-                            .padding(.leading, 4)
+                        ExpandableAppRowView(app: app, expandedAppIDs: $expandedAppIDs) {
+                            MigratorFileView(file: .constant(app.migratorFile), needsDescriptiveLabel: true, showFileSize: false)
+                        }
+                        .padding(.leading, 4)
                     }
+                }
+                ForEach(MigrationController.shared.migrationOption.migrationPreferencesList.filter { $0.isSelected }) { group in
+                    PreferenceGroupRowView(group: group, selection: nil)
+                        .padding(.leading, 4)
                 }
             }
             .padding()
@@ -129,8 +137,16 @@ struct RecapView: View {
         .frame(idealWidth: 250)
         .layoutPriority(0.9)
         .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color("discoveryViewBackground"))
+            if #available(macOS 26.0, *) {
+                Color.clear
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                    .accessibilityHidden(true)
+            } else {
+                Color("discoveryViewBackground")
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                    .accessibilityHidden(true)
+            }
         }
     }
     
@@ -154,8 +170,16 @@ struct RecapView: View {
         .frame(idealWidth: 250)
         .layoutPriority(0.9)
         .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color("discoveryViewBackground"))
+            if #available(macOS 26.0, *) {
+                Color.clear
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                    .accessibilityHidden(true)
+            } else {
+                Color("discoveryViewBackground")
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                    .accessibilityHidden(true)
+            }
         }
     }
     
@@ -170,8 +194,16 @@ struct RecapView: View {
         .frame(idealWidth: 500, maxWidth: .infinity)
         .layoutPriority(0.9)
         .background {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color("discoveryViewBackground"))
+            if #available(macOS 26.0, *) {
+                Color.clear
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                    .accessibilityHidden(true)
+            } else {
+                Color("discoveryViewBackground")
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                    .accessibilityHidden(true)
+            }
         }
     }
     
@@ -202,6 +234,7 @@ struct RecapView: View {
                 Toggle(isOn: $showHiddenFiles, label: { })
                     .controlSize(.mini)
                     .toggleStyle(.switch)
+                    .accessibilityLabel(String(format: "migration.setup.directory.content.hidden.label".localized, showHiddenFiles ? "migration.setup.directory.content.hidden.label.hide".localized : "migration.setup.directory.content.hidden.label.show".localized))
                 Text(String(format: "migration.setup.directory.content.hidden.label".localized, showHiddenFiles ? "migration.setup.directory.content.hidden.label.hide".localized : "migration.setup.directory.content.hidden.label.show".localized))
                     .customFont(.body)
                 Spacer()

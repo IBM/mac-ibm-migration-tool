@@ -50,7 +50,7 @@ struct WelcomeView: View {
                 .accessibilityHidden(true)
             Text(String(format: "welcome.page.title".localized, Bundle.main.name))
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             Text("welcome.page.subtitle")
                 .multilineTextAlignment(.center)
@@ -103,8 +103,7 @@ struct WelcomeView: View {
             }
             .accessibilityHint("accessibility.welcomePage.fdaAlert.secondaryButton.hint")
         }, message: {
-            Text(String(format: "welcome.page.fda.error.message".localized,
-                        appName,
+            Text(String(format: "welcome.page.fda.error.message".localized, appName,
                         String(format: "welcome.page.fda.error.first.action.title".localized, Utils.Common.systemSettingsLabel),
                         appName))
                 .customFont(.body)

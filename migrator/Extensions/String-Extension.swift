@@ -43,4 +43,15 @@ extension String {
             }
         }
     }
+    
+    /// Formats a string for matching by converting to lowercase and removing spaces, hyphens, and underscores.
+    /// This is used for fuzzy matching of app names and bundle identifiers.
+    /// - Returns: Formatted string suitable for matching
+    /// - Example: "My App-Name_2.0" becomes "myappname20"
+    func normalize() -> String {
+        return self.lowercased()
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: "_", with: "")
+    }
 }

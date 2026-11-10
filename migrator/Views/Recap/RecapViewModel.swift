@@ -12,12 +12,13 @@ import SwiftUI
 import Combine
 
 /// ViewModel for the Recap view.
-class RecapViewModel: ObservableObject {
-    
+@MainActor
+final class RecapViewModel: ObservableObject {
+
     // MARK: - Observable Variables
-    
+
     /// Observable object that controls the migration process.
-    @ObservedObject var migrationController: MigrationController = MigrationController.shared
+    let migrationController: MigrationController = MigrationController.shared
     
     // MARK: - Published Variables
     
@@ -47,7 +48,7 @@ class RecapViewModel: ObservableObject {
     /// Stores any cancellable instances to manage memory and prevent leaks.
     private var cancellables = Set<AnyCancellable>()
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .report)
     /// Indicates whether the recap items have already been loaded during the current lifecycle of the view model.
     private var itemsLoaded: Bool = false
     
@@ -55,31 +56,29 @@ class RecapViewModel: ObservableObject {
     
     /// Initializes the ViewModel with default values and sets up a subscription for available space changes.
     init() {
-        self.migrationController.$isConnected.sink { newValue in
-            Task { @MainActor in
-                self.connectionInterrupted = !newValue
-            }
+        self.migrationController.$isConnected.sink { [weak self] newValue in
+            self?.connectionInterrupted = !newValue
         }.store(in: &cancellables)
-        
     }
-    
-    deinit {
-        cancellables.removeAll()
-    }
-    
+
     // MARK: - Public Methods
     
     /// Prepares the recap data by analyzing what will be migrated and what won't
     func prepareRecapData() async {
-        await MainActor.run { self.isLoading = true }
-        guard let migrationOption = migrationController.migrationOption, !itemsLoaded else {
-            logger.log("recapViewModel.prepareRecapData: No migration option selected", type: .fault)
-            await MainActor.run { self.isLoading = false }
+        self.isLoading = true
+        guard let migrationOption = migrationController.migrationOption else {
+            logger.log("recapViewModel.prepareRecapData: no migration option selected", type: .fault)
+            self.isLoading = false
+            return
+        }
+        guard !itemsLoaded else {
+            logger.log("recapViewModel.prepareRecapData: recap items already loaded, skipping")
+            self.isLoading = false
             return
         }
         self.itemsExcluded.removeAll()
         await findExcludedItems(migrationOption: migrationOption)
-        await MainActor.run { self.isLoading = false }
+        self.isLoading = false
     }
     
     // MARK: - Private Methods
@@ -98,31 +97,23 @@ class RecapViewModel: ObservableObject {
             .filter { $0.isSelected }
             .map { $0.url.fullURL() }
         
-        await withCheckedContinuation { continuation in
-            Task.detached(priority: .utility) {
-                for selectedFile in selectedFiles {
-                    for exclusionURL in exclusionList where (try? exclusionURL.checkResourceIsReachable()) ?? false {
-                        let relationship = Utils.FileManagerHelpers.getRelationship(ofItemAt: selectedFile, toItemAt: exclusionURL)
-                        guard relationship == .containedBy || relationship == .same else { continue }
-                        if let file = MigratorFile(with: exclusionURL, excludedItem: true) {
-                            await MainActor.run { self.addExcludedFile(file: file) }
-                        }
-                    }
+        for selectedFile in selectedFiles {
+            for exclusionURL in exclusionList where (try? exclusionURL.checkResourceIsReachable()) ?? false {
+                let relationship = Utils.FileManagerHelpers.getRelationship(ofItemAt: selectedFile, toItemAt: exclusionURL)
+                guard relationship == .containedBy || relationship == .same else { continue }
+                if let file = await MigratorFile.make(with: exclusionURL, excludedItem: true) {
+                    self.addExcludedFile(file: file)
                 }
-                
-                await MainActor.run {
-                    self.itemsExcluded.sort { (file1: MigratorFile, file2: MigratorFile) in
-                        if file1.type != file2.type {
-                            return file1.type.sortOrder < file2.type.sortOrder
-                        } else {
-                            return file1.name < file2.name
-                        }
-                    }
-                }
-                await MainActor.run { self.itemsLoaded = true }
-                continuation.resume()
             }
         }
-        
+
+        self.itemsExcluded.sort { (file1: MigratorFile, file2: MigratorFile) in
+            if file1.type != file2.type {
+                return file1.type.sortOrder < file2.type.sortOrder
+            } else {
+                return file1.name < file2.name
+            }
+        }
+        self.itemsLoaded = true
     }
 }

@@ -12,9 +12,10 @@ import Network
 import Combine
 import AppKit
 
-// swiftlint:disable type_body_length file_length
+// swiftlint:disable type_body_length file_length large_tuple
 /// Controls the migration process, managing network connections, and handling data transfer.
-class MigrationController: ObservableObject {
+@MainActor
+final class MigrationController: ObservableObject {
     
     // MARK: - Enum Definitions
     
@@ -51,9 +52,13 @@ class MigrationController: ObservableObject {
     /// Holds the current network connection. Observes changes to dynamically handle new connections.
     var connection: NetworkConnection? {
         didSet {
+            // A promoted racing predecessor is already subscribed from when it was first assigned.
+            guard !isPromotingRacingPredecessor else { return }
             self.setupSubscriptions()
         }
     }
+    /// Set while `promoteRacingPredecessor` re-assigns `connection`, so its subscriptions aren't duplicated.
+    private var isPromotingRacingPredecessor = false
     /// Responsible for browsing the network for available services.
     var browser: NetworkBrowser
     /// Acts as the server to accept incoming network connections.
@@ -81,12 +86,41 @@ class MigrationController: ObservableObject {
     private var connectionRestorationAttempts: Int = 0
     /// Maximum number of connection restoration attempts before giving up
     private let maxConnectionRestorationAttempts: Int = 10
-    /// Timer that synchronize the collection of data transfer reports.
-    private var dataTransferReportTimer: Timer?
-    /// Object used to collect data trasfer reports.
-    private var pendingDataTrasferReport: NWConnection.PendingDataTransferReport?
-    /// The time interval between one estimate of the time remaining until completion and the next.
-    private var dataTrasferTimerInterval: TimeInterval = 5
+    /// Tracks how many pairing attempts a human has accepted but then failed the code check on,
+    /// across the current server session.
+    private var failedPairingAttempts: Int = 0
+    /// Maximum number of failed pairing attempts before the server locks and requires a new code.
+    private let maxFailedPairingAttempts: Int = 5
+    /// Server only: the remote host of the last pairing request the destination human
+    /// explicitly accepted this server session.
+    private(set) var lastAcceptedPairingHost: NWEndpoint.Host?
+    /// Timer that samples the transfer progress once per second to feed the time-left estimate.
+    private var etaSampleTimer: Timer?
+    /// Learns the cost of a byte and of a file from the transfer to estimate the time left.
+    private var etaEstimator = MigrationETAEstimator()
+    /// Smooths the estimate before it is shown.
+    private var etaStabilizer = ETADisplayStabilizer()
+    /// Progress counters at the previous ETA sample, `nil` until the first sample after a (re)start.
+    private var lastETASample: (date: Date, bytes: Int, files: Int)?
+    /// Counts ETA samples, used to log the progress periodically.
+    private var etaSampleCount: Int = 0
+    /// Timer driving the connection-health watchdog. Independent of the ETA sampling timer -
+    /// the watchdog needs a fixed, predictable cadence to make its stalled-window count meaningful.
+    private var connectionHealthWatchdogTimer: Timer?
+    /// Object used to collect data transfer reports for the connection-health watchdog, separate
+    /// from the ETA sampling, which no longer relies on transfer reports.
+    private var pendingHealthCheckReport: NWConnection.PendingDataTransferReport?
+    /// Whether a health-check report collection is still outstanding. If the watchdog timer fires
+    /// again before the previous collection has come back, that's treated as a stalled window too.
+    private var isHealthCheckReportPending: Bool = false
+    /// Number of consecutive watchdog windows observed with ~zero transport bytes sent while
+    /// actively transmitting.
+    private var consecutiveStalledWindows: Int = 0
+    /// How often the connection-health watchdog samples throughput.
+    private let connectionHealthCheckInterval: TimeInterval = 10
+    /// Consecutive stalled windows (at `connectionHealthCheckInterval` each) before the connection
+    /// is considered broken and repair is attempted. 12 * 10s = 2 minutes.
+    private let maxConsecutiveStalledWindows: Int = 12
     /// Variable used to track when the migration started.
     private var migrationStartTime: Date?
     /// Bytes sent to the connected device since the migration started.
@@ -108,11 +142,9 @@ class MigrationController: ObservableObject {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .migration)
     /// Flag to indicate if migration is paused due to resource constraints
     private var isPausedForResources: Bool = false
-    /// Semaphore to limit concurrent file operations
-    private let fileOperationSemaphore = AsyncSemaphore(value: 5)
     /// Semaphore to limit concurrent file operations
     private let connectionOperationSemaphore = AsyncSemaphore(value: 5)
     
@@ -158,7 +190,42 @@ class MigrationController: ObservableObject {
     @Published var shouldShowIntelAppWarning: Bool = false
     /// Stores Intel-only apps that need user confirmation
     @Published var intelOnlyAppsForConfirmation: [DiscoveredApplication] = []
-            
+    /// Server only: which pairing-related alert, if any, should be shown.
+    enum PendingPairingAlert: Equatable {
+        case none
+        case requestPending(hostname: String)
+        case accepted
+    }
+    @Published var pendingPairingAlert: PendingPairingAlert = .none
+    /// Client only: whether the destination has accepted this device's `pairingRequest`, so
+    /// the code entry field should be unlocked. `false` means "don't let the human type or
+    /// submit a code yet - nobody has agreed to check it."
+    @Published var isAwaitingPasscodeEntry: Bool = false
+    /// Client only: whether the destination declined (or never answered) this device's
+    /// `pairingRequest`. Distinct from `.wrongOTPCodeSent`, since no code was entered yet.
+    @Published var pairingRequestWasDeclined: Bool = false
+    /// Server only: whether repeated wrong-code attempts locked the server. The listener is
+    /// stopped; the human must generate a new code to resume.
+    @Published var isPairingLocked: Bool = false
+    /// Source only: a user-requested pause is waiting for the in-flight chunk to finish before
+    /// the connection is closed.
+    @Published var isPausing: Bool = false
+    /// Source only: the last attempt to resume a paused migration couldn't reach the destination.
+    @Published var resumeFailed: Bool = false
+    /// Source only: a user-requested resume is reconnecting. Makes a failed reconnect fall back
+    /// to `.paused` instead of `.interrupted`.
+    private var isResumingFromPause: Bool = false
+    /// Gives up a resume that never reaches `.ready` (e.g. the destination isn't on this network).
+    private var resumeTimeoutTask: Task<Void, Never>?
+    /// How long a resume may take before it's treated as failed.
+    private let resumeTimeout: TimeInterval = 60
+    /// Server only: an incoming connection replaced by a newer one moments later, kept until we
+    /// know which of the two the source actually uses (see `holdRacingPredecessor`).
+    private var racingPredecessor: NetworkConnection?
+    private var racingPredecessorCancellable: AnyCancellable?
+    /// Maximum time `pauseMigration()` waits for in-flight sends to finish.
+    private let pauseQuiesceTimeout: TimeInterval = 30
+
     // MARK: - Initializers
     
     private init() {
@@ -167,13 +234,17 @@ class MigrationController: ObservableObject {
         
         // Sets up a sink to handle new connections to the server.
         self.server.onNewConnection.sink { [weak self] newConnection in
-            self?.logger.log("migrationController.onNewConnection: new connection requeste received from \"\(newConnection.debugDescription)\"", type: .default)
+            self?.logger.log("migrationController.onNewConnection: new connection request received from \"\(newConnection.debugDescription)\"", type: .default)
             // Prevents connecting to the same endpoint more than once.
             if let currentConnection = self?.connection?.connection, currentConnection.endpoint == newConnection.endpoint {
                 newConnection.cancel()
-            } else {
+            } else if let self, let passcode = self.passcode {
+                // The source races IPv6 and IPv4 and the destination sees both as separate
+                // incoming connections, in no guaranteed order, with only one of them kept by
+                // the source. Hold on to the one about to be replaced until we know which wins.
+                self.holdRacingPredecessor(self.connection)
                 // Establishes a new connection if the device is different.
-                self?.connection = NetworkConnection(connection: newConnection)
+                self.connection = NetworkConnection(connection: newConnection, withPasscode: passcode)
             }
         }.store(in: &cancellables)
         
@@ -227,15 +298,83 @@ class MigrationController: ObservableObject {
         }.store(in: &cancellables)
     }
     
-    /// Starts the network server to accept incoming connections with a given passcode.
+    /// Server: keeps an incoming connection that a newer one is about to replace, in case it
+    /// turns out to be the one the source kept. Only a still-undecided connection qualifies -
+    /// one that already received a `pairingRequest` or finished authenticating is the real one.
+    private func holdRacingPredecessor(_ predecessor: NetworkConnection?) {
+        discardRacingPredecessor()
+        guard operatingMode == .server, let predecessor,
+              !predecessor.isAuthenticated, !predecessor.hasReceivedPairingRequest,
+              predecessor.connection.state != .cancelled else { return }
+        logger.log("migrationController.holdRacingPredecessor: holding \"\(predecessor.connection.endpoint.debugDescription)\" in case it is the connection the source kept", type: .default)
+        racingPredecessor = predecessor
+        racingPredecessorCancellable = predecessor.onIncomingPairingRequest.sink { [weak self, weak predecessor] hostname in
+            Task { @MainActor in
+                guard let self, let predecessor, self.racingPredecessor === predecessor else { return }
+                self.promoteRacingPredecessor(hostname: hostname)
+            }
+        }
+    }
+
+    /// Server: drops the held predecessor, which lost the race.
+    private func discardRacingPredecessor() {
+        racingPredecessorCancellable = nil
+        racingPredecessor?.connection.cancel()
+        racingPredecessor = nil
+    }
+
+    /// Server: the held predecessor received the `pairingRequest`, so it is the connection the
+    /// source kept. Makes it current again, discards the newer one that replaced it, and
+    /// handles the request it would otherwise have missed.
+    @MainActor
+    private func promoteRacingPredecessor(hostname: String) {
+        guard let winner = racingPredecessor else { return }
+        logger.log("migrationController.promoteRacingPredecessor: held connection received the pairing request, making it current", type: .default)
+        racingPredecessorCancellable = nil
+        racingPredecessor = nil
+        let loser = connection
+        isPromotingRacingPredecessor = true
+        connection = winner
+        isPromotingRacingPredecessor = false
+        loser?.connection.cancel()
+        handleIncomingPairingRequest(hostname: hostname, from: winner)
+    }
+
+    /// Server: shows the approval alert for a `pairingRequest`, or auto-accepts it on a
+    /// reconnect from a device the human already approved.
+    @MainActor
+    private func handleIncomingPairingRequest(hostname: String, from requestingConnection: NetworkConnection?) {
+        guard connection === requestingConnection else { return }
+        // This is the connection the source kept, so any held predecessor lost the race.
+        discardRacingPredecessor()
+        let remoteHost = connection?.remoteHost
+        if migrationState == .restoringConnection || migrationState == .paused || (remoteHost != nil && remoteHost == lastAcceptedPairingHost) {
+            acceptCurrentPairingRequest()
+        } else {
+            pendingPairingAlert = .requestPending(hostname: hostname)
+        }
+    }
+
+    /// Starts the network server to accept incoming connections with a given passcode. Also
+    /// used by `restoreConnection()` to re-listen after a dropped connection - in that case
+    /// `migrationState` is already `.restoringConnection` and must stay that way (and
+    /// `lastAcceptedPairingHost` must be preserved) so the reconnecting device's `pairingRequest`
+    /// gets auto-accepted by the `onIncomingPairingRequest` sink instead of prompting the human
+    /// to approve a pairing request they already approved once.
     @MainActor
     func startServer(withPasscode passcode: String) {
         self.operatingMode = .server
         self.passcode = passcode
+        let isRestoring = migrationState == .restoringConnection || migrationState == .paused
+        if !isRestoring {
+            self.lastAcceptedPairingHost = nil
+        }
         logger.log("migrationController.networkServer.start: starting server...", type: .default)
         do {
-            try server.start(withPasscode: passcode)
-            migrationState = .discovery
+            try server.start()
+            if !isRestoring {
+                migrationState = .discovery
+            }
         } catch let error {
             logger.log("migrationController.networkServer.start: failed to start the server with error \"\(error.localizedDescription)\"", type: .error)
             self.errorLog = error.localizedDescription
@@ -249,6 +388,16 @@ class MigrationController: ObservableObject {
         server.stop()
         isServiceRegistered = false
         migrationState = .initial
+    }
+
+    /// Server: recovers from a wrong-code lockout (see `maxFailedPairingAttempts`) by
+    /// generating a fresh code and restarting the listener. Called from the UI's "Generate a
+    /// new code" action.
+    @MainActor
+    func recoverFromPairingLockout(withPasscode passcode: String) {
+        failedPairingAttempts = 0
+        isPairingLocked = false
+        startServer(withPasscode: passcode)
     }
     
     /// Starts the network browser to search for available network services.
@@ -269,11 +418,14 @@ class MigrationController: ObservableObject {
         browserResults = []
     }
     
-    /// Attempts to connect to a specified device using a passcode. Calls the completion handler with the result.
+    /// Attempts to connect to a specified device. The passcode isn't known yet - the device
+    /// identifies itself by hostname first, and the code is supplied later via `submitPasscode`
+    /// once the destination approves it (see `NetworkConnection.beginPairingHandshake`).
     @MainActor
-    func connect(to device: NWBrowser.Result, withPasscode passcode: String = "000000") {
-        self.passcode = passcode
+    func connect(to device: NWBrowser.Result) {
         self.destinationDevice = device
+        self.pairingRequestWasDeclined = false
+        self.isAwaitingPasscodeEntry = false
         logger.log("migrationController.connect: starting connection with device \"\(device)\"", type: .default)
         guard !self.isConnected else {
             logger.log("migrationController.connect: a connection has already been established \"\(self.connection?.connection.debugDescription ?? "nil")\", discarding new connection request...", type: .default)
@@ -290,26 +442,71 @@ class MigrationController: ObservableObject {
             // Don't set connection to nil - we'll reuse the wrapper object
         }
         
-        // Creates a new connection to the selected device or reuses existing wrapper
-        if self.connection == nil {
-            self.connection = NetworkConnection(endpoint: device.endpoint, withPasscode: passcode)
-            self.connection?.connection.start(queue: .main)
-        } else {
-            // Reuse existing NetworkConnection wrapper but restore the underlying connection
-            self.connection = NetworkConnection(endpoint: device.endpoint, withPasscode: passcode)
-            self.connection?.connection.start(queue: .main)
-        }
-        
+        // Creates a new connection to the selected device (or replaces the existing wrapper -
+        // either way this is a fresh `NetworkConnection`, so it starts a fresh pairing).
+        self.connection = NetworkConnection(endpoint: device.endpoint)
+        self.connection?.connection.start(queue: .main)
+
         logger.log("migrationController.connect: starting connection...", type: .default)
         self.hostName = device.resultName
         MigrationReportController.shared.setTargetDevice(device.resultName)
-        self.checkConnectionEstablishment(5)
     }
-    
+
+    /// Called once the destination has accepted this device's `pairingRequest` and the human
+    /// has typed in the code relayed from the destination's screen.
+    func submitPasscode(_ passcode: String) async {
+        await connection?.submitPasscode(passcode)
+    }
+
+    /// Server: the destination human approved the pending `pairingRequest`. Silent on the
+    /// wire - switches `pendingPairingAlert` to show the code-and-cancel alert locally instead.
+    @MainActor
+    func acceptIncomingPairingRequest() {
+        guard case .requestPending = pendingPairingAlert else { return }
+        acceptCurrentPairingRequest()
+    }
+
+    /// Shared by the UI-driven accept above and an auto-accepted mid-migration reconnect or
+    /// same-host retry (see the `onIncomingPairingRequest` subscription in `setupSubscriptions`).
+    /// The auto-accept path must go through here too, rather than calling
+    /// `NetworkConnection.acceptIncomingPairingRequest()` directly - that only tells the client
+    /// it may proceed, but never touches `pendingPairingAlert`, which would leave this device's
+    /// own screen showing nothing at all.
+    @MainActor
+    private func acceptCurrentPairingRequest() {
+        lastAcceptedPairingHost = connection?.remoteHost
+        pendingPairingAlert = .accepted
+        connection?.acceptIncomingPairingRequest()
+    }
+
+    /// Server: the destination human declined the pending `pairingRequest`. The listener keeps
+    /// running for the next attempt.
+    @MainActor
+    func declineIncomingPairingRequest() {
+        pendingPairingAlert = .none
+        connection?.declineIncomingPairingRequest()
+    }
+
+    /// Server: the destination human cancelled from the code-showing alert, after already
+    /// accepting.
+    @MainActor
+    func cancelAcceptedPairingRequest() {
+        pendingPairingAlert = .none
+        connection?.cancelAcceptedPairingRequest()
+    }
+
+    /// Client: the human cancelled the connection attempt, either while waiting for the
+    /// destination's decision or while still entering the code.
+    @MainActor
+    func cancelPairingRequest() {
+        connection?.cancelPairingRequest()
+    }
+
     @MainActor
     func resetMigration() {
         stopServer()
         stopBrowser()
+        stopConnectionHealthWatchdog()
         connection?.connection.forceCancel()
         connection = nil
         migrationOption = nil
@@ -319,7 +516,13 @@ class MigrationController: ObservableObject {
         selectedBrowserResult = nil
         isPausedForResources = false
         connectionRestorationAttempts = 0
+        isPausing = false
+        resumeFailed = false
+        isResumingFromPause = false
+        resumeTimeoutTask?.cancel()
+        resumeTimeoutTask = nil
         migrationSetupViewModel.resetMigration()
+        FileSizeCache.shared.pruneExpiredEntries()
     }
     
     @MainActor
@@ -328,34 +531,77 @@ class MigrationController: ObservableObject {
         
         switch self.operatingMode {
         case .server:
-            // For server mode, restart the server to accept new connections
             logger.log("migrationController.restoreConnection: restarting server", type: .default)
             self.startServer(withPasscode: self.passcode)
         case .browser:
-            // For browser mode, restore the existing connection object instead of creating a new one
             if let existingConnection = self.connection {
                 logger.log("migrationController.restoreConnection: restoring existing connection object", type: .default)
                 if existingConnection.restoreConnection() {
                     logger.log("migrationController.restoreConnection: connection restoration initiated", type: .default)
-                    self.checkConnectionEstablishment(5)
                 } else {
                     logger.log("migrationController.restoreConnection: connection restoration failed, falling back to new connection", type: .error)
-                    self.connect(to: self.destinationDevice, withPasscode: self.passcode)
+                    self.connect(to: self.destinationDevice)
                 }
             } else {
                 logger.log("migrationController.restoreConnection: no existing connection, creating new one", type: .default)
-                self.connect(to: self.destinationDevice, withPasscode: self.passcode)
+                self.connect(to: self.destinationDevice)
             }
         case .none:
             logger.log("migrationController.restoreConnection: no operating mode set", type: .error)
         }
     }
-    
+
+    /// Repairs a connection that appears broken even though Network.framework hasn't (yet, or
+    /// ever will) report a `.failed` state - e.g. the connection-health watchdog detecting zero
+    /// throughput, or `NetworkConnection` exhausting its send retries. Also the sole handler for
+    /// a real `.failed` state, which now just forwards here.
+    ///
+    /// Idempotent: `migrationState == .restoringConnection` doubles as an in-progress flag, so
+    /// overlapping triggers (the watchdog firing right as a send exhausts its retries, or a
+    /// stale `.failed` callback arriving after this method already started a repair) only act
+    /// once, and the watchdog resets its own stalled-window count whenever this state is active -
+    /// see `performConnectionHealthCheck()`.
+    @MainActor
+    func attemptConnectionRepair(reason: String) {
+        guard migrationState != .restoringConnection else {
+            logger.log("migrationController.attemptConnectionRepair: repair already in progress, ignoring (\(reason))", type: .default)
+            return
+        }
+        guard migrationState != .paused else {
+            logger.log("migrationController.attemptConnectionRepair: migration is paused, ignoring (\(reason))", type: .default)
+            return
+        }
+        guard connection?.isAuthenticated == true else {
+            logger.log("migrationController.attemptConnectionRepair: no authenticated connection to repair (\(reason))", type: .default)
+            return
+        }
+        logger.log("migrationController.attemptConnectionRepair: connection appears unhealthy (\(reason)), attempting repair", type: .error)
+        isConnected = false
+        migrationState = .restoringConnection
+        connectedDeviceIsReady = false
+        connectionRestorationAttempts += 1
+        connection?.connection.forceCancel()
+
+        if connectionRestorationAttempts > maxConnectionRestorationAttempts {
+            logger.log("migrationController.attemptConnectionRepair: exceeded maximum connection restoration attempts (\(maxConnectionRestorationAttempts)). Transitioning to interrupted state.", type: .error)
+            if isResumingFromPause {
+                failResumeAndReturnToPaused()
+                return
+            }
+            migrationState = .interrupted
+            MigrationReportController.shared.addError("Connection failed after \(maxConnectionRestorationAttempts) restoration attempts")
+        } else {
+            logger.log("migrationController.attemptConnectionRepair: attempting connection restoration (\(connectionRestorationAttempts)/\(maxConnectionRestorationAttempts)) (\(reason))", type: .fault)
+            restoreConnection()
+        }
+    }
+
     // MARK: - Private Methods
     
     /// Sets up Combine subscriptions for all relevant `NetworkConnection` publishers to keep the
     /// `MigrationController` state synchronized with the underlying connection lifecycle and data flow.
     private func setupSubscriptions() {
+        let currentConnection = connection
         connection?.onHostNameChange.sink(receiveValue: { hostName in
             Task { @MainActor in
                 self.hostName = hostName
@@ -367,7 +613,8 @@ class MigrationController: ObservableObject {
             Task { @MainActor in
                 self.destinationDeviceInfo = deviceInfo
                 self.destinationDeviceArchitecture = deviceInfo.appArchitecture
-                self.logger.log("migrationController.onDeviceInfoReceived: Destination device architecture: \(deviceInfo.architecture)", type: .default)
+                self.logger.log("migrationController.onDeviceInfoReceived: Connected device info: Architecture - \(deviceInfo.architecture), OS Version - \(deviceInfo.osVersion), Available Space - \(deviceInfo.availableSpace)",
+                                type: .default)
             }
         }).store(in: &cancellables)
         connection?.onReadyToReceive.sink(receiveValue: { isReady in
@@ -407,16 +654,20 @@ class MigrationController: ObservableObject {
             switch newState {
             case .setup, .waiting, .preparing:
                 Task { @MainActor in
-                    guard self.migrationState != .restoringConnection else { return }
+                    guard self.migrationState != .restoringConnection, self.migrationState != .paused else { return }
                     self.migrationState = .fetching
                     self.isConnected = false
                 }
             case .ready:
                 Task { @MainActor in
                     self.isConnected = true
-                    if self.migrationState == .restoringConnection {
+                    self.pendingPairingAlert = .none
+                    if self.migrationState == .restoringConnection || self.migrationState == .paused {
                         self.connectedDeviceIsReady = true
                         self.connectionRestorationAttempts = 0
+                        if self.isResumingFromPause {
+                            self.completeResume()
+                        }
                         self.logger.log("migrationController.onNewConnectionState: connection restored successfully after \(self.connectionRestorationAttempts) attempts", type: .default)
                         
                         if self.migrationTask != nil && !self.migrationTask!.isCancelled {
@@ -426,6 +677,9 @@ class MigrationController: ObservableObject {
                             } else if !self.migrationOption.migrationAppList.allSatisfy({ $0.migratorFile.sent || !$0.isSelected }) {
                                 self.migrationState = .appMigration
                                 self.logger.log("migrationController.onNewConnectionState: resuming app migration", type: .default)
+                            } else if !self.migrationOption.migrationPreferencesList.allSatisfy({ $0.sent || !$0.isSelected }) {
+                                self.migrationState = .preferencesMigration
+                                self.logger.log("migrationController.onNewConnectionState: resuming preferences migration", type: .default)
                             } else {
                                 self.migrationState = .completing
                                 self.logger.log("migrationController.onNewConnectionState: resuming migration completion", type: .default)
@@ -440,19 +694,7 @@ class MigrationController: ObservableObject {
             case .failed:
                 Task { @MainActor in
                     self.connection?.connection.cancel()
-                    self.isConnected = false
-                    self.migrationState = .restoringConnection
-                    self.connectedDeviceIsReady = false
-                    self.connectionRestorationAttempts += 1
-                    
-                    if self.connectionRestorationAttempts > self.maxConnectionRestorationAttempts {
-                        self.logger.log("migrationController.onNewConnectionState: exceeded maximum connection restoration attempts (\(self.maxConnectionRestorationAttempts)). Transitioning to interrupted state.", type: .error)
-                        self.migrationState = .interrupted
-                        MigrationReportController.shared.addError("Connection failed after \(self.maxConnectionRestorationAttempts) restoration attempts")
-                    } else {
-                        self.logger.log("migrationController.onNewConnectionState: attempting connection restoration (\(self.connectionRestorationAttempts)/\(self.maxConnectionRestorationAttempts))", type: .fault)
-                        self.restoreConnection()
-                    }
+                    self.attemptConnectionRepair(reason: "connection reported .failed")
                 }
             case .cancelled:
                 break
@@ -460,69 +702,100 @@ class MigrationController: ObservableObject {
                 break
             }
         }).store(in: &cancellables)
-    }
-    
-    /// Method used to identify issues during the establishment of a connection.
-    /// Needed because the Network framework doesn't give us a simple way to be notified about failed handshakes.
-    /// - Parameter attempts: number of attempts the method will make to get an establishment report.
-    private func checkConnectionEstablishment(_ attempts: Int) {
-        logger.log("migrationController.connect: trying to get connection establishment report...", type: .default)
-        self.connection?.connection.requestEstablishmentReport(queue: .global(qos: .userInteractive), completion: { report in
-            guard self.connection?.connection.state == .preparing || self.connection?.connection.state == .setup else {
-                self.logger.log("migrationController.connect: a connection has been established \"\(self.connection?.connection.debugDescription ?? "nil")\"", type: .default)
-                switch self.migrationState {
-                case .restoringConnection, .fileMigration, .appMigration, .completing:
-                    break
-                default:
-                    self.migrationState = .fetching
-                }
-                return
-            }
-            if report == nil {
-                guard attempts > 1 else {
-                    self.logger.log("migrationController.connect: failed to get connection establishment report. Connection will be cancelled", type: .error)
-                    self.connection?.connection.forceCancel()
-                    guard self.migrationState != .restoringConnection else {
-                        Task { @MainActor in
+        connection?.onAuthenticationFailed.sink(receiveValue: { [weak self] reason in
+            guard let self else { return }
+            self.logger.log("migrationController.onAuthenticationFailed: application-layer pairing handshake failed (reason: \(reason))", type: .error)
+            Task { @MainActor in
+                guard self.connection === currentConnection else { return }
+                switch self.operatingMode {
+                case .server:
+                    if reason == .wrongCode {
+                        self.failedPairingAttempts += 1
+                    } else {
+                        self.pendingPairingAlert = .none
+                    }
+                    if self.failedPairingAttempts >= self.maxFailedPairingAttempts {
+                        self.logger.log("migrationController.onAuthenticationFailed: exceeded maximum failed pairing attempts (\(self.maxFailedPairingAttempts)), locking the server", type: .error)
+                        self.server.stop()
+                        self.isServiceRegistered = false
+                        self.isPairingLocked = true
+                        self.pendingPairingAlert = .none
+                        self.connection = nil
+                        self.isConnected = false
+                    } else {
+                        self.connection = nil
+                        self.isConnected = false
+                    }
+                case .browser:
+                    // A stale handshake timeout from a connection we already abandoned while paused.
+                    if self.migrationState == .paused { return }
+                    if self.migrationState == .restoringConnection {
+                        self.connectionRestorationAttempts += 1
+                        if self.connectionRestorationAttempts > self.maxConnectionRestorationAttempts {
+                            self.logger.log("migrationController.onAuthenticationFailed: exceeded maximum connection restoration attempts (\(self.maxConnectionRestorationAttempts)). Transitioning to interrupted state.", type: .error)
+                            if self.isResumingFromPause {
+                                self.failResumeAndReturnToPaused()
+                                return
+                            }
+                            self.migrationState = .interrupted
+                            MigrationReportController.shared.addError("Connection failed after \(self.maxConnectionRestorationAttempts) restoration attempts")
+                        } else {
                             self.restoreConnection()
                         }
-                        return
+                    } else {
+                        self.isConnected = false
+                        self.migrationState = .wrongOTPCodeSent
                     }
-                    self.migrationState = .wrongOTPCodeSent
-                    return
+                case .none:
+                    break
                 }
-                self.logger.log("migrationController.connect: failed to get connection establishment report. Trying again in 3 seconds...", type: .fault)
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2), execute: {
-                    self.checkConnectionEstablishment(attempts-1)
-                })
-                return
             }
-        })
+        }).store(in: &cancellables)
+        connection?.onIncomingPairingRequest.sink(receiveValue: { [weak self] hostname in
+            Task { @MainActor in
+                self?.handleIncomingPairingRequest(hostname: hostname, from: currentConnection)
+            }
+        }).store(in: &cancellables)
+        connection?.onPairingRequestAccepted.sink(receiveValue: { [weak self] in
+            Task { @MainActor in
+                guard let self, self.connection === currentConnection else { return }
+                self.isAwaitingPasscodeEntry = true
+            }
+        }).store(in: &cancellables)
+        connection?.onPairingRequestDeclined.sink(receiveValue: { [weak self] in
+            Task { @MainActor in
+                guard let self, self.connection === currentConnection else { return }
+                self.isAwaitingPasscodeEntry = false
+                self.pairingRequestWasDeclined = true
+            }
+        }).store(in: &cancellables)
+        connection?.onIncomingPairingRequestCancelled.sink(receiveValue: { [weak self] in
+            Task { @MainActor in
+                guard let self, self.connection === currentConnection else { return }
+                self.pendingPairingAlert = .none
+                self.connection = nil
+                self.isConnected = false
+            }
+        }).store(in: &cancellables)
+        connection?.onMigrationPaused.sink(receiveValue: { [weak self] in
+            Task { @MainActor in
+                guard let self, self.connection === currentConnection, self.operatingMode == .server else { return }
+                self.handleMigrationPausedByPeer()
+            }
+        }).store(in: &cancellables)
     }
-    
+
     // MARK: - Resource Management Methods
-    
-    /// Acquires a resource token for file operations
-    func acquireFileOperationToken() async {
-        logger.log("migrationController.acquireFileOperationToken: Asking for file operation token...", type: .debug)
-        await fileOperationSemaphore.request()
-    }
-    
-    /// Releases a resource token after file operations
-    func releaseFileOperationToken() async {
-        logger.log("migrationController.releaseFileOperationToken: releasing file operation token...", type: .debug)
-        await fileOperationSemaphore.release()
-    }
-    
+
     /// Acquires a resource token for file operations
     func acquireConnectionOperationToken() async {
-        logger.log("migrationController.acquireConnectionOperationToken: Asking for connection operation token...", type: .debug)
+        logger.log("migrationController.acquireConnectionOperationToken: Asking for connection operation token...")
         await self.connectionOperationSemaphore.request()
     }
     
     /// Releases a resource token after file operations
     func releaseConnectionOperationToken() async {
-        logger.log("migrationController.releaseConnectionOperationToken: releasing connection operation token...", type: .debug)
+        logger.log("migrationController.releaseConnectionOperationToken: releasing connection operation token...")
         await connectionOperationSemaphore.release()
     }
     
@@ -545,28 +818,128 @@ class MigrationController: ObservableObject {
     
     // MARK: - Data Transfer Report Methods
     
-    /// Starts the data transfer report collection and timer.
+    /// Starts tracking the transfer progress: the ETA sampling timer and the connection-health watchdog.
     @MainActor
-    func startDataTransferReport() {
-        guard let connection = connection?.connection else {
-            logger.log("migrationController.startDataTransferReport: no connection available", type: .error)
+    func startProgressTracking() {
+        guard connection?.connection != nil else {
+            logger.log("migrationController.startProgressTracking: no connection available", type: .error)
             return
         }
         
-        logger.log("migrationController.startDataTransferReport: starting data transfer report collection", type: .default)
+        logger.log("migrationController.startProgressTracking: starting ETA sampling and connection-health watchdog", type: .default)
         migrationStartTime = Date()
-        pendingDataTrasferReport = connection.startDataTransferReport()
-        dataTransferReportTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(estimateTimeLeft), userInfo: nil, repeats: false)
+        // The baseline is taken now, so time spent paused or reconnecting never counts as transfer time.
+        lastETASample = (Date(), bytesSent, filesSent)
+        etaSampleTimer?.invalidate()
+        etaSampleTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.sampleETA()
+            }
+        }
+        startConnectionHealthWatchdog()
     }
-    
-    /// Stops the data transfer report collection and timer.
+
+    /// Stops tracking the transfer progress: the ETA sampling timer and the connection-health watchdog.
     @MainActor
-    func stopDataTransferReport() {
-        logger.log("migrationController.stopDataTransferReport: stopping data transfer report collection", type: .default)
-        pendingDataTrasferReport = nil
-        dataTransferReportTimer?.invalidate()
-        dataTransferReportTimer = nil
+    func stopProgressTracking() {
+        logger.log("migrationController.stopProgressTracking: stopping ETA sampling and connection-health watchdog", type: .default)
+        etaSampleTimer?.invalidate()
+        etaSampleTimer = nil
+        lastETASample = nil
         migrationStartTime = nil
+        stopConnectionHealthWatchdog()
+    }
+
+    // MARK: - Connection Health Watchdog
+
+    /// Starts the connection-health watchdog: a fixed-cadence timer, independent of the ETA
+    /// timer above, that samples throughput via its own `NWConnection.PendingDataTransferReport`
+    /// window and triggers `attemptConnectionRepair(reason:)` if it sees no progress for
+    /// `maxConsecutiveStalledWindows` consecutive samples while actively transmitting.
+    @MainActor
+    private func startConnectionHealthWatchdog() {
+        consecutiveStalledWindows = 0
+        isHealthCheckReportPending = false
+        pendingHealthCheckReport = connection?.connection.startDataTransferReport()
+        connectionHealthWatchdogTimer?.invalidate()
+        connectionHealthWatchdogTimer = Timer.scheduledTimer(withTimeInterval: connectionHealthCheckInterval, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.performConnectionHealthCheck()
+            }
+        }
+    }
+
+    /// Stops the connection-health watchdog and clears its state.
+    @MainActor
+    private func stopConnectionHealthWatchdog() {
+        connectionHealthWatchdogTimer?.invalidate()
+        connectionHealthWatchdogTimer = nil
+        pendingHealthCheckReport = nil
+        isHealthCheckReportPending = false
+        consecutiveStalledWindows = 0
+    }
+
+    /// Whether the migration is in a state where bytes should actively be moving over the
+    /// connection right now. While this is false (e.g. `.restoringConnection`, `.paused`), the
+    /// watchdog resets its stalled-window count instead of counting - a connection drop already
+    /// being handled by the existing restore logic must not also look like a fresh stall.
+    private func isActivelyTransmitting() -> Bool {
+        switch migrationState {
+        case .fileMigration, .appMigration, .preferencesMigration, .completing:
+            return true
+        default:
+            return false
+        }
+    }
+
+    /// One watchdog tick. Collects the current health-check report window and starts a fresh one
+    /// for the next tick; a report that never comes back by the next tick counts as stalled too.
+    @MainActor
+    private func performConnectionHealthCheck() {
+        guard isActivelyTransmitting() else {
+            consecutiveStalledWindows = 0
+            isHealthCheckReportPending = false
+            pendingHealthCheckReport = connection?.connection.startDataTransferReport()
+            return
+        }
+        guard let report = pendingHealthCheckReport else {
+            pendingHealthCheckReport = connection?.connection.startDataTransferReport()
+            return
+        }
+        if isHealthCheckReportPending {
+            logger.log("migrationController.performConnectionHealthCheck: previous report never returned, treating window as stalled", type: .error)
+            registerStalledWindow()
+            return
+        }
+        isHealthCheckReportPending = true
+        report.collect(queue: .main) { [weak self] dataReport in
+            Task { @MainActor in
+                guard let self else { return }
+                self.isHealthCheckReportPending = false
+                self.pendingHealthCheckReport = self.connection?.connection.startDataTransferReport()
+                guard self.isActivelyTransmitting() else {
+                    self.consecutiveStalledWindows = 0
+                    return
+                }
+                let sentBytes = dataReport.pathReports
+                    .first(where: { self.connection?.connection.currentPath?.usesInterfaceType($0.interface.type) ?? false })?
+                    .sentTransportByteCount ?? 0
+                if sentBytes > 0 {
+                    self.consecutiveStalledWindows = 0
+                } else {
+                    self.registerStalledWindow()
+                }
+            }
+        }
+    }
+
+    /// Counts one stalled window and, once `maxConsecutiveStalledWindows` is reached, triggers repair.
+    @MainActor
+    private func registerStalledWindow() {
+        consecutiveStalledWindows += 1
+        guard consecutiveStalledWindows >= maxConsecutiveStalledWindows else { return }
+        consecutiveStalledWindows = 0
+        attemptConnectionRepair(reason: "no throughput for \(Int(connectionHealthCheckInterval) * maxConsecutiveStalledWindows)s")
     }
     
     /// Updates the bytes sent counter.
@@ -581,37 +954,50 @@ class MigrationController: ObservableObject {
         filesSent += count
     }
     
-    /// Estimates the time left for the migration based on data transfer reports.
-    @objc
-    private func estimateTimeLeft() {
+    /// Samples the transfer progress and refreshes the estimate of the time left. Called once per
+    /// second; only time spent actively transmitting is fed to the estimator.
+    @MainActor
+    private func sampleETA() {
         guard let migrationOption = migrationOption else {
-            logger.log("migrationController.estimateTimeLeft: no migration option available", type: .error)
+            logger.log("migrationController.sampleETA: no migration option available", type: .error)
             return
         }
-        
-        pendingDataTrasferReport?.collect(queue: .main, completion: { [weak self] report in
-            guard let self = self else { return }
-            
-            if let currentReport = report.pathReports.first(where: { self.connection?.connection.currentPath?.usesInterfaceType($0.interface.type) ?? false }) {
-                let transferSpeed = Double(currentReport.sentTransportByteCount)/report.duration
-                let timeLeftToTransferBytes = Double(migrationOption.size - self.bytesSent)/transferSpeed
-                let rttNeededTime = Double(max(0, migrationOption.numberOfFiles - self.filesSent)) * currentReport.transportSmoothedRTT
-                let totalTimeLeft = timeLeftToTransferBytes + rttNeededTime
-                
-                Task { @MainActor in
-                    self.estimatedTimeLeft = String(format: "migration.page.time.estimation.label".localized, totalTimeLeft.prettyFormattedTimeLeft())
-                    if transferSpeed.isFinite && !transferSpeed.isNaN {
-                        self.transferSpeed = "\(Int(transferSpeed / 1_000_000)) MB/s"
-                    } else {
-                        self.transferSpeed = "Impossible to estimate..."
-                    }
-                }
+        let now = Date()
+        let current = (date: now, bytes: bytesSent, files: filesSent)
+        guard let previous = lastETASample else {
+            lastETASample = current
+            return
+        }
+        lastETASample = current
+
+        // The baseline above is refreshed even when idle, so paused/reconnecting time is excluded.
+        guard isActivelyTransmitting(), !isPausedForResources else { return }
+        etaEstimator.record(deltaBytes: current.bytes - previous.bytes,
+                            deltaFiles: current.files - previous.files,
+                            activeSeconds: now.timeIntervalSince(previous.date))
+
+        let rawEstimate = etaEstimator.estimate(remainingBytes: migrationOption.size - bytesSent,
+                                                remainingFiles: migrationOption.numberOfFiles - filesSent)
+        if let timeLeft = etaStabilizer.update(estimate: rawEstimate, at: now) {
+            let newLabel = String(format: "migration.page.time.estimation.label".localized, timeLeft.prettyFormattedTimeLeft())
+            if newLabel != estimatedTimeLeft {
+                estimatedTimeLeft = newLabel
             }
-            self.pendingDataTrasferReport = self.connection?.connection.startDataTransferReport()
-            self.dataTransferReportTimer?.invalidate()
-            self.dataTransferReportTimer = nil
-            self.dataTransferReportTimer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(self.estimateTimeLeft), userInfo: nil, repeats: false)
-        })
+        }
+        if let bytesPerSecond = etaEstimator.smoothedBytesPerSecond, bytesPerSecond.isFinite {
+            let newSpeed = "\(Int(bytesPerSecond / 1_000_000)) MB/s"
+            if newSpeed != transferSpeed {
+                transferSpeed = newSpeed
+            }
+        }
+
+        etaSampleCount += 1
+        if etaSampleCount % 30 == 0 {
+            let sentSize = ByteCountFormatter.string(fromByteCount: Int64(bytesSent), countStyle: .file)
+            let totalSize = ByteCountFormatter.string(fromByteCount: Int64(migrationOption.size), countStyle: .file)
+            let remaining = rawEstimate?.prettyFormattedTimeLeft() ?? "calculating"
+            logger.log("migrationController.sampleETA: progress — \(filesSent)/\(migrationOption.numberOfFiles) file(s), \(sentSize)/\(totalSize), \(transferSpeed), \(remaining) remaining", type: .default)
+        }
     }
     
     // MARK: - Migration Execution Methods
@@ -629,11 +1015,9 @@ class MigrationController: ObservableObject {
         guard let migrationOption = migrationOption else { return true }
         guard let destinationArch = destinationDeviceArchitecture else { return true }
         
-        // Find incompatible apps based on destination architecture
         let incompatibleApps: [DiscoveredApplication]
         
         if destinationArch == .appleSilicon {
-            // Intel-only apps won't run natively on Apple Silicon
             incompatibleApps = migrationOption.migrationAppList.filter {
                 $0.isSelected && $0.architectureType == .intelOnly
             }
@@ -645,7 +1029,6 @@ class MigrationController: ObservableObject {
                 return false
             }
         } else if destinationArch == .intel {
-            // Apple Silicon-only apps won't run on Intel
             incompatibleApps = migrationOption.migrationAppList.filter {
                 $0.isSelected && $0.architectureType == .appleSiliconOnly
             }
@@ -682,9 +1065,11 @@ class MigrationController: ObservableObject {
         }
         var anyAppSelected = false
         var anyFileSelected = false
+        var anyPreferenceSelected = false
         anyAppSelected = migrationOption.migrationAppList.reduce(anyAppSelected, { $0 || $1.isSelected })
         anyFileSelected = migrationOption.migrationFileList.reduce(anyFileSelected, { $0 || $1.isSelected })
-        guard anyAppSelected || anyFileSelected else {
+        anyPreferenceSelected = migrationOption.migrationPreferencesList.reduce(anyPreferenceSelected, { $0 || $1.isSelected })
+        guard anyAppSelected || anyFileSelected || anyPreferenceSelected else {
             completion(false)
             return
         }
@@ -700,82 +1085,141 @@ class MigrationController: ObservableObject {
             return
         }
 
-        logger.log("migrationController.startMigration: starting migration", type: .default)
-        
+        migrationOption.discountDuplicatedSupportPaths()
+
+        let totalFiles = migrationOption.migrationFileList.filter { $0.isSelected }.count
+        let totalApps = migrationOption.migrationAppList.filter { $0.isSelected }.count
+        let totalPreferences = migrationOption.migrationPreferencesList.filter { $0.isSelected }.count
+        let totalSize = ByteCountFormatter.string(fromByteCount: Int64(migrationOption.size), countStyle: .file)
+        logger.log("migrationController.startMigration: ===== starting migration \"\(migrationOption.name)\" — \(totalFiles) file(s), \(totalApps) app(s), \(totalPreferences) preference group(s), \(totalSize) total =====", type: .default)
+
         bytesSent = migrationOption.migrationFileList.reduce(1) { $0 + ($1.sent ? $1.fileSize : 0) }
         bytesSent = migrationOption.migrationAppList.reduce(bytesSent) { $0 + ($1.migratorFile.sent ? $1.migratorFile.fileSize : 0) }
         estimatedTimeLeft = String(format: "migration.page.time.estimation.label".localized, "migration.common.calculating.label".localized)
-        
+        etaEstimator = MigrationETAEstimator()
+        etaStabilizer = ETADisplayStabilizer()
+        etaSampleCount = 0
+
         MigrationReportController.shared.setMigrationSize(Int64(migrationOption.size))
         sleep(3)
-        
-        startDataTransferReport()
-        
+
+        startProgressTracking()
+
         migrationTask = Task {
             do {
                 try await self.sendMigrationSize(migrationOption.size)
             } catch {
-                self.logger.log("migrationController.startMigration: delivery of migration size failed with error \"\(error.localizedDescription)\"", type: .error)
+                self.logger.log("migrationController.startMigration: delivery of migration size failed — error: \"\(error.localizedDescription)\"", type: .error)
             }
 
-            if migrationOption.migrationPreferencesList.isEmpty && !migrationOption.type.migratePreferences {
+            if !migrationOption.migrationPreferencesList.contains(where: { $0.isSelected }) {
                 do {
                     try await self.sendDefaults(DefaultsMessage(key: AppContext.skipRebootUserDefaultsKey, boolValue: true))
                 } catch {
-                    self.logger.log("migrationController.startMigration: delivery of default value failed with error \"\(error.localizedDescription)\"", type: .error)
+                    self.logger.log("migrationController.startMigration: delivery of default value failed — error: \"\(error.localizedDescription)\"", type: .error)
                 }
             }
-            
-            self.logger.log("migrationController.startMigration: starting migration of files", type: .default)
+
+            self.logger.log("migrationController.startMigration: starting migration of \(totalFiles) file(s)", type: .default)
             await MainActor.run { self.migrationState = .fileMigration }
-            
+
             for file in migrationOption.migrationFileList {
                 guard !file.sent && file.isSelected else { continue }
                 do {
-                    MLogger.main.log("migrationController.startMigration: sending file \(file.url.fullURL().relativePath)", type: .default)
+                    self.logger.log("migrationController.startMigration: sending file \"\(file.url.fullURL().relativePath)\"")
                     try await self.sendFile(file)
-                    MLogger.main.log("migrationController.startMigration: file sent \(file.url.fullURL().relativePath)", type: .default)
+                    self.logger.log("migrationController.startMigration: file sent \"\(file.url.fullURL().relativePath)\"")
                     file.sent = true
                     MigrationReportController.shared.addMigratedFile(file.url.fullURL().relativePath)
                 } catch {
-                    self.logger.log("migrationController.startMigration: failed to send file: \(file.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"", type: .error)
+                    self.logger.log("migrationController.startMigration: failed to send file \"\(file.url.fullURL().relativePath)\" — error: \"\(error.localizedDescription)\"", type: .error)
                     MigrationReportController.shared.addError("migrationController.startMigration: failed to send file: \(file.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"")
                 }
             }
-            
+
             self.logger.log("migrationController.startMigration: files migration complete", type: .default)
-            self.logger.log("migrationController.startMigration: starting migration of apps", type: .default)
+            self.logger.log("migrationController.startMigration: starting migration of \(totalApps) app(s)", type: .default)
             await MainActor.run { self.migrationState = .appMigration }
-            
+
+            let selectedAppsSupportPaths: [DiscoveredApplication: Set<URL>] = AppContext.shouldMigrateAppSupportFiles
+                ? migrationOption.deduplicatedSupportPaths(forSelectedApps: migrationOption.migrationAppList.filter { $0.isSelected })
+                : [:]
+
             for app in migrationOption.migrationAppList {
                 guard !app.migratorFile.sent && app.isSelected else { continue }
                 do {
-                    self.logger.log("migrationController.startMigration: sending app: \(app.migratorFile.url.fullURL().relativePath)", type: .default)
+                    self.logger.log("migrationController.startMigration: sending app \"\(app.migratorFile.url.fullURL().relativePath)\"")
                     try await self.sendFile(app.migratorFile)
-                    self.logger.log("migrationController.startMigration: app sent: \(app.migratorFile.url.fullURL().relativePath)", type: .default)
+                    self.logger.log("migrationController.startMigration: app sent \"\(app.migratorFile.url.fullURL().relativePath)\"")
                     app.migratorFile.sent = true
+
+                    // Send app support files if enabled and discovered
+                    if let supportPaths = selectedAppsSupportPaths[app], !supportPaths.isEmpty {
+                        self.logger.log("migrationController.startMigration: sending \(supportPaths.count) support file(s) for \"\(app.name)\"")
+
+                        for supportFilePath in supportPaths {
+                            guard let supportFile = await MigratorFile.make(with: supportFilePath, ignoringURLExclusions: true) else {
+                                self.logger.log("migrationController.startMigration: failed to create MigratorFile for support file \"\(supportFilePath.path)\"", type: .error)
+                                MigrationReportController.shared.addError("Skipped support file (could not be scanned): \(supportFilePath.path)")
+                                continue
+                            }
+
+                            do {
+                                self.logger.log("migrationController.startMigration: sending support file \"\(supportFilePath.relativePath)\"")
+                                try await self.sendFile(supportFile)
+                                self.logger.log("migrationController.startMigration: support file sent \"\(supportFilePath.relativePath)\"")
+                                supportFile.sent = true
+                                MigrationReportController.shared.addMigratedFile(supportFilePath.relativePath)
+                            } catch {
+                                self.logger.log("migrationController.startMigration: failed to send support file \"\(supportFilePath.relativePath)\" — error: \"\(error.localizedDescription)\"", type: .error)
+                                MigrationReportController.shared.addError("migrationController.startMigration: failed to send support file: \(supportFilePath.relativePath) - with error: \"\(error.localizedDescription)\"")
+                            }
+                        }
+
+                        self.logger.log("migrationController.startMigration: completed sending support files for \"\(app.name)\"")
+                    }
                 } catch {
-                    self.logger.log("migrationController.startMigration: failed to send file: \(app.migratorFile.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"", type: .error)
+                    self.logger.log("migrationController.startMigration: failed to send app \"\(app.migratorFile.url.fullURL().relativePath)\" — error: \"\(error.localizedDescription)\"", type: .error)
                     MigrationReportController.shared.addError("migrationController.startMigration: failed to send file: \(app.migratorFile.url.fullURL().relativePath) - with error: \"\(error.localizedDescription)\"")
                 }
             }
-            
+
             self.logger.log("migrationController.startMigration: apps migration complete", type: .default)
+            self.logger.log("migrationController.startMigration: starting migration of \(totalPreferences) preference group(s)", type: .default)
+            await MainActor.run { self.migrationState = .preferencesMigration }
+
+            for group in migrationOption.migrationPreferencesList {
+                guard !group.sent && group.isSelected else { continue }
+                do {
+                    self.logger.log("migrationController.startMigration: sending preference group \"\(group.catalogID)\"")
+                    try await self.sendPreferenceGroup(group)
+                    group.sent = true
+                    MigrationReportController.shared.addMigratedPreference(group.name)
+                } catch {
+                    self.logger.log("migrationController.startMigration: failed to send preference group \"\(group.catalogID)\" — error: \"\(error.localizedDescription)\"", type: .error)
+                    MigrationReportController.shared.addError("migrationController.startMigration: failed to send preference group: \(group.catalogID) - with error: \"\(error.localizedDescription)\"")
+                }
+            }
+
+            self.logger.log("migrationController.startMigration: preferences migration complete", type: .default)
             await MainActor.run { self.migrationState = .completing }
-            
+
             // Verification and retry phase - ensure all selected items were migrated
             self.logger.log("migrationController.startMigration: starting verification phase", type: .default)
             let verificationResult = await self.verifyAndRetryMigration(migrationOption: migrationOption, maxRetries: 3)
-            
+
             if !verificationResult.success {
-                self.logger.log("migrationController.startMigration: verification failed - \(verificationResult.failedItems.count) items could not be migrated", type: .error)
+                self.logger.log("migrationController.startMigration: verification failed — \(verificationResult.failedItems.count) item(s) could not be migrated", type: .error)
                 for failedItem in verificationResult.failedItems {
                     MigrationReportController.shared.addError("Failed to migrate after retries: \(failedItem)")
                 }
             } else {
-                self.logger.log("migrationController.startMigration: verification complete - all items migrated successfully", type: .default)
+                self.logger.log("migrationController.startMigration: verification complete — all items migrated successfully", type: .default)
             }
-            
+
+            let elapsedSeconds = Int(self.migrationStartTime.map { Date().timeIntervalSince($0) } ?? 0)
+            self.logger.log("migrationController.startMigration: ===== migration \"\(migrationOption.name)\" finished in \(elapsedSeconds)s — \(self.filesSent) item(s) sent, \(verificationResult.failedItems.count) failed =====", type: .default)
+
             do {
                 try await self.sendMigrationCompleted()
                 MigrationReportController.shared.setMigrationEnd()
@@ -783,17 +1227,26 @@ class MigrationController: ObservableObject {
                     self.percentageCompleted = "100%"
                     self.estimatedTimeLeft = ""
                     self.migrationProgress = 1
-                    self.stopDataTransferReport()
+                    self.stopProgressTracking()
                     NSSound(named: .init("Funk"))?.play()
                     Utils.Window.makeWindowFloating()
                 }
             } catch {
-                self.logger.log("migrationController.startMigration: send migration completion failed with error \"\(error.localizedDescription)\"", type: .error)
+                self.logger.log("migrationController.startMigration: send migration completion failed — error: \"\(error.localizedDescription)\"", type: .error)
             }
         }
     }
     // swiftlint:enable function_body_length
-    
+
+    /// Sends every domain of a preference group to the connected device.
+    /// - Parameter group: The preference group to send.
+    private func sendPreferenceGroup(_ group: PreferenceGroup) async throws {
+        for (domain, data) in PreferencesDiscovery.payloads(for: group) {
+            let message = PreferencesMessage(groupID: group.catalogID, applicationID: domain.applicationID, isByHost: domain.isByHost)
+            try await self.sendPreferences(message, payload: data)
+        }
+    }
+
     /// Verifies that all selected items have been migrated and retries failed items
     /// - Parameters:
     ///   - migrationOption: The migration option containing files and apps to verify
@@ -817,64 +1270,95 @@ class MigrationController: ObservableObject {
             let unsentFiles = migrationOption.migrationFileList.filter { !$0.sent && $0.isSelected }
             if !unsentFiles.isEmpty {
                 hasUnsentItems = true
-                logger.log("migrationController.verifyAndRetryMigration: found \(unsentFiles.count) unsent files", type: .default)
-                
+                logger.log("migrationController.verifyAndRetryMigration: found \(unsentFiles.count) unsent file(s)", type: .default)
+
                 for file in unsentFiles {
                     let itemPath = file.url.fullURL().relativePath
                     let currentRetries = itemRetryCount[itemPath, default: 0]
-                    
+
                     if currentRetries >= maxRetries {
-                        logger.log("migrationController.verifyAndRetryMigration: file \(itemPath) exceeded retry limit (\(currentRetries)/\(maxRetries))", type: .error)
+                        logger.log("migrationController.verifyAndRetryMigration: file \"\(itemPath)\" exceeded retry limit (\(currentRetries)/\(maxRetries))", type: .error)
                         if !failedItems.contains(itemPath) {
                             failedItems.append(itemPath)
                         }
                         continue
                     }
-                    
+
                     itemRetryCount[itemPath] = currentRetries + 1
-                    
+
                     do {
-                        logger.log("migrationController.verifyAndRetryMigration: retrying file \(itemPath) (attempt \(currentRetries + 1)/\(maxRetries))", type: .default)
+                        logger.log("migrationController.verifyAndRetryMigration: retrying file \"\(itemPath)\" (attempt \(currentRetries + 1)/\(maxRetries))")
                         try await MigrationController.shared.sendFile(file)
                         file.sent = true
                         MigrationReportController.shared.addMigratedFile(itemPath)
-                        logger.log("migrationController.verifyAndRetryMigration: successfully sent file \(itemPath)", type: .default)
+                        logger.log("migrationController.verifyAndRetryMigration: successfully sent file \"\(itemPath)\"")
                     } catch {
-                        logger.log("migrationController.verifyAndRetryMigration: failed to send file \(itemPath) - \(error.localizedDescription)", type: .error)
+                        logger.log("migrationController.verifyAndRetryMigration: failed to send file \"\(itemPath)\" — error: \"\(error.localizedDescription)\"", type: .error)
                     }
                 }
             }
-            
+
             let unsentApps = migrationOption.migrationAppList.filter { !$0.migratorFile.sent && $0.isSelected }
             if !unsentApps.isEmpty {
                 hasUnsentItems = true
-                logger.log("migrationController.verifyAndRetryMigration: found \(unsentApps.count) unsent apps", type: .default)
-                
+                logger.log("migrationController.verifyAndRetryMigration: found \(unsentApps.count) unsent app(s)", type: .default)
+
                 for app in unsentApps {
                     let itemPath = app.url.relativePath
                     let currentRetries = itemRetryCount[itemPath, default: 0]
-                    
+
                     if currentRetries >= maxRetries {
-                        logger.log("migrationController.verifyAndRetryMigration: app \(itemPath) exceeded retry limit (\(currentRetries)/\(maxRetries))", type: .error)
+                        logger.log("migrationController.verifyAndRetryMigration: app \"\(itemPath)\" exceeded retry limit (\(currentRetries)/\(maxRetries))", type: .error)
                         if !failedItems.contains(itemPath) {
                             failedItems.append(itemPath)
                         }
                         continue
                     }
-                    
+
                     itemRetryCount[itemPath] = currentRetries + 1
-                    
+
                     do {
-                        logger.log("migrationController.verifyAndRetryMigration: retrying app \(itemPath) (attempt \(currentRetries + 1)/\(maxRetries))", type: .default)
+                        logger.log("migrationController.verifyAndRetryMigration: retrying app \"\(itemPath)\" (attempt \(currentRetries + 1)/\(maxRetries))")
                         try await MigrationController.shared.sendFile(app.migratorFile)
                         app.migratorFile.sent = true
-                        logger.log("migrationController.verifyAndRetryMigration: successfully sent app \(itemPath)", type: .default)
+                        logger.log("migrationController.verifyAndRetryMigration: successfully sent app \"\(itemPath)\"")
                     } catch {
-                        logger.log("migrationController.verifyAndRetryMigration: failed to send app \(itemPath) - \(error.localizedDescription)", type: .error)
+                        logger.log("migrationController.verifyAndRetryMigration: failed to send app \"\(itemPath)\" — error: \"\(error.localizedDescription)\"", type: .error)
                     }
                 }
             }
-            
+
+            let unsentPreferences = migrationOption.migrationPreferencesList.filter { !$0.sent && $0.isSelected }
+            if !unsentPreferences.isEmpty {
+                hasUnsentItems = true
+                logger.log("migrationController.verifyAndRetryMigration: found \(unsentPreferences.count) unsent preference group(s)", type: .default)
+
+                for group in unsentPreferences {
+                    let itemPath = group.catalogID
+                    let currentRetries = itemRetryCount[itemPath, default: 0]
+
+                    if currentRetries >= maxRetries {
+                        logger.log("migrationController.verifyAndRetryMigration: preference group \"\(itemPath)\" exceeded retry limit (\(currentRetries)/\(maxRetries))", type: .error)
+                        if !failedItems.contains(itemPath) {
+                            failedItems.append(itemPath)
+                        }
+                        continue
+                    }
+
+                    itemRetryCount[itemPath] = currentRetries + 1
+
+                    do {
+                        logger.log("migrationController.verifyAndRetryMigration: retrying preference group \"\(itemPath)\" (attempt \(currentRetries + 1)/\(maxRetries))")
+                        try await MigrationController.shared.sendPreferenceGroup(group)
+                        group.sent = true
+                        MigrationReportController.shared.addMigratedPreference(group.name)
+                        logger.log("migrationController.verifyAndRetryMigration: successfully sent preference group \"\(itemPath)\"")
+                    } catch {
+                        logger.log("migrationController.verifyAndRetryMigration: failed to send preference group \"\(itemPath)\" — error: \"\(error.localizedDescription)\"", type: .error)
+                    }
+                }
+            }
+
             if hasUnsentItems && verificationPass < maxVerificationPasses {
                 logger.log("migrationController.verifyAndRetryMigration: waiting 5 seconds before next verification pass", type: .default)
                 try? await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
@@ -883,23 +1367,31 @@ class MigrationController: ObservableObject {
         
         let finalUnsentFiles = migrationOption.migrationFileList.filter { !$0.sent && $0.isSelected }
         let finalUnsentApps = migrationOption.migrationAppList.filter { !$0.migratorFile.sent && $0.isSelected }
-        
+        let finalUnsentPreferences = migrationOption.migrationPreferencesList.filter { !$0.sent && $0.isSelected }
+
         for file in finalUnsentFiles {
             let itemPath = file.url.fullURL().relativePath
             if !failedItems.contains(itemPath) {
                 failedItems.append(itemPath)
             }
         }
-        
+
         for app in finalUnsentApps {
             let itemPath = app.url.relativePath
             if !failedItems.contains(itemPath) {
                 failedItems.append(itemPath)
             }
         }
-        
+
+        for group in finalUnsentPreferences {
+            let itemPath = group.catalogID
+            if !failedItems.contains(itemPath) {
+                failedItems.append(itemPath)
+            }
+        }
+
         let success = failedItems.isEmpty
-        logger.log("migrationController.verifyAndRetryMigration: verification complete - success: \(success), failed items: \(failedItems.count)", type: success ? .default : .error)
+        logger.log("migrationController.verifyAndRetryMigration: verification complete — success: \(success), failed item(s): \(failedItems.count)", type: success ? .default : .error)
         
         return (success: success, failedItems: failedItems)
     }
@@ -938,7 +1430,20 @@ class MigrationController: ObservableObject {
         }
         try await currentConnection.sendDefaults(object)
     }
-    
+
+    /// Sends one preferences domain through the current active connection
+    /// - Parameters:
+    ///   - object: Identifies the domain and the `PreferenceGroup` it belongs to.
+    ///   - payload: The binary property list of the domain's values.
+    func sendPreferences(_ object: PreferencesMessage, payload: Data) async throws {
+        guard let currentConnection = connection else {
+            logger.log("migrationController.sendPreferences: no active connection", type: .error)
+            throw NSError(domain: "MigrationController", code: 2001,
+                         userInfo: [NSLocalizedDescriptionKey: "No active connection"])
+        }
+        try await currentConnection.sendPreferences(object, payload: payload)
+    }
+
     /// Sends migration completed through the current active connection
     func sendMigrationCompleted() async throws {
         guard let currentConnection = connection else {
@@ -949,17 +1454,106 @@ class MigrationController: ObservableObject {
         try await currentConnection.sendMigrationCompleted()
     }
     
-    /// Pauses the migration process.
+    // MARK: - Pause / Resume
+
+    /// Start time of the migration at the moment it was paused, restored on resume so the
+    /// elapsed-time log stays accurate across the pause.
+    private var migrationStartTimeBeforePause: Date?
+
+    /// Source only: pauses the migration so the devices can be disconnected. The migration task
+    /// is suspended, not cancelled: every send parks in `awaitConnectionReadiness()` while the
+    /// state is `.paused`, and carries on from the same chunk after `resumeMigration()`.
     @MainActor
-    func pauseMigration() {
+    func pauseMigration() async {
+        guard operatingMode == .browser, isActivelyTransmitting(), !isPausing else { return }
         logger.log("migrationController.pauseMigration: pausing migration", type: .default)
-        migrationTask?.cancel()
-        stopDataTransferReport()
-        
-        if migrationState != .completed && migrationState != .interrupted {
-            migrationState = .paused
-            MigrationReportController.shared.addError("migrationController.pauseMigration: Migration was paused by user or system")
+        isPausing = true
+        // From here `sendAsyncWrapper` starts no new send.
+        migrationState = .paused
+
+        // Let the sends already handed to Network.framework finish so the connection is closed
+        // on a message boundary. On timeout we pause anyway: chunks carry their byte offset, so
+        // a chunk re-sent after resume overwrites itself.
+        let deadline = Date().addingTimeInterval(pauseQuiesceTimeout)
+        while (connection?.inFlightSendCount ?? 0) > 0 && Date() < deadline {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+        }
+
+        migrationStartTimeBeforePause = migrationStartTime
+        stopProgressTracking()
+        do {
+            try await connection?.sendMigrationPaused()
+        } catch {
+            logger.log("migrationController.pauseMigration: failed to notify the destination -> \"\(error.localizedDescription)\"", type: .error)
+        }
+        connection?.closeForPause()
+        isConnected = false
+        connectedDeviceIsReady = false
+        isPausing = false
+    }
+
+    /// Source only: reconnects to the destination of a paused migration and lets the suspended
+    /// migration task continue.
+    @MainActor
+    func resumeMigration() {
+        guard migrationState == .paused, operatingMode == .browser, !isResumingFromPause else { return }
+        logger.log("migrationController.resumeMigration: resuming migration", type: .default)
+        resumeFailed = false
+        isResumingFromPause = true
+        connectionRestorationAttempts = 0
+        migrationState = .restoringConnection
+        restoreConnection()
+
+        resumeTimeoutTask?.cancel()
+        resumeTimeoutTask = Task { @MainActor [weak self] in
+            guard let timeout = self?.resumeTimeout else { return }
+            try? await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+            guard !Task.isCancelled, let self, self.isResumingFromPause else { return }
+            self.logger.log("migrationController.resumeMigration: timed out waiting for the destination", type: .error)
+            self.failResumeAndReturnToPaused()
         }
     }
+
+    /// Source only: the reconnect after a pause worked; restarts the progress/health timers.
+    @MainActor
+    private func completeResume() {
+        logger.log("migrationController.completeResume: reconnected, resuming transfer", type: .default)
+        resumeTimeoutTask?.cancel()
+        resumeTimeoutTask = nil
+        isResumingFromPause = false
+        resumeFailed = false
+        startProgressTracking()
+        if let start = migrationStartTimeBeforePause {
+            migrationStartTime = start
+        }
+        migrationStartTimeBeforePause = nil
+    }
+
+    /// Source only: the destination couldn't be reached, so go back to the paused screen and
+    /// let the human try again.
+    @MainActor
+    private func failResumeAndReturnToPaused() {
+        logger.log("migrationController.failResumeAndReturnToPaused: couldn't reach the destination, staying paused", type: .error)
+        resumeTimeoutTask?.cancel()
+        resumeTimeoutTask = nil
+        isResumingFromPause = false
+        connection?.connection.forceCancel()
+        isConnected = false
+        connectedDeviceIsReady = false
+        connectionRestorationAttempts = 0
+        resumeFailed = true
+        migrationState = .paused
+    }
+
+    /// Destination only: the source paused and is closing the connection. Keeps the migration
+    /// state and listens again so the source's reconnect is auto-accepted (see `startServer`).
+    @MainActor
+    private func handleMigrationPausedByPeer() {
+        logger.log("migrationController.handleMigrationPausedByPeer: source paused the migration", type: .default)
+        migrationState = .paused
+        isConnected = false
+        connectedDeviceIsReady = false
+        startServer(withPasscode: passcode)
+    }
 }
-// swiftlint:enable type_body_length file_length
+// swiftlint:enable type_body_length file_length large_tuple

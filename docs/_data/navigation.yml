@@ -1,0 +1,22 @@
+- title: Home
+  url: /
+- title: Using IBM Data Shift
+  url: /user-guide/
+- title: Deployment
+  children:
+    - title: Rebrand the app
+      url: /rebranding/
+    - title: Custom settings
+      url: /custom-settings/
+    - title: PPPC profile
+      url: /pppc-deployment/
+    - title: MDM check & inventory update
+      url: /mdm-check/
+    - title: Sign, notarize & distribute
+      url: /sign-notarize-distribute/
+- title: Technical
+  children:
+    - title: Architecture overview
+      url: /architecture/
+    - title: Security & privacy
+      url: /security/

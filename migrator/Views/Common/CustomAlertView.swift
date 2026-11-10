@@ -20,13 +20,15 @@ struct CustomAlertView<Content: View>: View {
     // MARK: - Views
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .center, spacing: 20) {
             Text(title)
                 .customFont(.title2, weight: .semibold)
+                .frame(maxWidth: 400)
                 .padding(.vertical, 4)
             if let message = message {
                 Text(message)
                     .customFont(.body)
+                    .frame(maxWidth: 400)
                     .padding(.bottom, 8)
             }
             content
@@ -34,9 +36,8 @@ struct CustomAlertView<Content: View>: View {
         .padding(30)
         .background {
             if #available(macOS 26.0, *) {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.clear)
-                    .glassEffect(.regular, in: .rect(cornerRadius: 20))
+                Color.clear
+                    .glassEffect(.regular, in: .rect(cornerRadius: 30))
             } else {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color(NSColor.windowBackgroundColor.withAlphaComponent(0.8)))
@@ -44,8 +45,6 @@ struct CustomAlertView<Content: View>: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.blur(radius: 8, opaque: true).opacity(0.3))
-        .edgesIgnoringSafeArea(.all)
     }
 }
 

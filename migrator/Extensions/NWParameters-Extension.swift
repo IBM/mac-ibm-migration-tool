@@ -8,13 +8,21 @@
 //
 
 import Network
-import CryptoKit
 import Foundation
 
 extension NWParameters {
-    /// Initializes `NWParameters` with TCP and custom TLS settings, including a pre-shared key for TLS authentication.
-    /// - Parameter passcode: A `String` used to derive the pre-shared key for TLS authentication.
-    convenience init(passcode: String) {
+    /// Initializes `NWParameters` for TLS 1.3.
+    ///
+    /// TLS 1.3 dropped Network.framework's external-PSK mode, so the pairing code can no longer
+    /// gate the TLS handshake itself. Instead:
+    /// - The server passes its `tlsIdentity` (see `EphemeralTLSIdentity`), a throwaway self-signed
+    ///   certificate used only for confidentiality and forward secrecy.
+    /// - The client passes `nil` and deliberately accepts any certificate the server presents,
+    ///   because peer authentication happens afterwards at the application layer via
+    ///   `PairingAuthenticator`, bound to this TLS session's exporter secret.
+    /// - Parameter tlsIdentity: The local TLS identity to present, or `nil` for a client that
+    ///   doesn't authenticate the server at the TLS layer.
+    convenience init(tlsIdentity: sec_identity_t?) {
         let tcpOptions = NWProtocolTCP.Options()
         tcpOptions.enableKeepalive = true
         tcpOptions.keepaliveIdle = 1
@@ -22,69 +30,38 @@ extension NWParameters {
         tcpOptions.keepaliveInterval = 1
         tcpOptions.noDelay = true
 
-        // Initialize `NWParameters` with custom TLS options (derived from the passcode) and the specified TCP options.
-        self.init(tls: NWParameters.tlsOptions(passcode: passcode), tcp: tcpOptions)
+        // Initialize `NWParameters` with TLS 1.3 options and the specified TCP options.
+        self.init(tls: NWParameters.tlsOptions(identity: tlsIdentity), tcp: tcpOptions)
         self.includePeerToPeer = true
         self.attribution = .developer
         self.preferNoProxies = true
-        
+
         // Configure custom application protocol using `MigratorNetworkProtocol`.
         let migratorOptions = NWProtocolFramer.Options(definition: MigratorNetworkProtocol.definition)
         self.defaultProtocolStack.applicationProtocols.insert(migratorOptions, at: 0)
     }
 
-    /// Generates TLS options including a pre-shared key derived from a passcode.
-    /// - Parameter passcode: The passcode used to derive the pre-shared key.
+    /// Builds TLS 1.3-only options, presenting `identity` (if any) as the local identity.
+    /// - Parameter identity: The local TLS identity to present, or `nil` on the client.
     /// - Returns: A configured `NWProtocolTLS.Options` instance.
-    private static func tlsOptions(passcode: String) -> NWProtocolTLS.Options {
+    private static func tlsOptions(identity: sec_identity_t?) -> NWProtocolTLS.Options {
         let tlsOptions = NWProtocolTLS.Options()
-        
-        // Derive a symmetric key from the passcode.
-        guard let passcodeData = passcode.data(using: .utf8) else { return tlsOptions }
-        let authenticationKey = SymmetricKey(data: passcodeData)
+        let securityOptions = tlsOptions.securityProtocolOptions
 
-#if DEBUG
-        let pskIdentity = "MigrationController-Debug"
-#else
-        // Use a build-unique identity provided by a GYB-generated Swift file.
-        let pskIdentity = TLSPSKIdentity.value
-#endif
+        sec_protocol_options_set_min_tls_protocol_version(securityOptions, .TLSv13)
+        sec_protocol_options_set_max_tls_protocol_version(securityOptions, .TLSv13)
 
-        // Create an authentication code for the identity using HMAC with SHA384.
-        let authenticationCode = HMAC<SHA384>.authenticationCode(for: Data(pskIdentity.utf8), using: authenticationKey)
-
-        // Convert the authentication code to `DispatchData`.
-        let authenticationDispatchData = authenticationCode.withUnsafeBytes {
-            DispatchData(bytes: $0)
+        if let identity {
+            sec_protocol_options_set_local_identity(securityOptions, identity)
+        } else {
+            // Accept any server certificate: it's an ephemeral, throwaway identity with no
+            // meaningful chain of trust. The actual peer authentication happens afterwards via
+            // the application-layer PAKE exchange, bound to this exact TLS session.
+            sec_protocol_options_set_verify_block(securityOptions, { _, _, complete in
+                complete(true)
+            }, .main)
         }
-
-        // Convert the identity string to `DispatchData`.
-        guard let identityDispatchData = stringToDispatchData(pskIdentity) else { return tlsOptions }
-
-        // Add the pre-shared key to the TLS options.
-        sec_protocol_options_add_pre_shared_key(tlsOptions.securityProtocolOptions,
-                                                authenticationDispatchData as __DispatchData,
-                                                identityDispatchData as __DispatchData)
-        
-        sec_protocol_options_append_tls_ciphersuite(tlsOptions.securityProtocolOptions,
-                                                    tls_ciphersuite_t(rawValue: UInt16(TLS_PSK_WITH_AES_256_GCM_SHA384))!)
-        
-        // Enforce TLS 1.2+
-        sec_protocol_options_set_min_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv12)
 
         return tlsOptions
-    }
-
-    /// Converts a `String` to `DispatchData`.
-    /// - Parameter string: The `String` to be converted.
-    /// - Returns: The converted `DispatchData`, or `nil` if the conversion fails.
-    private static func stringToDispatchData(_ string: String) -> DispatchData? {
-        guard let stringData = string.data(using: .utf8) else {
-            return nil
-        }
-        let dispatchData = stringData.withUnsafeBytes {
-            DispatchData(bytes: $0)
-        }
-        return dispatchData
     }
 }

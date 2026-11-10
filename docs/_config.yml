@@ -1,0 +1,21 @@
+title: IBM Data Shift
+description: Documentation for deploying, customizing and using IBM Data Shift
+url: https://ibm.github.io
+baseurl: /mac-ibm-migration-tool
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+# Latest released version of the app, and the unreleased changes that are tagged
+# "New in next release" (see CHANGELOG.md, [Unreleased]). When the next version
+# ships, replace the "next" tags with its number.
+app_version: 2.0.0
+
+repo_url: https://github.com/IBM/mac-ibm-migration-tool
+
+# Repository markdown files that live in /docs but are not part of the site.
+exclude:
+  - SECURITY.md
+  - architecture-diagram.md
+  - README.md

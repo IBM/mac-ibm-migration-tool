@@ -70,7 +70,7 @@ struct WebView: NSViewRepresentable {
             parent.onNavigationFinished?(false)
         }
         
-        func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping @MainActor @Sendable (WKNavigationResponsePolicy) -> Void) {
             if let response = navigationResponse.response as? HTTPURLResponse {
                 if !(200...299).contains(response.statusCode) {
                     parent.onNavigationFinished?(false)

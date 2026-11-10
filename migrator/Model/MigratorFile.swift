@@ -13,7 +13,7 @@ import Combine
 import SwiftUI
 
 /// Enumeration to represent different types of files
-enum FileType: UInt8, Codable, Hashable {
+enum FileType: UInt8, Codable, Hashable, Sendable {
     case directory
     case file
     case symlink
@@ -37,7 +37,8 @@ enum FileType: UInt8, Codable, Hashable {
 }
 
 /// Class representing a file in the migration context.
-class MigratorFile {
+@MainActor
+final class MigratorFile {
     
     // MARK: - Published Variables
     
@@ -51,9 +52,12 @@ class MigratorFile {
     // MARK: - Variables
     
     /// Type of the file (directory, file, symlink, app)
-    var type: FileType
+    nonisolated let type: FileType
     /// URL of the file
-    var url: MigratorFileURL
+    nonisolated let url: MigratorFileURL
+    /// True when this file was scanned without the URL exclusion list (explicit app support
+    /// paths inside e.g. `~/Library`); children fetched later must be scanned the same way.
+    nonisolated let ignoresURLExclusions: Bool
     /// Name of the file
     var name: String
     /// Child files if the file is a directory
@@ -71,210 +75,117 @@ class MigratorFile {
     
     // MARK: - Intializers
     
-    // swiftlint:disable function_body_length
-    /// Asynchronous initialization to fetch file attributes and child files from a file URL.
-    /// - Parameter url: URL of the source file.
-    init?(with url: URL, level: Int = 0, excludedItem: Bool = false, excludedChild: Bool = false) {
-        var shouldContinue: Bool
-        if excludedItem {
-            shouldContinue = true
-        } else if excludedChild {
-            shouldContinue = Utils.FileManagerHelpers.shouldIgnorePath(url)
-        } else {
-            shouldContinue = !Utils.FileManagerHelpers.shouldIgnorePath(url)
-        }
-        guard shouldContinue else { return nil }
-        self.name = url.lastPathComponent
-        self.url = MigratorFileURL(with: url)
-        self.hLevel = level
-        self.isHidden = url.lastPathComponent.hasPrefix(".")
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: url.relativePath) as NSDictionary {
-            let filetype = FileAttributeType(rawValue: attributes.fileType() ?? "")
-            switch filetype {
-            case .typeDirectory:
-                guard url.pathExtension != "app" else {
-                    self.type = .app
-                    break
-                }
-                self.type = .directory
-                guard hLevel <= 2 else { break }
-                if let childsURL = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) {
-                    var partial = false
-                    for childURL in childsURL {
-                        if (try? childURL.checkResourceIsReachable()) == false {
-                            MLogger.main.log("migratorFile.init: Skipping unreachable file: \(childURL.relativePath)", type: .fault)
-                            continue
-                        }
-                        if let childFile = MigratorFile(with: childURL, level: hLevel+1, excludedChild: excludedItem) {
-                            self.childFiles.append(childFile)
-                        } else {
-                            partial = true
-                        }
-                    }
-                    if !self.childFiles.isEmpty && partial {
-                        self.isPartiallyMigrated = true
-                    }
-                }
-            case .typeRegular:
-                self.type = .file
-            case .typeSymbolicLink:
-                self.type = .symlink
-            case .typeSocket:
-                MLogger.main.log("migratorFile.init: Socket file detected: \(url.relativePath)", type: .debug)
-                return nil
-            case .typeBlockSpecial, .typeCharacterSpecial, .typeUnknown:
-                MLogger.main.log("migratorFile.init: Special file type detected: \(filetype.rawValue) at \(url.relativePath)", type: .default)
-                self.type = .file
-            default:
-                self.type = .file
-            }
-        } else {
-            MLogger.main.log("migratorFile.init: Could not get attributes for file: \(url.relativePath)", type: .fault)
-            self.type = .file
-        }
-        self.childFiles.sort { (file1: MigratorFile, file2: MigratorFile) in
-            if file1.type != file2.type {
-                return file1.type.sortOrder < file2.type.sortOrder
-            } else {
-                return file1.name < file2.name
-            }
-        }
+    /// Builds a `MigratorFile` (and its retained child tree) from a `FileScanner`-produced
+    /// snapshot. Pure object-graph construction - no disk I/O, so it's cheap to run synchronously
+    /// on the main actor.
+    init(snapshot: MigratorFileSnapshot) {
+        self.type = snapshot.type
+        self.url = snapshot.url
+        self.ignoresURLExclusions = snapshot.ignoresURLExclusions
+        self.name = snapshot.name
+        self.isHidden = snapshot.isHidden
+        self.hLevel = snapshot.hLevel
+        self.isPartiallyMigrated = snapshot.isPartiallyMigrated
+        self.childFiles = snapshot.children.map { MigratorFile(snapshot: $0) }
     }
-    // swiftlint:enable function_body_length
+    
+    /// Asynchronously scans a file URL (off the main actor) and builds a `MigratorFile` from the
+    /// result. Replaces the previous synchronous `init?(with:level:excludedItem:excludedChild:)`.
+    /// - Parameter url: URL of the source file.
+    static func make(with url: URL, level: Int = 0, excludedItem: Bool = false, excludedChild: Bool = false,
+                     ignoringURLExclusions: Bool = false) async -> MigratorFile? {
+        // This function is main-actor isolated, so calling the (blocking, disk-walking) scan directly
+        // would run it on the main thread. Hop to a GCD queue for it, like `AppInfo` does.
+        let snapshot: MigratorFileSnapshot? = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: FileScanner.scan(url: url, level: level, excludedItem: excludedItem,
+                                                                excludedChild: excludedChild,
+                                                                ignoringURLExclusions: ignoringURLExclusions))
+            }
+        }
+        guard let snapshot else { return nil }
+        return MigratorFile(snapshot: snapshot)
+    }
     
     // MARK: - Public Methods
 
     /// Asynchronously computes and caches the total allocated size (in bytes) and the number of files
     /// contained by the receiver, then publishes the results via `fileSize` and `numberOfFiles`.
     ///
-    /// Concurrency and performance:
-    /// - Work is performed on a detached task with `.utility` priority to avoid blocking the main thread.
-    /// - Child processing is batched (size 10) and executed in a `TaskGroup` to cap concurrency.
-    /// - Published properties are updated in one hop on the main actor.
+    /// Concurrency and performance: the entire recursive walk (`FileScanner.computeSize`) runs off
+    /// the main actor on a plain `Sendable` snapshot of this object's `url`/`type`/`childFiles` -
+    /// only building that cheap snapshot and writing the final numbers back touches the main actor,
+    /// so a large tree (a whole home folder can be tens of thousands of nodes) doesn't serialize
+    /// through it.
     func fetchFileSizeAndCount() async {
         guard self.fileSize == -1 else { return }
-        
-        // Use a task to avoid blocking the main thread
-        await Task.detached(priority: .utility) { [weak self] in
-            guard let self = self else { return }
-            
-            var size = 0
-            var count = 0
-            
-            switch self.type {
-            case .app:
-                if let appSize = try? await self.url.fullURL().directoryTotalAllocatedSize() {
-                    size = appSize
-                }
-                if let filesCount = try? await self.url.fullURL().directoryTotalNumberOfFiles() {
-                    count = filesCount + 1
-                }
-            case .socket:
-                break
-            case .directory:
-                let availableChildFiles = self.childFiles.isEmpty ? await self.fetchUnretainedChilds() : self.childFiles
-                let tempSize = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
-                
-                await withTaskGroup(of: (Int, Int).self, returning: Void.self) { group in
-                    let batchSize = 10
-                    let batches = stride(from: 0, to: availableChildFiles.count, by: batchSize)
-                        .map { Array(availableChildFiles[$0..<min($0 + batchSize, availableChildFiles.count)]) }
-                    for batch in batches {
-                        for file in batch {
-                            group.addTask(priority: .utility) {
-                                await file.fetchFileSizeAndCount()
-                                return (file.fileSize, file.numberOfFiles)
-                            }
-                        }
-                        for await result in group {
-                            size += result.0
-                            count += result.1
-                        }
-                    }
-                }
-                size += tempSize
-                count += 1
-            default:
-                size = (try? self.url.fullURL().resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0) ?? 0
-                count = 1
+        let result = await FileScanner.computeSize(for: FileSizeInput(migratorFile: self))
+        self.fileSize = result.size
+        self.numberOfFiles = result.count
+        if !self.childFiles.isEmpty {
+            Self.assign(result.childResults, to: self.childFiles)
+        }
+    }
+
+    /// Writes each `FileSizeResult` back onto its corresponding retained child, recursing into
+    /// grandchildren so every level of the (eagerly-expanded, ≤2-level-deep) retained tree gets its
+    /// own `fileSize`/`numberOfFiles` published, matching `files`' order to `results`' order 1:1
+    /// (both were built from the same `childFiles` array via `FileSizeInput(migratorFile:)`).
+    private static func assign(_ results: [FileSizeResult], to files: [MigratorFile]) {
+        for (file, result) in zip(files, results) {
+            file.fileSize = result.size
+            file.numberOfFiles = result.count
+            if !file.childFiles.isEmpty {
+                assign(result.childResults, to: file.childFiles)
             }
-            await MainActor.run { [size, count] in
-                self.fileSize = size
-                self.numberOfFiles = count
-            }
-        }.value
+        }
     }
     
     /// Asynchronously enumerates the immediate children of the directory represented by this
     /// MigratorFile and produces a new array of MigratorFile instances without mutating
     /// `self.childFiles`.
     ///
-    /// The work is executed on a detached task with `.utility` priority to avoid blocking the
-    /// main thread.
+    /// The scan itself runs on a background task to avoid blocking the main thread; only the
+    /// resulting object graph is built on the main actor.
     /// The method is side‑effect free with respect to `self.childFiles` (it does not retain
     /// the computed children on the receiver). It is typically used as a lazy loader for
     /// children during size/count computations (e.g., `fetchFileSizeAndCount()`).
     ///
     /// - Returns: An array of `MigratorFile` representing the immediate children of the directory.
     func fetchUnretainedChilds() async -> [MigratorFile] {
-        return await Task.detached(priority: .utility) { [weak self] in
-            guard let self = self else { return [] }
-            guard let childURLs = try? FileManager.default.contentsOfDirectory(
-                at: self.url.fullURL(),
-                includingPropertiesForKeys: [.totalFileAllocatedSizeKey]
-            ) else { return [] }
-            
-            // Process URLs in batches to avoid overwhelming the system
-            let batchSize = 20
-            var tempChilds: [MigratorFile] = []
-            tempChilds.reserveCapacity(childURLs.count)
-            await withTaskGroup(of: [MigratorFile].self) { group in
-                for batch in stride(from: 0,
-                                    to: childURLs.count,
-                                    by: batchSize).map({ Array(childURLs[$0..<min($0 + batchSize, childURLs.count)]) }) {
-                    group.addTask(priority: .utility) {
-                        var batchResults: [MigratorFile] = []
-                        batchResults.reserveCapacity(batch.count)
-                        
-                        for childURL in batch {
-                            guard (try? childURL.checkResourceIsReachable()) != false else {
-                                MLogger.main.log("migratorFile.fetchUnretainedChilds: File not reachable: \(childURL.relativePath)", type: .fault)
-                                continue
-                            }
-                            if let childFile = MigratorFile(with: childURL) {
-                                batchResults.append(childFile)
-                            }
-                        }
-                        return batchResults
-                    }
-                }
-                for await batchResults in group {
-                    tempChilds.append(contentsOf: batchResults)
-                }
-            }
-            tempChilds.sort { (file1: MigratorFile, file2: MigratorFile) in
-                if file1.type != file2.type {
-                    return file1.type.sortOrder < file2.type.sortOrder
-                } else {
-                    return file1.name < file2.name
-                }
-            }
-            return tempChilds
-        }.value
+        let snapshots = await FileScanner.scanChildren(of: self.url.fullURL(), ignoringURLExclusions: ignoresURLExclusions)
+        return snapshots.map { MigratorFile(snapshot: $0) }
     }
 }
+
+// MARK: - FileSizeInput Bridging
+
+extension FileSizeInput {
+    /// Builds a cheap (no I/O), main-actor-isolated mirror of a `MigratorFile`'s `url`/`type`/
+    /// `childFiles`, so `FileScanner.computeSize(for:)` can then do the actual recursive work
+    /// entirely off the main actor.
+    @MainActor
+    init(migratorFile: MigratorFile) {
+        self.init(url: migratorFile.url.fullURL(),
+                 type: migratorFile.type,
+                 children: migratorFile.childFiles.map { FileSizeInput(migratorFile: $0) },
+                 ignoresURLExclusions: migratorFile.ignoresURLExclusions)
+    }
+}
+
+// MARK: - Equatable, Hashable, Identifiable Conformance
 
 extension MigratorFile: Equatable, Hashable, Identifiable {
     
     // MARK: - Conformance to `Equatable`
     
-    static func == (lhs: MigratorFile, rhs: MigratorFile) -> Bool {
+    nonisolated static func == (lhs: MigratorFile, rhs: MigratorFile) -> Bool {
         return lhs.url == rhs.url
     }
     
     // MARK: - Conformance to `Hashable`
     
-    func hash(into hasher: inout Hasher) {
+    nonisolated func hash(into hasher: inout Hasher) {
         hasher.combine(url)
     }
 }

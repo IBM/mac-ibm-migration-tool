@@ -26,7 +26,6 @@ struct MigratorApp: App {
     // MARK: - State Variables
     
     @State private var currentWindow: NSWindow?
-    @State private var showQuitConfirmationAlert: Bool = false
     @State private var showTermsAndConditions: Bool = false
     @State private var showPrivacyPolicy: Bool = false
     @State private var showThirdPartyNotices: Bool = false
@@ -38,15 +37,6 @@ struct MigratorApp: App {
         WindowGroup {
             MainView()
                 .background(WindowAccessor(window: self.$currentWindow))
-                .onReceive(self.appDelegate.$userRequestToQuit, perform: { newValue in
-                    self.showQuitConfirmationAlert = newValue
-                })
-                .alert(isPresented: self.$showQuitConfirmationAlert, content: {
-                    Alert(title: Text("common.app.attention"),
-                          message: Text(String(format: "common.app.quit.alert.message".localized, Bundle.main.name)),
-                          primaryButton: .cancel(),
-                          secondaryButton: .destructive(Text("common.app.quit.alert.button.quit"), action: { appDelegate.quit() }))
-                })
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel("accessibility.mainWindow.label")
                 .sheet(isPresented: $showTermsAndConditions) {
@@ -84,7 +74,7 @@ struct MigratorApp: App {
                 }
                 Divider()
                 Button(String(format: "common.app.quit.menu.button".localized, Bundle.main.name)) {
-                    self.showQuitConfirmationAlert = true
+                    NSApplication.shared.terminate(nil)
                 }
             }
         }

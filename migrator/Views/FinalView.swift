@@ -24,7 +24,7 @@ struct FinalView: View {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .general)
     
     private let jamfReconManager: JamfReconManager = JamfReconManager()
     
@@ -48,7 +48,7 @@ struct FinalView: View {
             if reconState != .done && DeviceManagementHelper.shared.isJamfReconAvailable {
                 Text("final.page.title.recon.label")
                     .multilineTextAlignment(.center)
-                    .customFont(size: 27, weight: .bold)
+                    .customFont(.largeTitle, weight: .bold)
                     .padding(.bottom, 8)
                 Text(String(format: "final.page.body.recon.label".localized, AppContext.orgName))
                     .multilineTextAlignment(.center)
@@ -58,7 +58,7 @@ struct FinalView: View {
             } else {
                 Text("final.page.title.label")
                     .multilineTextAlignment(.center)
-                    .customFont(size: 27, weight: .bold)
+                    .customFont(.largeTitle, weight: .bold)
                     .padding(.bottom, 8)
                 Text("final.page.body.label")
                     .multilineTextAlignment(.center)
@@ -80,6 +80,7 @@ struct FinalView: View {
                         .resizable()
                         .frame(width: 25, height: 25)
                         .foregroundStyle(.green)
+                        .accessibilityHidden(true)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
@@ -175,9 +176,16 @@ struct FinalView: View {
                 }
             }
             .background {
-                Color("discoveryViewBackground")
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                if #available(macOS 26.0, *) {
+                    Color.clear
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                        .accessibilityHidden(true)
+                } else {
+                    Color("discoveryViewBackground")
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                        .accessibilityHidden(true)
+                }
             }
             .padding(.horizontal, 200)
             Spacer()
@@ -186,6 +194,7 @@ struct FinalView: View {
                 Image(systemName: "exclamationmark.circle")
                     .resizable()
                     .frame(width: 20, height: 20)
+                    .accessibilityHidden(true)
                 Text("final.page.bottom.informational.label")
                     .customFont(.body)
                 Spacer()
@@ -221,11 +230,11 @@ struct FinalView: View {
             NSSound(named: .init("Funk"))?.play()
             return
         }
-        logger.log("finalView.runJamfRecon: Starting Jamf Inventory Update Workflow.", type: .default)
+        logger.log("finalView.runJamfRecon: starting Jamf Inventory Update workflow", type: .default)
         if await jamfReconManager.isSelfServiceRunning {
-            logger.log("finalView.runJamfRecon: Self Service already running.", type: .default)
+            logger.log("finalView.runJamfRecon: Self Service already running", type: .default)
             if await jamfReconManager.isReconRunning {
-                logger.log("finalView.runJamfRecon: Jamf Inventory Update already running.", type: .default)
+                logger.log("finalView.runJamfRecon: Jamf Inventory Update already running", type: .default)
                 reconState = .running
                 await jamfReconManager.waitForReconCompletion()
             } else {

@@ -42,7 +42,7 @@ struct MigrationView: View {
                 .accessibilityHidden(true)
             Text(viewModel.migrationProgress == 1 ? "migration.page.title.complete.label".localized : "migration.page.title.ongoing.label".localized)
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             Text(viewModel.migrationProgress == 1 ? "migration.page.body.source.complete.label".localized : "migration.page.body.ongoing.label".localized)
                 .multilineTextAlignment(.center)
@@ -99,6 +99,7 @@ struct MigrationView: View {
                         Image(systemName: "exclamationmark")
                     }
                     .clipShape(Circle())
+                    .accessibilityLabel("accessibility.migrationView.warningButton.label")
                     .accessibilityHint("accessibility.migrationView.warningButton.hint")
                     .popover(isPresented: $showWarningPopover, arrowEdge: .bottom) {
                         Text("migration.page.warning.button.popover.text")
@@ -107,16 +108,26 @@ struct MigrationView: View {
                     }
                 }
                 Spacer()
-                Button(action: {
-                    appDelegate.quit()
-                }, label: {
-                    Text("migration.page.main.button.label")
-                        .customFont(.body)
-                        .padding(4)
-                })
-                .hiddenConditionally(isHidden: viewModel.migrationProgress < 1)
-                .keyboardShortcut(.defaultAction)
-                .accessibilityHint("accessibility.migrationView.mainButton.hint")
+                if viewModel.migrationProgress < 1 {
+                    Button(action: {
+                        viewModel.pauseMigration()
+                    }, label: {
+                        Text("migration.page.pause.button.label")
+                            .customFont(.body)
+                            .padding(4)
+                    })
+                    .accessibilityHint("accessibility.migrationView.pauseButton.hint")
+                } else {
+                    Button(action: {
+                        appDelegate.quit()
+                    }, label: {
+                        Text("migration.page.main.button.label")
+                            .customFont(.body)
+                            .padding(4)
+                    })
+                    .keyboardShortcut(.defaultAction)
+                    .accessibilityHint("accessibility.migrationView.mainButton.hint")
+                }
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
@@ -124,7 +135,27 @@ struct MigrationView: View {
             self.viewModel.startMigration()
         }
         .overlay {
-            if viewModel.connectionInterrupted {
+            if viewModel.isPausing {
+                CustomAlertView(title: "migration.pausing.alert.title".localized, message: "migration.pausing.alert.message".localized) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.regular)
+                }
+            } else if viewModel.isPaused {
+                CustomAlertView(title: "migration.paused.alert.title".localized,
+                                message: viewModel.resumeFailed
+                                    ? String(format: "migration.paused.alert.resume.failed.message".localized, viewModel.migrationController.hostName)
+                                    : "migration.paused.alert.message".localized) {
+                    Button {
+                        viewModel.resumeMigration()
+                    } label: {
+                        Text("migration.paused.alert.resume.button.label")
+                            .customFont(.body)
+                            .padding(4)
+                    }
+                    .keyboardShortcut(.defaultAction)
+                }
+            } else if viewModel.connectionInterrupted {
                 CustomAlertView(title: "connection.error.alert.title".localized, message: "connection.error.alert.restoring.message".localized) {
                     ProgressView()
                         .progressViewStyle(.circular)

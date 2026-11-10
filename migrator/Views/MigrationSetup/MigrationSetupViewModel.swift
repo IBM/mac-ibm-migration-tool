@@ -12,7 +12,8 @@ import SwiftUI
 import Combine
 
 /// ViewModel for the MigrationSetup view.
-class MigrationSetupViewModel: ObservableObject {
+@MainActor
+final class MigrationSetupViewModel: ObservableObject {
     
     // MARK: - Enums
     
@@ -26,7 +27,7 @@ class MigrationSetupViewModel: ObservableObject {
     // MARK: - Observable Variables
     
     /// Observable object that controls the migration process.
-    @ObservedObject var migrationController: MigrationController
+    let migrationController: MigrationController
     
     // MARK: - Published Variables
     
@@ -44,10 +45,8 @@ class MigrationSetupViewModel: ObservableObject {
     @Published var chosenOption: MigrationOption {
         didSet {
             updateButtonLabel()
-            Task { @MainActor in
-                self.isReadyForMigration = self.chosenOption.readyForMigration
-            }
-            MigrationReportController.shared.setMigrationChosenOption(self.chosenOption.type.rawValue)
+            self.isReadyForMigration = self.chosenOption.readyForMigration
+            MigrationReportController.shared.setMigrationChosenOption(self.chosenOption.type.identifier)
         }
     }
     /// Display string for available space on the destination, starts with a placeholder.
@@ -85,10 +84,8 @@ class MigrationSetupViewModel: ObservableObject {
         self.migrationController.connection?.onAvailableSpaceChange.sink(receiveValue: { [weak self] value in
             self?.availableSpaceOnDestination = value
         }).store(in: &cancellables)
-        self.migrationController.$isConnected.sink { newValue in
-            Task { @MainActor in
-                self.connectionInterrupted = !newValue
-            }
+        self.migrationController.$isConnected.sink { [weak self] newValue in
+            self?.connectionInterrupted = !newValue
         }.store(in: &cancellables)
         
         Utils.Common.preventSleep()
@@ -101,28 +98,29 @@ class MigrationSetupViewModel: ObservableObject {
         if let availableSpace = self.migrationController.connection?.connectedDeviceAvailableSpace {
             self.availableSpaceOnDestination = availableSpace
         }
-        for migrationType in MigrationOption.MigrationOptionType.allCases {
-            guard migrationType != .none else { continue }
+        let migrationTypes: [MigrationOption.MigrationOptionType] = AppContext.migrationPresets.map { .standard($0) } + [.advanced]
+        for migrationType in migrationTypes {
             let option = MigrationOption(type: migrationType)
             await option.loadFiles()
+            if AppContext.shouldMigratePreferences {
+                await option.discoverPreferences()
+            }
             option.$size.sink { size in
                 guard self.chosenOption.type == migrationType else { return }
                 self.updateButtonLabel(with: size)
             }.store(in: &cancellables)
-            option.$readyForMigration.sink { isReady in
-                guard self.chosenOption.type == migrationType else { return }
-                Task { @MainActor in
-                    self.isReadyForMigration = isReady
-                }
+            option.$readyForMigration.sink { [weak self] isReady in
+                guard let self, self.chosenOption.type == migrationType else { return }
+                self.isReadyForMigration = isReady
             }.store(in: &cancellables)
-            option.$isFinalSize.sink { isFinal in
+            option.$isFinalSize.sink { [weak self] isFinal in
                 guard isFinal else { return }
-                Task {
-                    self.evaluateSizeCalculationResult()
+                Task { @MainActor in
+                    self?.evaluateSizeCalculationResult()
                 }
             }.store(in: &cancellables)
             switch migrationType {
-            case .lite, .complete:
+            case .standard:
                 self.pickerMigrationOptions.append(option)
             case .advanced:
                 self.advancedMigrationOption = option
@@ -130,12 +128,46 @@ class MigrationSetupViewModel: ObservableObject {
                 break
             }
         }
-        await MainActor.run {
-            self.viewState = .standardSelection
+        self.viewState = .standardSelection
+
+        if AppContext.shouldMigrateAppSupportFiles {
+            await discoverAppSupportFiles()
         }
         await loadMigrationOptionsSizes()
     }
-    
+
+    /// Discovers app support files once per unique app and shares the result across all migration options.
+    ///
+    /// Complete and Advanced each build their own `DiscoveredApplication` instances for the same apps
+    /// (so selection and `sent` state stay independent), but the discovered `AppInfo` is
+    /// selection-independent, so it's computed once and shared. Sharing the instance also shares
+    /// `AppInfo.cachedTotalSize`, so support-file sizing runs once too.
+    private func discoverAppSupportFiles() async {
+        MLogger.main.log("migrationSetupViewModel.discoverAppSupportFiles: starting app support file discovery")
+
+        let allOptions = pickerMigrationOptions + [advancedMigrationOption].compactMap { $0 }
+        var appsByURL: [URL: [DiscoveredApplication]] = [:]
+        var orderedURLs: [URL] = []
+        for option in allOptions {
+            for app in option.migrationAppList {
+                let key = app.url.standardizedFileURL
+                if appsByURL[key] == nil {
+                    orderedURLs.append(key)
+                }
+                appsByURL[key, default: []].append(app)
+            }
+        }
+
+        let discovery = AppPathDiscovery()
+        for url in orderedURLs {
+            guard let apps = appsByURL[url], let representative = apps.first else { continue }
+            let appInfo = await discovery.discoverPaths(forAppNamed: representative.name, at: representative.url, sensitivity: .enhanced)
+            apps.forEach { $0.appInfo = appInfo }
+        }
+
+        MLogger.main.log("migrationSetupViewModel.discoverAppSupportFiles: completed app support file discovery for \(orderedURLs.count) unique app(s)")
+    }
+
     /// Reset the migration options and view state.
     func resetMigration() {
         self.advancedMigrationOption = nil
@@ -164,7 +196,6 @@ class MigrationSetupViewModel: ObservableObject {
     // MARK: - Private Methods
     
     /// Update the bottom label of the setup view with the correct text based on the view state and on the selected option.
-    @MainActor
     private func updateButtonLabel(with size: Int? = nil) {
         let migrationSize = size ?? chosenOption.size
         if self.availableSpaceOnDestination == -1 {
@@ -184,9 +215,8 @@ class MigrationSetupViewModel: ObservableObject {
         await advancedMigrationOption.detectAppArchitectures()
         await advancedMigrationOption.fetchFilesSizeAndCount()
     }
-    
+
     /// Check if all the migration options have completed size calculation.
-    @MainActor
     private func evaluateSizeCalculationResult() {
         guard !self.pickerMigrationOptions.isEmpty && self.advancedMigrationOption != nil else { return }
         guard self.pickerMigrationOptions.allSatisfy({ $0.isFinalSize }) && self.advancedMigrationOption.isFinalSize else { return }

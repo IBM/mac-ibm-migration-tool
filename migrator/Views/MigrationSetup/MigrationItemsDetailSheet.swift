@@ -22,6 +22,11 @@ struct MigrationItemsDetailSheet: View {
     /// The migration option containing the items to display
     @ObservedObject var option: MigrationOption
     
+    // MARK: - State Variables
+    
+    /// Tracks expanded application support file rows.
+    @State private var expandedAppIDs: Set<UUID> = []
+    
     // MARK: - Private Computed Properties
     
     /// Whether there are any files to display
@@ -32,6 +37,11 @@ struct MigrationItemsDetailSheet: View {
     /// Whether there are any apps to display
     private var hasApps: Bool {
         !option.migrationAppList.isEmpty
+    }
+
+    /// Whether there are any preference groups to display
+    private var hasPreferences: Bool {
+        !option.migrationPreferencesList.isEmpty
     }
     
     // MARK: - Views
@@ -50,7 +60,11 @@ struct MigrationItemsDetailSheet: View {
                         sectionView(title: "migration.option.detail.apps.section",
                                     apps: option.migrationAppList)
                     }
-                    if !hasFiles && !hasApps {
+                    if hasPreferences {
+                        sectionView(title: "migration.option.detail.preferences.section",
+                                    preferences: option.migrationPreferencesList)
+                    }
+                    if !hasFiles && !hasApps && !hasPreferences {
                         emptyStateView
                     }
                 }
@@ -59,7 +73,6 @@ struct MigrationItemsDetailSheet: View {
             .frame(maxHeight: 500)
         }
         .frame(width: 500)
-        .background(Color(nsColor: .windowBackgroundColor))
     }
     
     // MARK: - Subviews
@@ -68,7 +81,7 @@ struct MigrationItemsDetailSheet: View {
     private var headerView: some View {
         HStack {
             Text("migration.option.detail.sheet.title")
-                .customFont(size: 16, weight: .semibold)
+                .customFont(.title3, weight: .semibold)
                 .accessibilityAddTraits(.isHeader)
             Spacer()
             Button(action: {
@@ -91,7 +104,7 @@ struct MigrationItemsDetailSheet: View {
     private func sectionView(title: LocalizedStringKey, items: [MigratorFile]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .customFont(size: 14, weight: .semibold)
+                .customFont(.body, weight: .semibold)
                 .foregroundColor(.secondary)
                 .textCase(.uppercase)
                 .accessibilityAddTraits(.isHeader)
@@ -109,20 +122,42 @@ struct MigrationItemsDetailSheet: View {
     private func sectionView(title: LocalizedStringKey, apps: [DiscoveredApplication]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .customFont(size: 14, weight: .semibold)
+                .customFont(.body, weight: .semibold)
                 .foregroundColor(.secondary)
                 .textCase(.uppercase)
                 .accessibilityAddTraits(.isHeader)
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(apps) { app in
-                    appRowView(app: app)
+                    ExpandableAppRowView(app: app,
+                                         expandedAppIDs: $expandedAppIDs,
+                                         rowPadding: EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)) {
+                        appRowLabel(app: app)
+                    }
                 }
             }
         }
     }
     
-    /// Individual app row
-    private func appRowView(app: DiscoveredApplication) -> some View {
+    /// Section view for preference groups
+    private func sectionView(title: LocalizedStringKey, preferences: [PreferenceGroup]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .customFont(.body, weight: .semibold)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+                .accessibilityAddTraits(.isHeader)
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(preferences) { group in
+                    PreferenceGroupRowView(group: group, selection: nil)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                }
+            }
+        }
+    }
+
+    /// Label content shared by regular and expandable app rows.
+    private func appRowLabel(app: DiscoveredApplication) -> some View {
         HStack(spacing: 10) {
             Image(nsImage: NSWorkspace.shared.icon(forFile: app.url.relativePath))
                 .resizable()
@@ -137,22 +172,20 @@ struct MigrationItemsDetailSheet: View {
                         Image(systemName: app.architectureType.iconName)
                             .font(.system(size: 10))
                         Text(app.architectureType.displayName)
-                            .customFont(size: 11, weight: .regular)
+                            .customFont(.footnote, weight: .regular)
                     }
                     .foregroundColor(.secondary)
                     .help(Text(app.architectureType.tooltip))
                 }
             }
             Spacer()
-            if app.fileSize > 0 {
-                Text(app.fileSize.fileSizeToFormattedString)
-                    .customFont(size: 12, weight: .regular)
+            if app.totalSize > 0 {
+                Text(app.totalSize.fileSizeToFormattedString)
+                    .customFont(.footnote, weight: .regular)
                     .foregroundColor(.secondary)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(RoundedRectangle(cornerRadius: 6).fill(Color(nsColor: .controlBackgroundColor)))
+        .contentShape(Rectangle())
     }
     
     /// Empty state view
@@ -173,8 +206,9 @@ struct MigrationItemsDetailSheet: View {
 
 // MARK: - Preview
 
+@MainActor
 private let previewOption: MigrationOption = {
-    let option = MigrationOption(type: .complete)
+    let option = MigrationOption(type: .standard(.complete))
     Task {
         await option.loadFiles()
     }

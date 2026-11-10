@@ -26,7 +26,7 @@ class MigratorNetworkProtocol: NWProtocolFramerImplementation {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .network)
     
     // MARK: - Initializers
     

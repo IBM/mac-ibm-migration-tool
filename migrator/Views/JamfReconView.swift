@@ -16,7 +16,7 @@ struct JamfReconView: View {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .device)
     
     // MARK: - Constants
 
@@ -40,7 +40,7 @@ struct JamfReconView: View {
                 .accessibilityHidden(true)
             Text("recon.page.title.label")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             Text(String(format: "recon.page.body.label".localized, AppContext.orgName, "recon.page.main.button.run.label".localized))
                 .multilineTextAlignment(.center)
@@ -92,32 +92,26 @@ struct JamfReconView: View {
     // MARK: - Private Methods
     
     private func didPressMainButton() async {
-        await MainActor.run {
-            runningRecon.toggle()
-        }
+        runningRecon.toggle()
         logger.log("jamfReconView.runJamfRecon: Starting Jamf Inventory Update", type: .default)
-        var errors: NSDictionary?
-        await withCheckedContinuation { continuation in
-            Task.detached(priority: .background) {
-                 _ = NSAppleScript(source: "do shell script \"/usr/local/bin/jamf recon\" with administrator privileges")?.executeAndReturnError(&errors)
-                 continuation.resume()
-             }
-        }
-        if errors == nil {
+        // `NSDictionary` isn't `Sendable`, so the error is described to a plain `String` before
+        // crossing back from the detached task.
+        let errorDescription: String? = await Task.detached(priority: .background) {
+            var errors: NSDictionary?
+            _ = NSAppleScript(source: "do shell script \"/usr/local/bin/jamf recon\" with administrator privileges")?.executeAndReturnError(&errors)
+            return errors?.debugDescription
+        }.value
+        if let errorDescription {
+            logger.log("jamfReconView.runJamfRecon: Jamf Inventory Update completed with error: \(errorDescription)", type: .default)
+            encounteredError.toggle()
+        } else {
             logger.log("jamfReconView.runJamfRecon: Jamf Inventory Update completed", type: .default)
             await Utils.LaunchAgentHelpers.removeLaunchAgent()
             AppContext.isPostRebootPhase = false
             NSSound(named: .init("Funk"))?.play()
             action(.final)
-        } else {
-            logger.log("jamfReconView.runJamfRecon: Jamf Inventory Update completed with error: \(errors.debugDescription)", type: .default)
-            await MainActor.run {
-                encounteredError.toggle()
-            }
         }
-        await MainActor.run {
-            runningRecon.toggle()
-        }
+        runningRecon.toggle()
     }
 }
 

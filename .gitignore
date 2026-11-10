@@ -92,3 +92,13 @@ fastlane/test_output
 
 iOSInjectionProject/
 BuildIdentity.generated.swift
+
+# Bob
+.bob/
+
+# Jekyll (GitHub Pages local preview)
+docs/_site/
+docs/.jekyll-cache/
+docs/.sass-cache/
+docs/Gemfile.lock
+docs/.bundle/

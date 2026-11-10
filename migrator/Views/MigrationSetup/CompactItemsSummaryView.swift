@@ -19,7 +19,9 @@ struct CompactItemsSummaryView: View {
     let fileCount: Int
     /// Number of applications to display
     let appCount: Int
-    
+    /// Number of preference groups to display
+    var preferenceCount: Int = 0
+
     // MARK: - State Variables
     
     /// Tracks hover state for visual feedback
@@ -45,6 +47,15 @@ struct CompactItemsSummaryView: View {
         }
     }
     
+    /// Localized string for preference group count
+    private var preferenceCountText: String {
+        if preferenceCount == 1 {
+            return "migration.option.compact.preference.singular".localized
+        } else {
+            return String(format: "migration.option.compact.preferences.count".localized, preferenceCount)
+        }
+    }
+
     /// Combined accessibility label
     private var accessibilityLabel: String {
         var components: [String] = []
@@ -53,6 +64,9 @@ struct CompactItemsSummaryView: View {
         }
         if appCount > 0 {
             components.append(appCountText)
+        }
+        if preferenceCount > 0 {
+            components.append(preferenceCountText)
         }
         return components.joined(separator: ", ")
     }
@@ -83,6 +97,17 @@ struct CompactItemsSummaryView: View {
                         .lineLimit(1)
                 }
             }
+            if preferenceCount > 0 {
+                HStack(spacing: 4) {
+                    Image(systemName: "gearshape.fill")
+                        .resizable()
+                        .frame(width: 14, height: 14)
+                        .foregroundColor(.accentColor)
+                    Text(preferenceCountText)
+                        .customFont(.body)
+                        .lineLimit(1)
+                }
+            }
             Spacer()
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .semibold))
@@ -93,9 +118,11 @@ struct CompactItemsSummaryView: View {
         .padding(.vertical, 8)
         .background {
             if #available(macOS 26.0, *) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(nsColor: isHovered ? .controlBackgroundColor : .controlColor))
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                if isHovered {
+                    Color.clear.glassEffect(.clear, in: RoundedRectangle(cornerRadius: 8))
+                } else {
+                    Color.clear.glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
+                }
             } else {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color(nsColor: isHovered ? .controlBackgroundColor : .controlColor))

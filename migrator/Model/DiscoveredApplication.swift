@@ -11,7 +11,8 @@ import Foundation
 import Combine
 
 /// Class representing a discovered application with architecture information
-class DiscoveredApplication: ObservableObject, Identifiable {
+@MainActor
+final class DiscoveredApplication: ObservableObject, Identifiable {
     
     // MARK: - Published Variables
     
@@ -19,11 +20,13 @@ class DiscoveredApplication: ObservableObject, Identifiable {
     @Published var isSelected: Bool = false
     /// Set of architectures supported by this application
     @Published private(set) var architectures: Set<AppArchitecture>
+    /// Published property for discovered app support files information
+    @Published var appInfo: AppInfo?
     
     // MARK: - Constants
     
     /// Unique identifier for the application
-    let id: UUID
+    nonisolated let id: UUID
     /// Name of the application
     let name: String
     /// URL of the application bundle
@@ -88,13 +91,11 @@ class DiscoveredApplication: ObservableObject, Identifiable {
     convenience init?(from migratorFile: MigratorFile, architectures: Set<AppArchitecture>) {
         guard migratorFile.type == .app else { return nil }
         
-        self.init(
-            name: migratorFile.name,
-            url: migratorFile.url.fullURL(),
-            fileSize: migratorFile.fileSize,
-            architectures: architectures,
-            migratorFile: migratorFile
-        )
+        self.init(name: migratorFile.name,
+                  url: migratorFile.url.fullURL(),
+                  fileSize: migratorFile.fileSize,
+                  architectures: architectures,
+                  migratorFile: migratorFile)
     }
     
     // MARK: - Public Methods
@@ -111,16 +112,64 @@ class DiscoveredApplication: ObservableObject, Identifiable {
     func requiresRosetta(on destinationArchitecture: AppArchitecture) -> Bool {
         return destinationArchitecture == .appleSilicon && architectureType == .intelOnly
     }
+    
+    /// Returns all discovered support files as MigratorFile objects
+    func supportFiles() async -> [MigratorFile] {
+        guard AppContext.shouldMigrateAppSupportFiles, let appInfo = appInfo else { return [] }
+        var files: [MigratorFile] = []
+        for path in appInfo.allDiscoveredPaths {
+            if let file = await MigratorFile.make(with: path) {
+                files.append(file)
+            }
+        }
+        return files
+    }
+    
+    /// Returns the calculated app bundle size, falling back to the initial discovery value.
+    var appBundleSize: Int {
+        if migratorFile.fileSize != -1 {
+            return migratorFile.fileSize
+        }
+        return max(fileSize, 0)
+    }
+    
+    /// Returns the total size including app bundle and support files when enabled.
+    var totalSize: Int {
+        let supportSize = AppContext.shouldMigrateAppSupportFiles ? appInfo?.cachedTotalSize ?? 0 : 0
+        return appBundleSize + supportSize
+    }
+    
+    /// Asynchronously calculates total size including support files when enabled.
+    /// - Returns: Total size in bytes.
+    func getTotalSizeAsync() async -> Int {
+        await migratorFile.fetchFileSizeAndCount()
+        guard AppContext.shouldMigrateAppSupportFiles, let appInfo = appInfo else { return appBundleSize }
+        let supportSize = await appInfo.getTotalSize()
+        return appBundleSize + supportSize
+    }
+    
+    /// Returns the count of discovered support files
+    var supportFileCount: Int {
+        guard AppContext.shouldMigrateAppSupportFiles else { return 0 }
+        return appInfo?.discoveredFileCount ?? 0
+    }
+    
+    /// Returns a breakdown of support file sizes by category
+    /// - Returns: Dictionary with category names and sizes
+    func getSupportFileSizeBreakdown() async -> [String: Int] {
+        guard AppContext.shouldMigrateAppSupportFiles, let appInfo = appInfo else { return [:] }
+        return await appInfo.getSizeBreakdown()
+    }
 }
 
 // MARK: - Hashable Conformance
 
 extension DiscoveredApplication: Hashable {
-    static func == (lhs: DiscoveredApplication, rhs: DiscoveredApplication) -> Bool {
+    nonisolated static func == (lhs: DiscoveredApplication, rhs: DiscoveredApplication) -> Bool {
         return lhs.id == rhs.id
     }
     
-    func hash(into hasher: inout Hasher) {
+    nonisolated func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

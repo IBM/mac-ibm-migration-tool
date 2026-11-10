@@ -23,13 +23,25 @@ struct WindowAccessor: NSViewRepresentable {
     // MARK: - NSViewRepresentable methods implementation
     
     func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        Task { @MainActor in
-            self.window = view.window
-            self.window?.delegate = self.appDelegate
+        let view = WindowObservingView()
+        view.onWindowAttached = { newWindow in
+            newWindow.delegate = self.appDelegate
+            self.window = newWindow
         }
         return view
     }
     
     func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+/// A view that reports the window it is attached to as soon as it is available,
+/// since `window` is still nil when the representable creates the view.
+private final class WindowObservingView: NSView {
+    var onWindowAttached: ((NSWindow) -> Void)?
+    
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard let window else { return }
+        onWindowAttached?(window)
+    }
 }

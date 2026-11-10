@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title and page.url != '/' %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <span class="version">v{{ site.app_version }}</span>
+    <nav>
+      <ul>
+        {% for item in site.data.navigation %}
+          {% if item.children %}
+            <li class="group">{{ item.title }}
+              <ul>
+                {% for child in item.children %}
+                  <li><a href="{{ child.url | relative_url }}"{% if page.url == child.url %} class="active"{% endif %}>{{ child.title }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% else %}
+            <li><a href="{{ item.url | relative_url }}"{% if page.url == item.url %} class="active"{% endif %}>{{ item.title }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+  </aside>
+  <main class="content">
+    {% if page.url != '/' %}<h1>{{ page.title }}</h1>{% endif %}
+    {{ content }}
+    <footer>
+      <p>Based on IBM Data Shift v{{ site.app_version }}.</p>
+    </footer>
+  </main>
+</body>
+</html>

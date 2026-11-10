@@ -2,7 +2,7 @@
 //  ResourceView.swift
 //  IBM Data Shift
 //
-//  Created on 07/10/2025.
+//  Created by Simone Martorelli on 07/10/2025.
 //  © Copyright IBM Corp. 2023, 2026
 //  SPDX-License-Identifier: Apache2.0
 //

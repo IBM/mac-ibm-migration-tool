@@ -114,41 +114,53 @@ struct AppContext {
     /// Managed setting available using `customFontFamily` defaults key.
     private static let fallbackCustomFontFamily: String = ""
     
+    /// Flag that specifies whether the app should discover, size, display, and migrate app support files.
+    /// Managed setting available using `migrateAppSupportFiles` defaults key.
+    private static let fallbackShouldMigrateAppSupportFiles: Bool = true
+
+    /// Flag that specifies whether the app should discover, size, display, and migrate macOS preferences.
+    /// Managed setting available using `migratePreferences` defaults key.
+    private static let fallbackShouldMigratePreferences: Bool = true
+
+    /// The list of "standard" migration presets shown on the Migration Setup picker when no
+    /// admin-defined presets are available.
+    /// Managed setting available using `migrationPresets` defaults key.
+    private static let fallbackMigrationPresets: [MigrationPreset] = [.lite, .complete]
+
+    /// Flag that specifies whether the Applications folder should be excluded entirely from
+    /// migration, even when a preset or the advanced option includes it.
+    /// Managed setting available using `excludeApplicationsFolder` defaults key.
+    private static let fallbackShouldExcludeApplicationsFolder: Bool = false
+
     // MARK: - Default File Scan Variables
     
     /// Custom list of paths tha needs to be ignored during file discovery.
-    static var defaultUrlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
-                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("\(Bundle.main.name).app"),
-                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Numbers.app"),
-                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Pages.app"),
-                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Keynote.app"),
-                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Safari.app"),
+    static let defaultUrlExclusionList: [URL?] = [FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
                                                   FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Utilities"),
                                                   FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Xcode.app"),
-                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent(#".+ Creator Studio\.app"#),
+                                                  FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first?.appendingPathComponent("Siri.app"),
                                                   FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first,
-                                                  FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?.appendingPathComponent("FileProvider"),
+                                                  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(#"\..+"#),
                                                   FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".local"),
                                                   FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".cache"),
                                                   FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".cisco")]
     
     /// Custom list of explicitely allowed paths that needs to be included during file discovery.
-    static var defaultExplicitAllowList: [URL?] = [FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
-                                                   FileManager.default.urls(for: .applicationScriptsDirectory, in: .userDomainMask).first,
-                                                   FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?.appendingPathComponent("Preferences", conformingTo: .directory)]
+    static let defaultExplicitAllowList: [URL?] = [FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".ssh")]
     
     /// Custom list of file's extensions that needs to be ignored during file discovery.
-    static var defaultExcludedFileExtensions: [String] = ["vdi",
+    static let defaultExcludedFileExtensions: [String] = ["vdi",
                                                           "vbox",
                                                           "img"]
     
     /// Custom list of file's name prefixes that needs to be ignored during file discovery.
-    static var defaultExcludedFilePrefixes: [String] = ["MigrationReport_",
+    static let defaultExcludedFilePrefixes: [String] = ["\(Bundle.main.name).app",
+                                                        "Safari.app",
+                                                        "MigrationReport_",
                                                         "~",
                                                         ".DS_Store",
                                                         ".localized",
-                                                        "node_modules",
-                                                        "Safari.app"]
+                                                        "node_modules"]
 }
 
 // MARK: - Non customizable elements
@@ -260,6 +272,20 @@ extension AppContext {
     /// UserDefaults key indicating whether the user accepted Terms and Conditions.
     static let tAndCUserAcceptanceKey: String = "tAndCUserAcceptance"
     
+    /// UserDefaults key indicating whether the app should include app support files in app migration.
+    private static let migrateAppSupportFilesKey: String = "migrateAppSupportFiles"
+
+    /// UserDefaults key indicating whether the app should discover and migrate macOS preferences.
+    private static let migratePreferencesKey: String = "migratePreferences"
+
+    /// UserDefaults key used to pull the managed setting defining the list of admin-authored
+    /// "standard" migration presets that replace `Lite`/`Complete` on the Migration Setup picker.
+    private static let migrationPresetsKey: String = "migrationPresets"
+
+    /// UserDefaults key indicating whether the Applications folder should be excluded entirely
+    /// from migration, overriding any preset or advanced-option selection.
+    private static let excludeApplicationsFolderKey: String = "excludeApplicationsFolder"
+
     // MARK: - Final Computed Properties
     
     static var loggingLevel: MLogger.LogLevel {
@@ -314,9 +340,22 @@ extension AppContext {
             return Utils.Customization.parseProfileURL(urlString)
         }
 #endif
-    } 
+    }
+    /// All known Applications folder locations across every search domain, used to exclude them
+    /// from file scanning when `shouldExcludeApplicationsFolder` is set.
+    static var allApplicationsFolderURLs: [URL?] {
+        return [
+            // /Applications (local domain — the standard install location)
+            FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first,
+            // ~/Applications (user domain — per-user installs)
+            FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
+            // /System/Applications (system domain — Apple's built-in apps on macOS 11+)
+            FileManager.default.urls(for: .applicationDirectory, in: .systemDomainMask).first
+        ]
+    }
     static var urlExclusionList: [URL?] {
-        return managedExcludedURLs + defaultUrlExclusionList
+        let appsFolderExclusions: [URL?] = shouldExcludeApplicationsFolder ? allApplicationsFolderURLs : []
+        return appsFolderExclusions + managedExcludedURLs + defaultUrlExclusionList
     }
     private static var managedAllowedURLs: [URL?] {
 #if DEBUG
@@ -348,10 +387,26 @@ extension AppContext {
         return managedEnvironments.isEmpty ? fallbackMdmEnvironments : managedEnvironments
     }
     static var storePath: String {
-        if let jamfValue = UserDefaults(suiteName: "com.jamfsoftware.jamf")?.string(forKey: "self_service_app_path") {
+        if let jamfValue = Utils.UserDefaultsHelpers.managedValue(forKey: "self_service_app_path",
+                                                                  suiteName: "com.jamfsoftware.jamf",
+                                                                  defaultValue: ""),
+           isValidApplicationBundlePath(jamfValue) {
             return jamfValue
+        } else if let customPath = UserDefaults.standard.string(forKey: storePathKey),
+                  isValidApplicationBundlePath(customPath),
+                  Utils.UserDefaultsHelpers.isDefaultsValueAcceptable(forKey: storePathKey) {
+            return customPath
         }
-        return Utils.UserDefaultsHelpers.isDefaultsValueAcceptable(forKey: storePathKey) ? UserDefaults.standard.string(forKey: storePathKey) ?? fallbackStorePath : fallbackStorePath
+        return fallbackStorePath
+    }
+    /// Whether `path` is an absolute path to an existing `.app` bundle, free of control characters.
+    static func isValidApplicationBundlePath(_ path: String) -> Bool {
+        guard path.hasPrefix("/"), path.hasSuffix(".app"),
+              !path.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) else {
+            return false
+        }
+        var isDirectory: ObjCBool = false
+        return FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) && isDirectory.boolValue
     }
     static var orgName: String {
         return Utils.UserDefaultsHelpers.managedValue(forKey: orgNameKey, defaultValue: fallbackOrgName)
@@ -449,7 +504,41 @@ extension AppContext {
     static var customFontFamily: String {
         return Utils.UserDefaultsHelpers.managedValue(forKey: customFontFamilyKey, defaultValue: fallbackCustomFontFamily)
     }
-    
+    static var shouldMigrateAppSupportFiles: Bool {
+        return Utils.UserDefaultsHelpers.managedValue(forKey: migrateAppSupportFilesKey, defaultValue: fallbackShouldMigrateAppSupportFiles)
+    }
+    static var shouldMigratePreferences: Bool {
+        return Utils.UserDefaultsHelpers.managedValue(forKey: migratePreferencesKey, defaultValue: fallbackShouldMigratePreferences)
+    }
+    /// When `true`, the Applications folder is excluded entirely from migration regardless of
+    /// what the selected preset or advanced option includes. Defaults to `false`.
+    static var shouldExcludeApplicationsFolder: Bool {
+        return Utils.UserDefaultsHelpers.managedValue(forKey: excludeApplicationsFolderKey, defaultValue: fallbackShouldExcludeApplicationsFolder)
+    }
+    /// The "standard" migration presets to show on the Migration Setup picker.
+    /// Returns the admin-defined presets from the `migrationPresets` managed setting when at least
+    /// one valid, uniquely-identified preset is present; otherwise falls back to `Lite`/`Complete`.
+    static var migrationPresets: [MigrationPreset] {
+        let rawPresets = Utils.UserDefaultsHelpers.managedValue(forKey: migrationPresetsKey, defaultValue: [[String: Any]]())
+        var seenIDs = Set<String>()
+        let decodedPresets: [MigrationPreset] = rawPresets.compactMap { rawPreset in
+            guard let preset = try? DictionaryDecoder().decode(MigrationPreset.self, from: rawPreset) else {
+                MLogger.main.log("appContext.migrationPresets: dropping malformed migration preset entry -> \"\(rawPreset)\"", type: .error)
+                return nil
+            }
+            guard !preset.name.isEmpty else {
+                MLogger.main.log("appContext.migrationPresets: dropping migration preset with empty name (id: \"\(preset.id)\")", type: .error)
+                return nil
+            }
+            guard seenIDs.insert(preset.id).inserted else {
+                MLogger.main.log("appContext.migrationPresets: dropping migration preset with duplicate id \"\(preset.id)\"", type: .error)
+                return nil
+            }
+            return preset
+        }
+        return decodedPresets.isEmpty ? fallbackMigrationPresets : decodedPresets
+    }
+
     /// Returns the custom icon source for a given page identifier
     /// - Parameter pageIdentifier: The page identifier (e.g., "welcome", "browser", "setup")
     /// - Returns: The custom icon source string, or nil if not configured

@@ -16,6 +16,10 @@ struct FileMessage {
     
     /// Identifies a specific part of a file, used in multipart file transfers.
     var partNumber: Int
+    /// Byte offset of this part within the file. Lets the receiver write a chunk at an exact
+    /// position, so a chunk sent twice (e.g. around a pause or reconnect) can't corrupt the file.
+    /// `nil` when sent by a peer that predates this field.
+    var byteOffset: UInt64?
     /// File attributes such as modification date, size, etc., stored in a dictionary.
     var attributes: [FileAttributeKey: Any] = [:]
     /// The source file's URL, encapsulated in `MigratorFileURL` to include additional metadata.
@@ -27,9 +31,11 @@ struct FileMessage {
     /// - Parameters:
     ///   - sourceFile: The URL of the source file.
     ///   - part: The part number, defaulting to 0 for single-part files.
+    ///   - byteOffset: The offset of this part within the file, for multipart transfers.
     ///   - attributes: A dictionary of file attributes.
-    init(with sourceFile: URL, part: Int = 0, attributes: [FileAttributeKey: Any] = [:]) {
+    init(with sourceFile: URL, part: Int = 0, byteOffset: UInt64? = nil, attributes: [FileAttributeKey: Any] = [:]) {
         self.partNumber = part
+        self.byteOffset = byteOffset
         self.attributes = attributes
         self.source = MigratorFileURL(with: sourceFile)
     }
@@ -40,6 +46,7 @@ extension FileMessage: Codable {
     /// Custom coding keys for encoding and decoding the properties of `FileMessage`.
     private enum CodingKeys: String, CodingKey {
         case partNumber
+        case byteOffset
         case attributes
         case url
     }
@@ -48,6 +55,7 @@ extension FileMessage: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.partNumber = try container.decode(Int.self, forKey: .partNumber)
+        self.byteOffset = try container.decodeIfPresent(UInt64.self, forKey: .byteOffset)
         self.source = try container.decode(MigratorFileURL.self, forKey: .url)
 
         // Decoding attributes requires special handling due to their diverse types.
@@ -66,6 +74,7 @@ extension FileMessage: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(partNumber, forKey: .partNumber)
+        try container.encodeIfPresent(byteOffset, forKey: .byteOffset)
         try container.encode(source, forKey: .url)
         
         // Attributes are encoded as a dictionary mapping strings to Data.

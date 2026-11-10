@@ -45,7 +45,7 @@ struct CardButton: View {
                         .tint(tintColor)
                     Spacer()
                     Text(label)
-                        .customFont(size: 14, weight: .regular)
+                        .customFont(.body, weight: .regular)
                 }
                 .padding([.leading, .top, .bottom], 12)
                 Spacer()
@@ -78,10 +78,8 @@ struct CardButton: View {
 struct CardButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(configuration.isPressed ? Color.accentColor.opacity(0.30) : Color.clear)
-            )
+            .background(RoundedRectangle(cornerRadius: 12)
+                .fill(configuration.isPressed ? Color.accentColor.opacity(0.30) : Color.clear))
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }

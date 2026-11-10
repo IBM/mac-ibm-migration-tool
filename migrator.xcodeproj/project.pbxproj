@@ -37,7 +37,15 @@
 		53237C132CA9E297004062CC /* DuplicateFilesHandlingPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */; };
 		532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B52C64FFE5002E270F /* WindowAccessor.swift */; };
 		532F90B82C650014002E270F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532F90B72C650014002E270F /* AppDelegate.swift */; };
-		533EF2C62F6ADF3B00DA2DCD /* DebugHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533EF2C52F6ADF3700DA2DCD /* DebugHelpers.swift */; };
+		533EF2C22F6AB89200DA2DCD /* DebugHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533EF2C12F6AB84B00DA2DCD /* DebugHelpers.swift */; };
+		53465700306E915F0075EEB5 /* PreferenceCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534656FE306E915F0075EEB5 /* PreferenceCatalog.swift */; };
+		53465701306E915F0075EEB5 /* PreferenceGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534656FF306E915F0075EEB5 /* PreferenceGroup.swift */; };
+		53465703306E916D0075EEB5 /* PreferencesMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53465702306E916D0075EEB5 /* PreferencesMessage.swift */; };
+		53465705306E917D0075EEB5 /* PreferencesDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53465704306E917D0075EEB5 /* PreferencesDiscovery.swift */; };
+		53465708306E918C0075EEB5 /* PreferenceGroupRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53465707306E918C0075EEB5 /* PreferenceGroupRowView.swift */; };
+		53465709306E918C0075EEB5 /* PreferenceGroupInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53465706306E918C0075EEB5 /* PreferenceGroupInfoView.swift */; };
+		5346570C306E919F0075EEB5 /* AppPathDiscoveryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5346570A306E919F0075EEB5 /* AppPathDiscoveryTests.swift */; };
+		5346570D306E919F0075EEB5 /* PreferenceCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5346570B306E919F0075EEB5 /* PreferenceCatalogTests.swift */; };
 		534A99712EBAB0A500F3E24A /* CustomizableIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */; };
 		534A99732EC25E9400F3E24A /* CardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534A99722EC25E8E00F3E24A /* CardButton.swift */; };
 		5350A7DB2F20FCF600D04A33 /* DiscoveredApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5350A7DA2F20FCF600D04A33 /* DiscoveredApplication.swift */; };
@@ -52,6 +60,9 @@
 		5351C1DC2E828A1A00043122 /* BuildIdentity.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5351C1DB2E828A1A00043122 /* BuildIdentity.generated.swift */; };
 		5352A1E42EE1D89300754A4C /* FontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5352A1E22EE1D89300754A4C /* FontManager.swift */; };
 		5352A20C2EE8A37100754A4C /* NWInterface-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5352A20B2EE8A37100754A4C /* NWInterface-Extension.swift */; };
+		535633602FAE396500CB4F39 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5356335F2FAE396500CB4F39 /* AppInfo.swift */; };
+		535633622FAE398D00CB4F39 /* FileSizeCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535633612FAE398D00CB4F39 /* FileSizeCache.swift */; };
+		535633662FAE3A7E00CB4F39 /* AppPathDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535633652FAE3A7E00CB4F39 /* AppPathDiscovery.swift */; };
 		535A77912BA49A5E00BB8116 /* CodeVerificationFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */; };
 		535B5F9D2B99D7520071861E /* CodeVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535B5F9C2B99D7520071861E /* CodeVerificationView.swift */; };
 		53665E972BDBE12300086714 /* Decodable-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53665E962BDBE12300086714 /* Decodable-Extension.swift */; };
@@ -60,6 +71,10 @@
 		536A8A1C2E9E77FB00E1D9B0 /* RecapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536A8A1B2E9E77F600E1D9B0 /* RecapView.swift */; };
 		536A8A1E2E9E7A3800E1D9B0 /* RecapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536A8A1D2E9E7A3400E1D9B0 /* RecapViewModel.swift */; };
 		536A8AD42EA266AF00E1D9B0 /* MigrationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536A8AD32EA266AF00E1D9B0 /* MigrationItem.swift */; };
+		536D33D6307530E500A34C22 /* MigrationPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536D33D5307530E500A34C22 /* MigrationPreset.swift */; };
+		536D33D8307531CC00A34C22 /* MigrationPresetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536D33D7307531CC00A34C22 /* MigrationPresetTests.swift */; };
+		536D33DA307D0D4900A34C22 /* FileScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536D33D9307D0D4900A34C22 /* FileScanner.swift */; };
+		536D33DC307D0EAF00A34C22 /* MigrationOption+Discovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536D33DB307D0EAF00A34C22 /* MigrationOption+Discovery.swift */; };
 		5377C2272B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */; };
 		5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */; };
 		5377C22B2B51551D00B5C9C1 /* MigratorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C22A2B51551D00B5C9C1 /* MigratorError.swift */; };
@@ -68,6 +83,7 @@
 		5377C2312B57CD9C00B5C9C1 /* MigrationSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5377C2302B57CD9C00B5C9C1 /* MigrationSetupView.swift */; };
 		5381A1AC2F1A30FA00A4FAFD /* AsyncSemaphore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5381A1AB2F1A30FA00A4FAFD /* AsyncSemaphore.swift */; };
 		5381A1AE2F1A310100A4FAFD /* ContinuationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5381A1AD2F1A310100A4FAFD /* ContinuationState.swift */; };
+		53823344308A4F3D00710C75 /* TransferSkipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53823343308A4F3D00710C75 /* TransferSkipTests.swift */; };
 		539B25682B47FB930012B974 /* NSTableView-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B25672B47FB930012B974 /* NSTableView-Extension.swift */; };
 		539B256B2B47FBEE0012B974 /* NoBackgroundScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */; };
 		539B256D2B4817820012B974 /* View-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539B256C2B4817820012B974 /* View-Extension.swift */; };
@@ -76,14 +92,25 @@
 		539F23982BAC85A700E3F399 /* MLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539F23972BAC85A700E3F399 /* MLogger.swift */; };
 		53A1DCB72C6E86950086AD07 /* AppleIDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A1DCB62C6E86950086AD07 /* AppleIDView.swift */; };
 		53A2AA4F2CE34CCF00FEAD75 /* DictionaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */; };
+		53A4206F30909EE400D5F5B8 /* ExcludeApplicationsFolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A4206E30909EE400D5F5B8 /* ExcludeApplicationsFolderTests.swift */; };
 		53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */; };
 		53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */; };
 		53B193122C88CB1600DEFE24 /* ManagedEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */; };
 		53B193142C89C7D500DEFE24 /* DefaultsMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193132C89C7D500DEFE24 /* DefaultsMessage.swift */; };
 		53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193152C8EFDE700DEFE24 /* AppContext.swift */; };
 		53B193182C8F212C00DEFE24 /* Double-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B193172C8F212C00DEFE24 /* Double-Extension.swift */; };
+		53BC9A6A30825F03002176E9 /* FileMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53BC9A6930825F03002176E9 /* FileMessageTests.swift */; };
 		53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C5D8152B7CB2110099F667 /* Int-Extension.swift */; };
+		53C79FB630865A0D003071F3 /* MigratorFileURLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C79FB530865A0D003071F3 /* MigratorFileURLTests.swift */; };
 		53CC8E392E46042900B44432 /* MigrationReportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53CC8E382E46041E00B44432 /* MigrationReportController.swift */; };
+		53D5B8FF3066BBA30004DD11 /* EphemeralTLSIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D5B8FE3066BBA30004DD11 /* EphemeralTLSIdentity.swift */; };
+		53D5B9013066BC860004DD11 /* EphemeralTLSIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D5B9003066BC860004DD11 /* EphemeralTLSIdentityTests.swift */; };
+		53D5B9033067BAF20004DD11 /* PairingAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D5B9023067BAF20004DD11 /* PairingAuthenticator.swift */; };
+		53D5B9053067BB4E0004DD11 /* PairingAuthenticatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D5B9043067BB4E0004DD11 /* PairingAuthenticatorTests.swift */; };
+		53D5B9073067BC2F0004DD11 /* PairingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D5B9063067BC2F0004DD11 /* PairingMessage.swift */; };
+		53DA9A3B309217F100700089 /* MigrationETAEstimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DA9A3A309217F100700089 /* MigrationETAEstimator.swift */; };
+		53DA9A3D3092182100700089 /* MigrationETAEstimatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DA9A3C3092182100700089 /* MigrationETAEstimatorTests.swift */; };
+		53DA9A3F309353B000700089 /* ETADisplayStabilizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DA9A3E309353B000700089 /* ETADisplayStabilizer.swift */; };
 		53DE27992C78A815003AE255 /* Notification-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DE27982C78A815003AE255 /* Notification-Extension.swift */; };
 		53E313052C6CE8410090793F /* Bundle-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E313042C6CE8410090793F /* Bundle-Extension.swift */; };
 		53E65F532C772CE80010B8DD /* JamfReconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E65F522C772CE80010B8DD /* JamfReconView.swift */; };
@@ -102,6 +129,8 @@
 		53F2DE402B6A70E000588D2D /* URL-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE3F2B6A70E000588D2D /* URL-Extension.swift */; };
 		53F2DE422B6A712700588D2D /* MigrationOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE412B6A712700588D2D /* MigrationOption.swift */; };
 		53F2DE442B6A8AD500588D2D /* MigrationOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F2DE432B6A8AD500588D2D /* MigrationOptionView.swift */; };
+		53F77C2F2FBF3FBC004B11BC /* AppSupportFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F77C2E2FBF3FBC004B11BC /* AppSupportFilesView.swift */; };
+		53F77C332FBF4A61004B11BC /* ExpandableAppRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F77C322FBF4A61004B11BC /* ExpandableAppRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,7 +157,6 @@
 		1B4C5BB52B035EBA00D4BD0B /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
 		1B4C5BB72B035EBD00D4BD0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1B4C5BBA2B035EBD00D4BD0B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		1B4C5BBC2B035EBD00D4BD0B /* migrator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = migrator.entitlements; sourceTree = "<group>"; };
 		1B4C5BC12B035EBD00D4BD0B /* migratorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = migratorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B4C5BC52B035EBD00D4BD0B /* ProfileConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileConfigTests.swift; sourceTree = "<group>"; };
 		1B4C5BE02B0375C700D4BD0B /* Scene-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scene-Extension.swift"; sourceTree = "<group>"; };
@@ -149,7 +177,15 @@
 		53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateFilesHandlingPolicy.swift; sourceTree = "<group>"; };
 		532F90B52C64FFE5002E270F /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
 		532F90B72C650014002E270F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		533EF2C52F6ADF3700DA2DCD /* DebugHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugHelpers.swift; sourceTree = "<group>"; };
+		533EF2C12F6AB84B00DA2DCD /* DebugHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugHelpers.swift; sourceTree = "<group>"; };
+		534656FE306E915F0075EEB5 /* PreferenceCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceCatalog.swift; sourceTree = "<group>"; };
+		534656FF306E915F0075EEB5 /* PreferenceGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceGroup.swift; sourceTree = "<group>"; };
+		53465702306E916D0075EEB5 /* PreferencesMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesMessage.swift; sourceTree = "<group>"; };
+		53465704306E917D0075EEB5 /* PreferencesDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesDiscovery.swift; sourceTree = "<group>"; };
+		53465706306E918C0075EEB5 /* PreferenceGroupInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceGroupInfoView.swift; sourceTree = "<group>"; };
+		53465707306E918C0075EEB5 /* PreferenceGroupRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceGroupRowView.swift; sourceTree = "<group>"; };
+		5346570A306E919F0075EEB5 /* AppPathDiscoveryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPathDiscoveryTests.swift; sourceTree = "<group>"; };
+		5346570B306E919F0075EEB5 /* PreferenceCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceCatalogTests.swift; sourceTree = "<group>"; };
 		534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizableIconView.swift; sourceTree = "<group>"; };
 		534A99722EC25E8E00F3E24A /* CardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardButton.swift; sourceTree = "<group>"; };
 		5350A7DA2F20FCF600D04A33 /* DiscoveredApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredApplication.swift; sourceTree = "<group>"; };
@@ -172,6 +208,9 @@
 		5351C1DB2E828A1A00043122 /* BuildIdentity.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildIdentity.generated.swift; sourceTree = "<group>"; };
 		5352A1E22EE1D89300754A4C /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontManager.swift; sourceTree = "<group>"; };
 		5352A20B2EE8A37100754A4C /* NWInterface-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWInterface-Extension.swift"; sourceTree = "<group>"; };
+		5356335F2FAE396500CB4F39 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		535633612FAE398D00CB4F39 /* FileSizeCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSizeCache.swift; sourceTree = "<group>"; };
+		535633652FAE3A7E00CB4F39 /* AppPathDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPathDiscovery.swift; sourceTree = "<group>"; };
 		535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationFieldView.swift; sourceTree = "<group>"; };
 		535B5F9C2B99D7520071861E /* CodeVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationView.swift; sourceTree = "<group>"; };
 		53665E962BDBE12300086714 /* Decodable-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decodable-Extension.swift"; sourceTree = "<group>"; };
@@ -180,6 +219,10 @@
 		536A8A1B2E9E77F600E1D9B0 /* RecapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapView.swift; sourceTree = "<group>"; };
 		536A8A1D2E9E7A3400E1D9B0 /* RecapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapViewModel.swift; sourceTree = "<group>"; };
 		536A8AD32EA266AF00E1D9B0 /* MigrationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationItem.swift; sourceTree = "<group>"; };
+		536D33D5307530E500A34C22 /* MigrationPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationPreset.swift; sourceTree = "<group>"; };
+		536D33D7307531CC00A34C22 /* MigrationPresetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationPresetTests.swift; sourceTree = "<group>"; };
+		536D33D9307D0D4900A34C22 /* FileScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileScanner.swift; sourceTree = "<group>"; };
+		536D33DB307D0EAF00A34C22 /* MigrationOption+Discovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MigrationOption+Discovery.swift"; sourceTree = "<group>"; };
 		5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorNetworkProtocol.swift; sourceTree = "<group>"; };
 		5377C2282B4FF2D100B5C9C1 /* NWParameters-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWParameters-Extension.swift"; sourceTree = "<group>"; };
 		5377C22A2B51551D00B5C9C1 /* MigratorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorError.swift; sourceTree = "<group>"; };
@@ -188,6 +231,7 @@
 		5377C2302B57CD9C00B5C9C1 /* MigrationSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationSetupView.swift; sourceTree = "<group>"; };
 		5381A1AB2F1A30FA00A4FAFD /* AsyncSemaphore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncSemaphore.swift; sourceTree = "<group>"; };
 		5381A1AD2F1A310100A4FAFD /* ContinuationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuationState.swift; sourceTree = "<group>"; };
+		53823343308A4F3D00710C75 /* TransferSkipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSkipTests.swift; sourceTree = "<group>"; };
 		539B25672B47FB930012B974 /* NSTableView-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTableView-Extension.swift"; sourceTree = "<group>"; };
 		539B256A2B47FBEE0012B974 /* NoBackgroundScroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoBackgroundScroller.swift; sourceTree = "<group>"; };
 		539B256C2B4817820012B974 /* View-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View-Extension.swift"; sourceTree = "<group>"; };
@@ -196,14 +240,25 @@
 		539F23972BAC85A700E3F399 /* MLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLogger.swift; sourceTree = "<group>"; };
 		53A1DCB62C6E86950086AD07 /* AppleIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIDView.swift; sourceTree = "<group>"; };
 		53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryDecoder.swift; sourceTree = "<group>"; };
+		53A4206E30909EE400D5F5B8 /* ExcludeApplicationsFolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExcludeApplicationsFolderTests.swift; sourceTree = "<group>"; };
 		53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconManager.swift; sourceTree = "<group>"; };
 		53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManagementHelper.swift; sourceTree = "<group>"; };
 		53B193112C88CB1600DEFE24 /* ManagedEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedEnvironment.swift; sourceTree = "<group>"; };
 		53B193132C89C7D500DEFE24 /* DefaultsMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsMessage.swift; sourceTree = "<group>"; };
 		53B193152C8EFDE700DEFE24 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		53B193172C8F212C00DEFE24 /* Double-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double-Extension.swift"; sourceTree = "<group>"; };
+		53BC9A6930825F03002176E9 /* FileMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMessageTests.swift; sourceTree = "<group>"; };
 		53C5D8152B7CB2110099F667 /* Int-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int-Extension.swift"; sourceTree = "<group>"; };
+		53C79FB530865A0D003071F3 /* MigratorFileURLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratorFileURLTests.swift; sourceTree = "<group>"; };
 		53CC8E382E46041E00B44432 /* MigrationReportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationReportController.swift; sourceTree = "<group>"; };
+		53D5B8FE3066BBA30004DD11 /* EphemeralTLSIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralTLSIdentity.swift; sourceTree = "<group>"; };
+		53D5B9003066BC860004DD11 /* EphemeralTLSIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralTLSIdentityTests.swift; sourceTree = "<group>"; };
+		53D5B9023067BAF20004DD11 /* PairingAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingAuthenticator.swift; sourceTree = "<group>"; };
+		53D5B9043067BB4E0004DD11 /* PairingAuthenticatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingAuthenticatorTests.swift; sourceTree = "<group>"; };
+		53D5B9063067BC2F0004DD11 /* PairingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingMessage.swift; sourceTree = "<group>"; };
+		53DA9A3A309217F100700089 /* MigrationETAEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationETAEstimator.swift; sourceTree = "<group>"; };
+		53DA9A3C3092182100700089 /* MigrationETAEstimatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationETAEstimatorTests.swift; sourceTree = "<group>"; };
+		53DA9A3E309353B000700089 /* ETADisplayStabilizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETADisplayStabilizer.swift; sourceTree = "<group>"; };
 		53DE27982C78A815003AE255 /* Notification-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification-Extension.swift"; sourceTree = "<group>"; };
 		53E313042C6CE8410090793F /* Bundle-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle-Extension.swift"; sourceTree = "<group>"; };
 		53E65F522C772CE80010B8DD /* JamfReconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JamfReconView.swift; sourceTree = "<group>"; };
@@ -222,6 +277,8 @@
 		53F2DE3F2B6A70E000588D2D /* URL-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL-Extension.swift"; sourceTree = "<group>"; };
 		53F2DE412B6A712700588D2D /* MigrationOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationOption.swift; sourceTree = "<group>"; };
 		53F2DE432B6A8AD500588D2D /* MigrationOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationOptionView.swift; sourceTree = "<group>"; };
+		53F77C2E2FBF3FBC004B11BC /* AppSupportFilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSupportFilesView.swift; sourceTree = "<group>"; };
+		53F77C322FBF4A61004B11BC /* ExpandableAppRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableAppRowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -248,6 +305,8 @@
 				1B4C5BE62B03B82B00D4BD0B /* NetworkServer.swift */,
 				1B0507422B04F71500384CD5 /* NetworkConnection.swift */,
 				1B0507402B04F6B200384CD5 /* NetworkBrowser.swift */,
+				53D5B8FE3066BBA30004DD11 /* EphemeralTLSIdentity.swift */,
+				53D5B9023067BAF20004DD11 /* PairingAuthenticator.swift */,
 			);
 			path = NetworkControllers;
 			sourceTree = "<group>";
@@ -269,6 +328,8 @@
 			children = (
 				53665E9C2BDBE17200086714 /* DeviceManagement */,
 				53F2DE452B6AA41800588D2D /* Network */,
+				534656FE306E915F0075EEB5 /* PreferenceCatalog.swift */,
+				534656FF306E915F0075EEB5 /* PreferenceGroup.swift */,
 				53A2AA4E2CE34CCD00FEAD75 /* DictionaryDecoder.swift */,
 				1B05074D2B0612B500384CD5 /* MigratorPage.swift */,
 				53F2DE2F2B69047B00588D2D /* MigratorFileURL.swift */,
@@ -277,9 +338,13 @@
 				5350A7DA2F20FCF600D04A33 /* DiscoveredApplication.swift */,
 				5350A7E82F32122500D04A33 /* ArchitectureType.swift */,
 				53237C122CA9E295004062CC /* DuplicateFilesHandlingPolicy.swift */,
+				5356335F2FAE396500CB4F39 /* AppInfo.swift */,
 				53F2DE3B2B6905FB00588D2D /* MigratorFile.swift */,
 				5377C22A2B51551D00B5C9C1 /* MigratorError.swift */,
 				53F2DE412B6A712700588D2D /* MigrationOption.swift */,
+				536D33D5307530E500A34C22 /* MigrationPreset.swift */,
+				536D33D9307D0D4900A34C22 /* FileScanner.swift */,
+				536D33DB307D0EAF00A34C22 /* MigrationOption+Discovery.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -313,12 +378,11 @@
 		1B4C5BB22B035EBA00D4BD0B /* migrator */ = {
 			isa = PBXGroup;
 			children = (
-				5351C1E02E828B7800043122 /* Generated */,
-				1B4C5BBC2B035EBD00D4BD0B /* migrator.entitlements */,
 				1B4C5BE32B03B6FE00D4BD0B /* Info.plist */,
 				53B193152C8EFDE700DEFE24 /* AppContext.swift */,
 				1B4C5BB32B035EBA00D4BD0B /* MigratorApp.swift */,
 				532F90B72C650014002E270F /* AppDelegate.swift */,
+				5351C1E02E828B7800043122 /* Generated */,
 				53180FD72B6BBCDD00C84937 /* Controllers */,
 				1B0507482B0606A500384CD5 /* Model */,
 				1B4C5BDE2B03759E00D4BD0B /* Views */,
@@ -341,6 +405,16 @@
 			isa = PBXGroup;
 			children = (
 				1B4C5BC52B035EBD00D4BD0B /* ProfileConfigTests.swift */,
+				53C79FB530865A0D003071F3 /* MigratorFileURLTests.swift */,
+				53D5B9003066BC860004DD11 /* EphemeralTLSIdentityTests.swift */,
+				5346570A306E919F0075EEB5 /* AppPathDiscoveryTests.swift */,
+				5346570B306E919F0075EEB5 /* PreferenceCatalogTests.swift */,
+				53D5B9043067BB4E0004DD11 /* PairingAuthenticatorTests.swift */,
+				536D33D7307531CC00A34C22 /* MigrationPresetTests.swift */,
+				53BC9A6930825F03002176E9 /* FileMessageTests.swift */,
+				53823343308A4F3D00710C75 /* TransferSkipTests.swift */,
+				53A4206E30909EE400D5F5B8 /* ExcludeApplicationsFolderTests.swift */,
+				53DA9A3C3092182100700089 /* MigrationETAEstimatorTests.swift */,
 			);
 			path = migratorTests;
 			sourceTree = "<group>";
@@ -411,14 +485,19 @@
 			isa = PBXGroup;
 			children = (
 				1B0507442B04F8E900384CD5 /* NetworkControllers */,
+				53465704306E917D0075EEB5 /* PreferencesDiscovery.swift */,
 				53180FD82B6BBCF300C84937 /* MigrationController.swift */,
+				535633652FAE3A7E00CB4F39 /* AppPathDiscovery.swift */,
 				5350A7DE2F20FD1F00D04A33 /* ArchitectureDetector.swift */,
 				53B1930D2C88A7A600DEFE24 /* JamfReconManager.swift */,
 				5381A1AD2F1A310100A4FAFD /* ContinuationState.swift */,
+				535633612FAE398D00CB4F39 /* FileSizeCache.swift */,
 				53CC8E382E46041E00B44432 /* MigrationReportController.swift */,
 				5381A1AB2F1A30FA00A4FAFD /* AsyncSemaphore.swift */,
 				53B1930F2C88AEA300DEFE24 /* DeviceManagementHelper.swift */,
 				539F23972BAC85A700E3F399 /* MLogger.swift */,
+				53DA9A3A309217F100700089 /* MigrationETAEstimator.swift */,
+				53DA9A3E309353B000700089 /* ETADisplayStabilizer.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -463,8 +542,8 @@
 		5352A2082EE2F53100754A4C /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				533EF2C12F6AB84B00DA2DCD /* DebugHelpers.swift */,
 				1B4C5BE42B03B80300D4BD0B /* Utils.swift */,
-				533EF2C52F6ADF3700DA2DCD /* DebugHelpers.swift */,
 				5352A1E22EE1D89300754A4C /* FontManager.swift */,
 			);
 			path = Helpers;
@@ -496,6 +575,8 @@
 				536776C02D5F36EB0055F7A3 /* CustomAlertView.swift */,
 				535A77902BA49A5E00BB8116 /* CodeVerificationFieldView.swift */,
 				53E796642E95412C002B1187 /* ResourceView.swift */,
+				53465706306E918C0075EEB5 /* PreferenceGroupInfoView.swift */,
+				53465707306E918C0075EEB5 /* PreferenceGroupRowView.swift */,
 				534A99702EBAB0A500F3E24A /* CustomizableIconView.swift */,
 				53E796682E954596002B1187 /* WebView.swift */,
 				532F90B52C64FFE5002E270F /* WindowAccessor.swift */,
@@ -503,6 +584,8 @@
 				5310815A2B7E081500697D46 /* MigratorFileView.swift */,
 				5350A7E62F3211CC00D04A33 /* TwoByTwoGridView.swift */,
 				5310815F2B7E081600697D46 /* ScrollingTextView.swift */,
+				53F77C2E2FBF3FBC004B11BC /* AppSupportFilesView.swift */,
+				53F77C322FBF4A61004B11BC /* ExpandableAppRowView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -510,6 +593,7 @@
 		53F2DE452B6AA41800588D2D /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				53465702306E916D0075EEB5 /* PreferencesMessage.swift */,
 				1B0507492B0606B700384CD5 /* NetworkDevice.swift */,
 				53F2DE392B69058D00588D2D /* CommunicationInterfaces.swift */,
 				5377C2262B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift */,
@@ -519,6 +603,7 @@
 				53F2DE312B69049600588D2D /* SymbolicLinkMessage.swift */,
 				53B193132C89C7D500DEFE24 /* DefaultsMessage.swift */,
 				5377C22E2B57C94F00B5C9C1 /* FileMessage.swift */,
+				53D5B9063067BC2F0004DD11 /* PairingMessage.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -572,7 +657,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2700;
 				ORGANIZATIONNAME = IBM;
 				TargetAttributes = {
 					1B4C5BAF2B035EBA00D4BD0B = {
@@ -692,6 +777,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53F77C2F2FBF3FBC004B11BC /* AppSupportFilesView.swift in Sources */,
 				53F2DE362B69051F00588D2D /* MigratorNetworkProtocolHeader.swift in Sources */,
 				5350A7E72F3211DD00D04A33 /* TwoByTwoGridView.swift in Sources */,
 				5350A7DB2F20FCF600D04A33 /* DiscoveredApplication.swift in Sources */,
@@ -699,6 +785,7 @@
 				5381A1AE2F1A310100A4FAFD /* ContinuationState.swift in Sources */,
 				5300EE4F2B7F9E13002127BB /* String-Extension.swift in Sources */,
 				1B4C5BE72B03B82B00D4BD0B /* NetworkServer.swift in Sources */,
+				536D33D6307530E500A34C22 /* MigrationPreset.swift in Sources */,
 				1B05074E2B0612B500384CD5 /* MigratorPage.swift in Sources */,
 				53A2AA4F2CE34CCF00FEAD75 /* DictionaryDecoder.swift in Sources */,
 				53C5D8162B7CB2110099F667 /* Int-Extension.swift in Sources */,
@@ -706,9 +793,16 @@
 				53B193162C8EFDE700DEFE24 /* AppContext.swift in Sources */,
 				1B0507412B04F6B200384CD5 /* NetworkBrowser.swift in Sources */,
 				53665E972BDBE12300086714 /* Decodable-Extension.swift in Sources */,
+				53465708306E918C0075EEB5 /* PreferenceGroupRowView.swift in Sources */,
+				53465709306E918C0075EEB5 /* PreferenceGroupInfoView.swift in Sources */,
+				53DA9A3B309217F100700089 /* MigrationETAEstimator.swift in Sources */,
 				5350A7DF2F20FD1F00D04A33 /* ArchitectureDetector.swift in Sources */,
+				53DA9A3F309353B000700089 /* ETADisplayStabilizer.swift in Sources */,
+				536D33DC307D0EAF00A34C22 /* MigrationOption+Discovery.swift in Sources */,
 				534A99712EBAB0A500F3E24A /* CustomizableIconView.swift in Sources */,
 				53F2DE3E2B6A5B7500588D2D /* Binding-Extension.swift in Sources */,
+				535633622FAE398D00CB4F39 /* FileSizeCache.swift in Sources */,
+				53465705306E917D0075EEB5 /* PreferencesDiscovery.swift in Sources */,
 				5377C2292B4FF2D100B5C9C1 /* NWParameters-Extension.swift in Sources */,
 				53F2DE342B6904F900588D2D /* MigratorMessageType.swift in Sources */,
 				53F2DE322B69049600588D2D /* SymbolicLinkMessage.swift in Sources */,
@@ -716,6 +810,7 @@
 				53B193142C89C7D500DEFE24 /* DefaultsMessage.swift in Sources */,
 				539B25682B47FB930012B974 /* NSTableView-Extension.swift in Sources */,
 				53E796652E95412C002B1187 /* ResourceView.swift in Sources */,
+				536D33DA307D0D4900A34C22 /* FileScanner.swift in Sources */,
 				53F2DE302B69047B00588D2D /* MigratorFileURL.swift in Sources */,
 				53180FD92B6BBCF300C84937 /* MigrationController.swift in Sources */,
 				1B4C5BB62B035EBA00D4BD0B /* ServerView.swift in Sources */,
@@ -723,14 +818,19 @@
 				53F2DE402B6A70E000588D2D /* URL-Extension.swift in Sources */,
 				5352A1E42EE1D89300754A4C /* FontManager.swift in Sources */,
 				5350A7E92F32122B00D04A33 /* ArchitectureType.swift in Sources */,
-				533EF2C62F6ADF3B00DA2DCD /* DebugHelpers.swift in Sources */,
+				533EF2C22F6AB89200DA2DCD /* DebugHelpers.swift in Sources */,
+				53F77C332FBF4A61004B11BC /* ExpandableAppRowView.swift in Sources */,
 				5377C22F2B57C94F00B5C9C1 /* FileMessage.swift in Sources */,
 				1B0507522B06133800384CD5 /* MigrationView.swift in Sources */,
 				53CC8E392E46042900B44432 /* MigrationReportController.swift in Sources */,
+				53465703306E916D0075EEB5 /* PreferencesMessage.swift in Sources */,
 				1B4C5BB42B035EBA00D4BD0B /* MigratorApp.swift in Sources */,
 				531E49382C77996E00344C73 /* FinalView.swift in Sources */,
 				532F90B62C64FFE5002E270F /* WindowAccessor.swift in Sources */,
 				53237C112CA9E1D8004062CC /* JamfReconMethod.swift in Sources */,
+				53D5B9073067BC2F0004DD11 /* PairingMessage.swift in Sources */,
+				53465700306E915F0075EEB5 /* PreferenceCatalog.swift in Sources */,
+				53465701306E915F0075EEB5 /* PreferenceGroup.swift in Sources */,
 				536A8A1C2E9E77FB00E1D9B0 /* RecapView.swift in Sources */,
 				53B193102C88AEA300DEFE24 /* DeviceManagementHelper.swift in Sources */,
 				5350A7E12F21022600D04A33 /* IncompatibleAppConfirmationView.swift in Sources */,
@@ -758,16 +858,20 @@
 				53B1930E2C88A7A600DEFE24 /* JamfReconManager.swift in Sources */,
 				53B193122C88CB1600DEFE24 /* ManagedEnvironment.swift in Sources */,
 				5350A7DD2F20FD1000D04A33 /* DeviceInfoMessage.swift in Sources */,
+				53D5B8FF3066BBA30004DD11 /* EphemeralTLSIdentity.swift in Sources */,
 				1B0507502B06130800384CD5 /* WelcomeView.swift in Sources */,
 				1B0507432B04F71500384CD5 /* NetworkConnection.swift in Sources */,
 				535B5F9D2B99D7520071861E /* CodeVerificationView.swift in Sources */,
 				53F2DE422B6A712700588D2D /* MigrationOption.swift in Sources */,
 				5350A7E42F237CAD00D04A33 /* MigrationItemsDetailSheet.swift in Sources */,
 				5350A7E52F237CAD00D04A33 /* CompactItemsSummaryView.swift in Sources */,
+				53D5B9033067BAF20004DD11 /* PairingAuthenticator.swift in Sources */,
+				535633662FAE3A7E00CB4F39 /* AppPathDiscovery.swift in Sources */,
 				5377C2272B4FED5100B5C9C1 /* MigratorNetworkProtocol.swift in Sources */,
 				539B256D2B4817820012B974 /* View-Extension.swift in Sources */,
 				53E65F552C777EBD0010B8DD /* RebootView.swift in Sources */,
 				1B4C5BE12B0375C700D4BD0B /* Scene-Extension.swift in Sources */,
+				535633602FAE396500CB4F39 /* AppInfo.swift in Sources */,
 				5351C1DC2E828A1A00043122 /* BuildIdentity.generated.swift in Sources */,
 				53F2DE3C2B6905FB00588D2D /* MigratorFile.swift in Sources */,
 				539F23982BAC85A700E3F399 /* MLogger.swift in Sources */,
@@ -789,7 +893,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53C79FB630865A0D003071F3 /* MigratorFileURLTests.swift in Sources */,
+				53BC9A6A30825F03002176E9 /* FileMessageTests.swift in Sources */,
+				53DA9A3D3092182100700089 /* MigrationETAEstimatorTests.swift in Sources */,
 				1B4C5BC62B035EBD00D4BD0B /* ProfileConfigTests.swift in Sources */,
+				53D5B9013066BC860004DD11 /* EphemeralTLSIdentityTests.swift in Sources */,
+				53D5B9053067BB4E0004DD11 /* PairingAuthenticatorTests.swift in Sources */,
+				53A4206F30909EE400D5F5B8 /* ExcludeApplicationsFolderTests.swift in Sources */,
+				536D33D8307531CC00A34C22 /* MigrationPresetTests.swift in Sources */,
+				5346570C306E919F0075EEB5 /* AppPathDiscoveryTests.swift in Sources */,
+				5346570D306E919F0075EEB5 /* PreferenceCatalogTests.swift in Sources */,
+				53823344308A4F3D00710C75 /* TransferSkipTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -859,11 +973,12 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "//  © Copyright IBM Corp. 2023, 2026";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -918,10 +1033,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "//  © Copyright IBM Corp. 2023, 2026";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -931,11 +1047,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = migrator/migrator.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 218;
+				CURRENT_PROJECT_VERSION = 296;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -946,21 +1062,22 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Mac@IBM Data Shift";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2026";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "$(EXECUTABLE_NAME) needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "The app needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.4.1;
+				MACOSX_DEPLOYMENT_TARGET = 15;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.company.datashift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_CONCURRENCY = minimal;
-				SWIFT_VERSION = 5.0;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -969,11 +1086,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = migrator/migrator.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 218;
+				CURRENT_PROJECT_VERSION = 296;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"migrator/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
@@ -984,21 +1101,22 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = migrator/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Mac@IBM Data Shift";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© Copyright IBM Corp. 2023, 2026";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "$(EXECUTABLE_NAME) needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "The app needs access to your local network to discover nearby Macs and enable secure migration of your files, apps, and preferences.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.4.1;
+				MACOSX_DEPLOYMENT_TARGET = 15;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.company.datashift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_STRICT_CONCURRENCY = minimal;
-				SWIFT_VERSION = 5.0;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -1011,14 +1129,15 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Data Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Data Shift";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac@IBM Data Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mac@IBM Data Shift";
 			};
 			name = Debug;
 		};
@@ -1031,14 +1150,15 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.company.migratorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Data Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Data Shift";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mac@IBM Data Shift.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Mac@IBM Data Shift";
 			};
 			name = Release;
 		};

@@ -71,7 +71,7 @@ struct ScrollingTextView: View {
                                 startScrolling()
                             }
                         }
-                        .onChange(of: containerGeometry.size.width) { newWidth in
+                        .onChange(of: containerGeometry.size.width) { _, newWidth in
                             if maxWidth == nil {
                                 availableWidth = newWidth
                                 needsScrolling = textWidth > availableWidth
@@ -87,14 +87,14 @@ struct ScrollingTextView: View {
                 .frame(width: min(availableWidth, textWidth), height: textheight, alignment: .leading)
                 .clipped()
                 .help(needsScrolling ? text: "")
-                .onChange(of: text) { _ in
+                .onChange(of: text) {
                     animationTask?.cancel()
                     animationTask = nil
                     offset = 0
                     needsScrolling = false
                     animatingForward = true
                 }
-                .onChange(of: isPaused) { newValue in
+                .onChange(of: isPaused) { _, newValue in
                     if needsScrolling {
                         if newValue {
                             animationTask?.cancel()

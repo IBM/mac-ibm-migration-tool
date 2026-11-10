@@ -45,6 +45,10 @@ struct CodeVerificationView: View {
     @State private var showConnectionError: Bool = false
     /// Tracks the visibility of the code error alert.
     @State private var showCodeError: Bool = false
+    /// Tracks the visibility of the "the other device declined" alert.
+    @State private var showDeclinedError: Bool = false
+    /// Guards against starting a second connection attempt if this view re-appears.
+    @State private var hasStartedConnecting: Bool = false
     
     // MARK: - Views
     
@@ -56,7 +60,7 @@ struct CodeVerificationView: View {
                 .accessibilityHidden(true)
             Text("code.verification.page.title")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
                 .accessibilitySortPriority(1)
             Text("code.verification.page.subtitle")
@@ -65,10 +69,22 @@ struct CodeVerificationView: View {
                 .padding(.bottom)
                 .padding(.horizontal, 40)
                 .accessibilitySortPriority(0.9)
-            CodeVerificationFieldView(code: $verificationCode)
-                .disabled(isLoading)
-                .focused($isTextFieldFocused)
-                .accessibilitySortPriority(0.8)
+            if migrationController.isAwaitingPasscodeEntry {
+                CodeVerificationFieldView(code: $verificationCode)
+                    .disabled(isLoading)
+                    .focused($isTextFieldFocused)
+                    .accessibilitySortPriority(0.8)
+            } else {
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.small)
+                        .accessibilityHidden(true)
+                    Text("code.verification.page.waiting.label")
+                        .customFont(.body)
+                }
+                .accessibilityElement(children: .combine)
+            }
             Spacer()
             Divider()
             HStack {
@@ -78,25 +94,26 @@ struct CodeVerificationView: View {
                 }, label: {
                     secondaryButtonLabel
                 })
-                .disabled(isLoading)
                 .keyboardShortcut(.cancelAction)
                 .accessibilityHint("accessibility.cvPage.mainButton.hint")
-                ZStack {
-                    Button(action: {
-                        didPressMainButton()
-                    }, label: {
-                        mainButtonLabel
-                    })
-                    .disabled(verificationCode.count < 6)
-                    .hiddenConditionally(isHidden: isLoading)
-                    .keyboardShortcut(.defaultAction)
-                    .accessibilityHint("accessibility.cvPage.secondaryButton.hint")
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .controlSize(.small)
-                        .hiddenConditionally(isHidden: !isLoading)
+                if migrationController.isAwaitingPasscodeEntry {
+                    ZStack {
+                        Button(action: {
+                            didPressMainButton()
+                        }, label: {
+                            mainButtonLabel
+                        })
+                        .disabled(verificationCode.count < 6)
+                        .hiddenConditionally(isHidden: isLoading)
+                        .keyboardShortcut(.defaultAction)
+                        .accessibilityHint("accessibility.cvPage.secondaryButton.hint")
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .controlSize(.small)
+                            .hiddenConditionally(isHidden: !isLoading)
+                    }
+                    .padding(.leading, 6)
                 }
-                .padding(.leading, 6)
             }
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
         }
@@ -104,6 +121,12 @@ struct CodeVerificationView: View {
             Button("code.verification.alert.code.error.action") {
                 Task { @MainActor in
                     self.isLoading = false
+                    self.verificationCode = ""
+                    // A wrong code always ends with the underlying connection torn down (the
+                    // PAKE can't just be retried over the same session), so retrying needs a
+                    // genuinely fresh connection - which also means the destination will see a
+                    // new accept/decline prompt rather than silently reusing the old approval.
+                    migrationController.connect(to: migrationController.selectedBrowserResult)
                 }
             }
             .accessibilityHint("accessibility.cvPage.error.button.hint")
@@ -120,10 +143,17 @@ struct CodeVerificationView: View {
             Text("code.verification.alert.connection.error.message")
                 .customFont(.body)
         }
+        .alert("code.verification.alert.declined.title", isPresented: $showDeclinedError) {
+            Button("code.verification.alert.declined.action") {
+                action(previousPage)
+            }
+            .accessibilityHint("accessibility.cvPage.error.button.hint")
+        } message: {
+            Text("code.verification.alert.declined.message")
+                .customFont(.body)
+        }
         .onReceive(migrationController.$migrationState, perform: { newState in
             switch newState {
-            case .fetching:
-                isLoading = true
             case .connectionEstablished:
                 action(nextPage)
             case .wrongOTPCodeSent:
@@ -132,10 +162,22 @@ struct CodeVerificationView: View {
                 break
             }
         })
-        .onAppear {
+        .onChange(of: migrationController.pairingRequestWasDeclined) { _, wasDeclined in
+            guard wasDeclined else { return }
+            migrationController.pairingRequestWasDeclined = false
+            isLoading = false
+            showDeclinedError = true
+        }
+        .onChange(of: migrationController.isAwaitingPasscodeEntry) { _, isAwaiting in
+            guard isAwaiting else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 isTextFieldFocused = true
             }
+        }
+        .onAppear {
+            guard !hasStartedConnecting else { return }
+            hasStartedConnecting = true
+            migrationController.connect(to: migrationController.selectedBrowserResult)
         }
     }
     
@@ -146,7 +188,7 @@ struct CodeVerificationView: View {
     }
     
     var secondaryButtonLabel: some View {
-        Text("browser.page.button.secondary.label")
+        Text("code.verification.page.button.secondary.label")
             .customFont(.body)
             .padding(4)
     }
@@ -155,10 +197,13 @@ struct CodeVerificationView: View {
     
     private func didPressMainButton() {
         self.isLoading = true
-        migrationController.connect(to: migrationController.selectedBrowserResult, withPasscode: verificationCode)
+        Task {
+            await migrationController.submitPasscode(verificationCode)
+        }
     }
     
     private func didPressSecondaryButton() {
+        migrationController.cancelPairingRequest()
         migrationController.selectedBrowserResult = nil
         action(previousPage)
     }

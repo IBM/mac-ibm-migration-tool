@@ -29,14 +29,15 @@ struct MigrationOptionView: View {
     
     // MARK: - Private Computed Properties
     
-    /// Total count of items (files + apps)
+    /// Total count of items (files + apps + preference groups)
     private var totalItemCount: Int {
-        option.migrationFileList.count + option.migrationAppList.count
+        option.migrationFileList.count + option.migrationAppList.count + option.migrationPreferencesList.count
     }
-    
-    /// Determines whether to use compact display mode
+
+    /// Determines whether to use compact display mode. Preference groups always force compact mode
+    /// since `TwoByTwoGridView` only knows how to render a single, shared item type (files/apps).
     private var shouldUseCompactMode: Bool {
-        totalItemCount > displayThreshold
+        totalItemCount > displayThreshold || !option.migrationPreferencesList.isEmpty
     }
     
     // MARK: - Views
@@ -62,7 +63,8 @@ struct MigrationOptionView: View {
                 VStack(alignment: .leading) {
                     if shouldUseCompactMode {
                         CompactItemsSummaryView(fileCount: option.migrationFileList.count,
-                                                appCount: option.migrationAppList.count)
+                                                appCount: option.migrationAppList.count,
+                                                preferenceCount: option.migrationPreferencesList.count)
                         .onTapGesture {
                             showDetailSheet = true
                         }

@@ -121,8 +121,16 @@ struct IncompatibleAppConfirmationView: View {
                 }
             }
             .padding()
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(8)
+            .background {
+                if #available(macOS 26.0, *) {
+                    Color.clear
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
+                } else {
+                    Color.gray
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .opacity(0.1)
+                }
+            }
             Spacer()
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "info.circle.fill")

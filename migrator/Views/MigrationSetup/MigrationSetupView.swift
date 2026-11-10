@@ -15,7 +15,7 @@ struct MigrationSetupView: View {
     // MARK: - Environment Variables
     
     @Environment(\.colorScheme) var colorScheme
-    
+
     // MARK: - Constants
     
     /// Closure to execute when an action requires navigation to a different page.
@@ -24,7 +24,7 @@ struct MigrationSetupView: View {
     let previousPage: MigratorPage = .browser
     /// The next page to navigate forward to, typically the migration setup page.
     let nextPage: MigratorPage = AppContext.shouldSkipMigrationSummary ? .migration : .recap
-    
+
     // MARK: - Observable Variables
     
     /// Observable view model object to handle data and logic for the migration setup
@@ -48,7 +48,7 @@ struct MigrationSetupView: View {
                 .accessibilityHidden(true)
             Text("migration.setup.page.title")
                 .multilineTextAlignment(.center)
-                .customFont(size: 27, weight: .bold)
+                .customFont(.largeTitle, weight: .bold)
                 .padding(.bottom, 8)
             if $viewModel.viewState.wrappedValue != MigrationSetupViewModel.MigrationSetupViewState.advancedSelection {
                 Text("migration.setup.page.subtitle")
@@ -171,6 +171,7 @@ struct MigrationSetupView: View {
                             .padding(4)
                     }
                     .clipShape(Circle())
+                    .accessibilityLabel("accessibility.migrationView.warningButton.label")
                     .accessibilityHint("accessibility.migrationView.warningButton.hint")
                     .popover(isPresented: $showInsufficientSpacePopover, arrowEdge: .bottom) {
                         Text("migration.setup.page.bottom.info.storage.help")
@@ -191,6 +192,7 @@ struct MigrationSetupView: View {
                         .padding(4)
                 }
                 .clipShape(Circle())
+                .accessibilityLabel("accessibility.migrationView.warningButton.label")
                 .accessibilityHint("accessibility.migrationView.warningButton.hint")
                 .popover(isPresented: $showInsufficientSpacePopover, arrowEdge: .bottom) {
                     Text("migration.setup.page.bottom.noinfo.size.label")
@@ -202,13 +204,19 @@ struct MigrationSetupView: View {
             }
         }
     }
-    
+
     private var selectionView: some View {
         ZStack {
-            Color("discoveryViewBackground")
-                .clipShape(RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 12 : 20))
-                .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
-                .accessibilityHidden(true)
+            if #available(macOS 26.0, *) {
+                Color.clear
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 12 : 20))
+                    .accessibilityHidden(true)
+            } else {
+                Color("discoveryViewBackground")
+                    .clipShape(RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 12 : 20))
+                    .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.15), radius: 6, x: 0, y: 0)
+                    .accessibilityHidden(true)
+            }
             if viewModel.viewState == .advancedSelection {
                 AdavancedSelectionView(migrationOption: $viewModel.chosenOption)
                     .transition(.opacity)
@@ -223,7 +231,7 @@ struct MigrationSetupView: View {
                                     .padding(.leading, -38)
                                     .padding(.trailing, -7)
                             }
-                            .tag(element.wrappedValue)
+                                .tag(element.wrappedValue)
                         }
                     }
                     .pickerStyle(.radioGroup)
@@ -252,10 +260,6 @@ struct MigrationSetupView: View {
                 .transition(.opacity)
             }
         }
-        .mask(
-            RoundedRectangle(cornerRadius: viewModel.viewState == .advancedSelection ? 12 : 20)
-                .padding(.top, viewModel.viewState == .advancedSelection ? -11 : 0)
-        )
     }
     
     private var mainButtonLabel: some View {
@@ -269,7 +273,7 @@ struct MigrationSetupView: View {
             .customFont(.body)
             .padding(4)
     }
-    
+
     // MARK: - Private Methods
     
     private func didPressMainButton() {
@@ -328,5 +332,5 @@ struct MigrationSetupView: View {
 
 #Preview {
     MigrationSetupView(action: { _ in })
-        .frame(width: 812, height: 600)
+    .frame(width: 812, height: 600)
 }

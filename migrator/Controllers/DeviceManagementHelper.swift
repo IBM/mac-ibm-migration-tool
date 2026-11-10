@@ -10,6 +10,7 @@
 import Foundation
 
 /// Helper class used to run the device management state discovery.
+@MainActor
 final class DeviceManagementHelper {
     
     // MARK: - Static Constants
@@ -48,7 +49,7 @@ final class DeviceManagementHelper {
             
             guard let serverURL = serverURL else {
                 self.state = .unmanaged
-                MLogger.main.log("deviceManagementHelper:loadDeviceManagementState no matching management profile found.", type: .default)
+                MLogger.main.log("deviceManagementHelper.loadDeviceManagementState: no matching management profile found", type: .default, category: .device)
                 return
             }
             
@@ -62,7 +63,7 @@ final class DeviceManagementHelper {
     
     /// Executes the command to fetch profiles and parses the result.
     private func fetchProfiles(completion: @escaping (String?) -> Void) {
-        MLogger.main.log("deviceManagementHelper:fetchProfiles fecthing installed profiles...", type: .default)
+        MLogger.main.log("deviceManagementHelper.fetchProfiles: fetching installed profiles", type: .default, category: .device)
         let command = "profiles status -type enrollment | grep \"MDM server\" | awk -F': ' '{print $2}'"
         let task = Process()
         let pipe = Pipe()
@@ -88,12 +89,12 @@ final class DeviceManagementHelper {
             .filter { !$0.isEmpty }
         
         guard let serverURL = lines.last, !serverURL.isEmpty else {
-            MLogger.main.log("deviceManagementHelper:fetchProfiles device appear not to be managed. No Server URL found. Result of the command: \(output)", type: .error)
+            MLogger.main.log("deviceManagementHelper.fetchProfiles: device appears not to be managed, no Server URL found in command output: \"\(output)\"", type: .error, category: .device)
             completion(nil)
             return
         }
         
-        MLogger.main.log("deviceManagementHelper:fetchProfiles successfully retrieved and parsed Server URL: \(serverURL)", type: .default)
+        MLogger.main.log("deviceManagementHelper.fetchProfiles: successfully retrieved and parsed server URL \"\(serverURL)\"", type: .default, category: .device)
         completion(serverURL)
     }
     
@@ -101,10 +102,10 @@ final class DeviceManagementHelper {
     private func handleServerURL(url: String,
                                  completion: @escaping (DeviceManagementState) -> Void) {
         if let env = findMatchingEnvironment(for: url) {
-            MLogger.main.log("deviceManagementHelper:loadDeviceManagementState found matching management profile.", type: .default)
+            MLogger.main.log("deviceManagementHelper.handleServerURL: found matching management profile", type: .default, category: .device)
             completion(.managed(env: env))
         } else {
-            MLogger.main.log("deviceManagementHelper:loadDeviceManagementState found unknown management profile.", type: .default)
+            MLogger.main.log("deviceManagementHelper:loadDeviceManagementState found unknown management profile", type: .default, category: .device)
             completion(.managedByUnknownOrg)
         }
     }

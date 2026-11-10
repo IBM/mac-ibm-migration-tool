@@ -123,16 +123,16 @@ struct CustomizableIconView: View {
         }
         
         guard let imageData = Data(base64Encoded: base64String, options: .ignoreUnknownCharacters) else {
-            MLogger.main.log("CustomizableIconView: Failed to decode base64 image for page '\(pageIdentifier)'", type: .error)
+            MLogger.main.log("customizableIconView.loadBase64Image: failed to decode base64 image for page \"\(pageIdentifier)\"", type: .error)
             return nil
         }
         
         guard let image = NSImage(data: imageData) else {
-            MLogger.main.log("CustomizableIconView: Failed to create image from base64 data for page '\(pageIdentifier)'", type: .error)
+            MLogger.main.log("customizableIconView.loadBase64Image: failed to create image from base64 data for page \"\(pageIdentifier)\"", type: .error)
             return nil
         }
         
-        MLogger.main.log("CustomizableIconView: Successfully loaded base64 image for page '\(pageIdentifier)'", type: .default)
+        MLogger.main.log("customizableIconView.loadBase64Image: successfully loaded base64 image for page \"\(pageIdentifier)\"", type: .default)
         return image
     }
     
@@ -141,7 +141,7 @@ struct CustomizableIconView: View {
     /// - Returns: The downloaded NSImage, or nil if download failed
     private func loadRemoteImage(from source: String) async -> NSImage? {
         guard let url = URL(string: source) else {
-            MLogger.main.log("CustomizableIconView: Invalid URL '\(source)' for page '\(pageIdentifier)'", type: .error)
+            MLogger.main.log("customizableIconView.loadRemoteImage: invalid URL \"\(source)\" for page \"\(pageIdentifier)\"", type: .error)
             return nil
         }
         
@@ -150,19 +150,19 @@ struct CustomizableIconView: View {
             
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
-                MLogger.main.log("CustomizableIconView: Failed to download image from '\(source)' for page '\(pageIdentifier)'", type: .error)
+                MLogger.main.log("customizableIconView.loadRemoteImage: failed to download image from \"\(source)\" for page \"\(pageIdentifier)\"", type: .error)
                 return nil
             }
             
             guard let image = NSImage(data: data) else {
-                MLogger.main.log("CustomizableIconView: Failed to create image from downloaded data for page '\(pageIdentifier)'", type: .error)
+                MLogger.main.log("customizableIconView.loadRemoteImage: failed to create image from downloaded data for page \"\(pageIdentifier)\"", type: .error)
                 return nil
             }
             
-            MLogger.main.log("CustomizableIconView: Successfully loaded remote image from '\(source)' for page '\(pageIdentifier)'", type: .default)
+            MLogger.main.log("customizableIconView.loadRemoteImage: successfully loaded remote image from \"\(source)\" for page \"\(pageIdentifier)\"", type: .default)
             return image
         } catch {
-            MLogger.main.log("CustomizableIconView: Error downloading image from '\(source)' for page '\(pageIdentifier)': \(error.localizedDescription)", type: .error)
+            MLogger.main.log("customizableIconView.loadRemoteImage: failed to download image from \"\(source)\" for page \"\(pageIdentifier)\" -> \"\(error.localizedDescription)\"", type: .error)
             return nil
         }
     }
@@ -176,11 +176,11 @@ struct CustomizableIconView: View {
         
         // Try to load the image
         guard let image = NSImage(contentsOfFile: expandedPath) else {
-            MLogger.main.log("CustomizableIconView: Failed to load image from local path '\(expandedPath)' for page '\(pageIdentifier)'", type: .error)
+            MLogger.main.log("customizableIconView.loadLocalImage: failed to load image from local path \"\(expandedPath)\" for page \"\(pageIdentifier)\"", type: .error)
             return nil
         }
         
-        MLogger.main.log("CustomizableIconView: Successfully loaded local image from '\(expandedPath)' for page '\(pageIdentifier)'", type: .default)
+        MLogger.main.log("customizableIconView.loadLocalImage: successfully loaded local image from \"\(expandedPath)\" for page \"\(pageIdentifier)\"", type: .default)
         return image
     }
 }

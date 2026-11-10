@@ -12,6 +12,7 @@ import Network
 import Combine
 
 /// Manages the discovery of network services using NWBrowser. It provides functionality to start and stop the discovery process and publishes updates on the browser's state and discovered services.
+@MainActor
 final class NetworkBrowser {
 
     // MARK: - Published Properties
@@ -39,7 +40,7 @@ final class NetworkBrowser {
     // MARK: - Private Constants
     
     /// Logger instance.
-    private let logger: MLogger = MLogger.main
+    private let logger = MLogger.main.scoped(to: .discovery)
 
     // MARK: - Initializer
     
@@ -53,19 +54,47 @@ final class NetworkBrowser {
     
     /// Starts the discovery process of network services.
     func start() {
+        logger.log("networkBrowser.start: starting discovery of nearby devices", type: .default)
+        // `NWBrowser`'s handlers aren't `@MainActor`-annotated, but `browser` is started on the
+        // `.main` queue below, so they always fire there.
         // Sets up handlers to publish state updates and discovered services changes.
         browser.stateUpdateHandler = { [weak self] newState in
-            self?.onNewBrowserState.send(newState)
+            MainActor.assumeIsolated {
+                switch newState {
+                case .failed(let error):
+                    self?.logger.log("networkBrowser.stateUpdateHandler: discovery failed -> \"\(error.localizedDescription)\"", type: .error)
+                case .cancelled:
+                    self?.logger.log("networkBrowser.stateUpdateHandler: discovery cancelled", type: .default)
+                case .ready:
+                    self?.logger.log("networkBrowser.stateUpdateHandler: discovery ready, browsing for devices", type: .default)
+                default:
+                    break
+                }
+                self?.onNewBrowserState.send(newState)
+            }
         }
         browser.browseResultsChangedHandler = { [weak self] _, changes in
-            self?.onNewBrowserResults.send(changes)
+            MainActor.assumeIsolated {
+                for change in changes {
+                    switch change {
+                    case .added(let result):
+                        self?.logger.log("networkBrowser.browseResultsChangedHandler: discovered device \"\(result.endpoint.debugDescription)\"", type: .default)
+                    case .removed(let result):
+                        self?.logger.log("networkBrowser.browseResultsChangedHandler: lost device \"\(result.endpoint.debugDescription)\"", type: .default)
+                    default:
+                        break
+                    }
+                }
+                self?.onNewBrowserResults.send(changes)
+            }
         }
         // Starts the NWBrowser instance on the main queue.
         browser.start(queue: .main)
     }
-    
+
     /// Stops the discovery process and resets the NWBrowser instance.
     func stop() {
+        logger.log("networkBrowser.stop: stopping discovery of nearby devices", type: .default)
         // Cancels the current browsing session.
         browser.cancel()
         // Reinitializes the browser to be ready for a new discovery session.
