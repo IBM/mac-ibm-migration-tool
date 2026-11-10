@@ -6,10 +6,7 @@ markdown: kramdown
 kramdown:
   input: GFM
   hard_wrap: false
-
-# Latest released version of the app, and the unreleased changes that are tagged
-# "New in next release" (see CHANGELOG.md, [Unreleased]). When the next version
-# ships, replace the "next" tags with its number.
+  
 app_version: 2.0.0
 
 repo_url: https://github.com/IBM/mac-ibm-migration-tool

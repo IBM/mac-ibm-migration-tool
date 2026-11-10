@@ -6,7 +6,7 @@ permalink: /architecture/
 
 IBM Data Shift is a native macOS application built with SwiftUI that migrates files, applications and preferences between Mac devices over a direct peer-to-peer connection. This page gives developers and technical administrators an architectural overview.
 
-Security implementation details (cryptography, authentication, protocol hardening, threat model) are in [Security & privacy]({{ '/security/' | relative_url }}). Changes from the unreleased development branch are tagged {% include tag.html v="2.0.0" %}.
+Security implementation details (cryptography, authentication, protocol hardening, threat model) are in [Security & privacy]({{ '/security/' | relative_url }}). 
 
 ## High-level architecture
 

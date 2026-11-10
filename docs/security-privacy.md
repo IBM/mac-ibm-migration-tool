@@ -6,7 +6,7 @@ permalink: /security/
 
 IBM Data Shift protects data during a device migration with an encrypted, authenticated, direct connection between the two Macs and with strict validation of everything the destination Mac receives. This page is for administrators and security teams running reviews or compliance assessments.
 
-Changes are tagged with the version that introduced them. {% include tag.html v="2.0.0" %} marks changes from the unreleased development branch (see the [CHANGELOG]({{ site.repo_url }}/blob/main/CHANGELOG.md)); the rest describes v1.4.1 and earlier, and the sections called *Until v1.4.1* describe the behavior that the unreleased version replaces.
+Changes are tagged with the version that introduced them (e.g. {% include tag.html v="2.0.0" %}).
 
 ## Security layers
 
@@ -30,7 +30,7 @@ Changes are tagged with the version that introduced them. {% include tag.html v=
 
 ## Transport security and pairing {% include tag.html v="2.0.0" %}
 
-Network.framework dropped external pre-shared-key support in TLS 1.3, so the pairing code can no longer gate the TLS handshake. The unreleased version therefore splits the job in two:
+Network.framework dropped external pre-shared-key support in TLS 1.3, so the pairing code can no longer gate the TLS handshake. The new version therefore splits the job in two:
 
 1. **Confidential transport (TLS 1.3 only).** The destination Mac serves an ephemeral, self-signed certificate that exists only in memory and is never written to the keychain. It is used purely to obtain an encrypted, **forward-secret** channel. The source Mac accepts any certificate at this layer, because peers are authenticated in the next step.
 2. **Peer authentication (application layer).** Immediately after the handshake, both Macs run a CPace-style password-authenticated key exchange (PAKE) that uses the 6-digit pairing code and is **bound to the TLS session's exporter secret**.
@@ -62,7 +62,7 @@ Versions up to v1.4.1 enforce **TLS 1.2 or higher** with the single cipher suite
 - The PSK identity is a random UUID generated at build time by GYB (`BuildIdentity.generated.swift.gyb`), so different builds can't talk to each other even with the same passcode. Debug builds use a fixed identity.
 - The negotiated TLS version and cipher suite are logged at connection time.
 
-Limitations of that design, which the unreleased version removes:
+Limitations of that design, which v2.0.0 removes:
 
 - No forward secrecy (plain PSK key exchange).
 - The key was derived from a 6-digit code, so a captured handshake could be attacked offline.
@@ -79,7 +79,7 @@ Limitations of that design, which the unreleased version removes:
 
 An application protocol runs on top of TLS. Every message starts with a fixed-size header made of three `UInt32` fields: message type, payload length and info length.
 
-- **Type validation**: only known message types are processed (hostname, file, multipart file, available space, result, symlink, directory, metadata, defaults, device info, and, in the unreleased version, preferences and the pairing messages {% include tag.html v="2.0.0" %}).
+- **Type validation**: only known message types are processed (hostname, file, multipart file, available space, result, symlink, directory, metadata, defaults, device info, and, since v2.0.0 version, preferences and the pairing messages {% include tag.html v="2.0.0" %}).
 - **Structured parsing**: the header drives how the stream is read, and metadata is separated from file content.
 - **Fixed header size**: header parsing reads a fixed number of bytes.
 

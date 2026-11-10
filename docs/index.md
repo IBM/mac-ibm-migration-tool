@@ -14,8 +14,6 @@ IBM Data Shift is a native macOS app that migrates files, applications and prefe
 
 ### v2.0.0 {% include tag.html v="2.0.0" %}
 
-Unreleased changes from the development branch. Items are tagged throughout this site.
-
 - **Stronger pairing and transport**: TLS 1.3 with forward secrecy, a PAKE-based peer verification bound to the TLS session, explicit accept/decline of pairing requests on the new Mac and a lockout after repeated wrong codes. See [Security & privacy]({{ '/security/' | relative_url }}).
 - **Safer transfers**: the new Mac validates every path, symlink and file attribute it receives, and Jamf Self Service is launched without a shell.
 - **Pause & resume**: the old Mac can pause a running migration and resume it later from the same point.
