@@ -20,3 +20,7 @@
       url: /architecture/
     - title: Security & privacy
       url: /security/
+- title: Public Release
+  children:
+    - title: Default Configuration Settings of the Public Release
+      url: /public-release-defaults/
